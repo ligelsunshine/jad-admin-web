@@ -1,19 +1,17 @@
-import type { UserInfo } from '/#/store';
-import type { ErrorMessageMode } from '/#/axios';
+import type { User } from '/#/store';
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import { RoleEnum } from '/@/enums/roleEnum';
 import { PageEnum } from '/@/enums/pageEnum';
 import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY } from '/@/enums/cacheEnum';
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
-import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel';
 import { doLogout, getUserInfo, loginApi } from '/@/api/sys/user';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { router } from '/@/router';
 
 interface UserState {
-  userInfo: Nullable<UserInfo>;
+  userInfo: Nullable<User>;
   token?: string;
   roleList: RoleEnum[];
   sessionTimeout?: boolean;
@@ -32,8 +30,8 @@ export const useUserStore = defineStore({
     sessionTimeout: false,
   }),
   getters: {
-    getUserInfo(): UserInfo {
-      return this.userInfo || getAuthCache<UserInfo>(USER_INFO_KEY) || {};
+    getUserInfo(): User {
+      return this.userInfo || getAuthCache<User>(USER_INFO_KEY) || {};
     },
     getToken(): string {
       return this.token || getAuthCache<string>(TOKEN_KEY);
@@ -54,7 +52,7 @@ export const useUserStore = defineStore({
       this.roleList = roleList;
       setAuthCache(ROLES_KEY, roleList);
     },
-    setUserInfo(info: UserInfo) {
+    setUserInfo(info: User) {
       this.userInfo = info;
       setAuthCache(USER_INFO_KEY, info);
     },
@@ -70,22 +68,15 @@ export const useUserStore = defineStore({
     /**
      * @description: login
      */
-    async login(
-      params: LoginParams & {
-        goHome?: boolean;
-        mode?: ErrorMessageMode;
-      }
-    ): Promise<GetUserInfoModel | null> {
+    async login(params) {
       try {
-        const { goHome = true, mode, ...loginParams } = params;
-        const data = await loginApi(loginParams, mode);
-        const { token } = data;
-
+        const { goHome = true, ...loginParams } = params;
+        const response = await loginApi(loginParams);
+        const token = response.headers['authorization'];
         // save token
         this.setToken(token);
         // get user info
         const userInfo = await this.getUserInfoAction();
-
         const sessionTimeout = this.sessionTimeout;
         sessionTimeout && this.setSessionTimeout(false);
         !sessionTimeout && goHome && (await router.replace(PageEnum.BASE_HOME));
@@ -95,12 +86,13 @@ export const useUserStore = defineStore({
       }
     },
     async getUserInfoAction() {
-      const userInfo = await getUserInfo();
-      const { roles } = userInfo;
+      const response = await getUserInfo();
+      const { roles, user } = response.data?.data;
+
       const roleList = roles.map((item) => item.value) as RoleEnum[];
-      this.setUserInfo(userInfo);
+      this.setUserInfo(user);
       this.setRoleList(roleList);
-      return userInfo;
+      return user;
     },
     /**
      * @description: logout

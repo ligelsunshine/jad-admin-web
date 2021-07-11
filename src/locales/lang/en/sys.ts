@@ -9,7 +9,7 @@ export default {
     networkException: 'network anomaly',
     networkExceptionMsg:
       'Please check if your network connection is normal! The network is abnormal',
-
+    errMsg400: 'Bad request',
     errMsg401: 'The user does not have permission (token, user name, password error)!',
     errMsg403: 'The user is authorized, but access is forbidden!',
     errMsg404: 'Network request error, the resource was not found!',
@@ -89,6 +89,7 @@ export default {
     // placeholder
     accountPlaceholder: 'Please input username',
     passwordPlaceholder: 'Please input password',
+    picPlaceholder: 'Please input picture code',
     smsPlaceholder: 'Please input sms code',
     mobilePlaceholder: 'Please input mobile',
     policyPlaceholder: 'Register after checking',
@@ -98,6 +99,7 @@ export default {
     password: 'Password',
     confirmPassword: 'Confirm Password',
     email: 'Email',
+    picCode: 'Picture code',
     smsCode: 'SMS code',
     mobile: 'Mobile',
   },

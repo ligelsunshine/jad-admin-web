@@ -1,35 +1,37 @@
 import { defHttp } from '/@/utils/http/axios';
-import { LoginParams, LoginResultModel, GetUserInfoModel } from './model/userModel';
+import { LoginParams } from './model/userModel';
 
-import { ErrorMessageMode } from '/#/axios';
+import qs from 'qs';
 
 enum Api {
-  Login = '/login',
-  Logout = '/logout',
-  GetUserInfo = '/getUserInfo',
+  Login = '/auth/login',
+  Logout = '/auth/logout',
+  GetPicCaptcha = '/auth/captcha',
+  GetUserInfo = '/sys/user/currentUser',
   GetPermCode = '/getPermCode',
 }
 
 /**
  * @description: user login api
  */
-export function loginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') {
-  return defHttp.post<LoginResultModel>(
-    {
-      url: Api.Login,
-      params,
-    },
-    {
-      errorMessageMode: mode,
-    }
-  );
+export function loginApi(params: LoginParams) {
+  return defHttp.post({
+    url: Api.Login + '?' + qs.stringify(params),
+  });
+}
+
+/**
+ * @description: getPicCaptcha
+ */
+export function getPicCaptcha() {
+  return defHttp.get({ url: Api.GetPicCaptcha });
 }
 
 /**
  * @description: getUserInfo
  */
 export function getUserInfo() {
-  return defHttp.get<GetUserInfoModel>({ url: Api.GetUserInfo });
+  return defHttp.get({ url: Api.GetUserInfo });
 }
 
 export function getPermCode() {

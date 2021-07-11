@@ -1,10 +1,10 @@
 {
-  "name": "vben-admin",
+  "name": "jad-admin-web",
   "version": "2.6.0",
   "author": {
-    "name": "vben",
-    "email": "anncwb@126.com",
-    "url": "https://github.com/anncwb"
+    "name": "cxxwl96",
+    "email": "cxxwl96@sina.com",
+    "url": "#"
   },
   "scripts": {
     "bootstrap": "yarn install",
@@ -132,15 +132,7 @@
     "bin-wrapper": "npm:bin-wrapper-china",
     "rollup": "^2.52.7"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/anncwb/vue-vben-admin.git"
-  },
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/anncwb/vue-vben-admin/issues"
-  },
-  "homepage": "https://github.com/anncwb/vue-vben-admin",
   "engines": {
     "node": "^12 || >=14"
   }

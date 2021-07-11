@@ -29,12 +29,19 @@ export interface ErrorLogInfo {
   time?: string;
 }
 
-export interface UserInfo {
-  userId: string | number;
+export interface User {
+  id: string | number;
   username: string;
-  realName: string;
+  name: string;
+  sex: number;
+  age: number;
+  birthday: Date;
+  email: string;
+  phone: string;
   avatar: string;
-  desc?: string;
+  city: string;
+  lastLogin: Date;
+  remark?: string;
 }
 
 export interface BeforeMiniState {

@@ -22,7 +22,7 @@ export function checkStatus(
 
   switch (status) {
     case 400:
-      errMessage = `${msg}`;
+      errMessage = `${msg}` != `` ? `${msg}` : t('sys.api.errMsg401');
       break;
     // 401: Not logged in
     // Jump to the login page if not logged in, and carry the path of the current page

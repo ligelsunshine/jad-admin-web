@@ -8,9 +8,11 @@
     v-show="getShow"
     @keypress.enter="handleLogin"
   >
+    <!-- username -->
     <FormItem name="account" class="enter-x">
       <Input size="large" v-model:value="formData.account" :placeholder="t('sys.login.userName')" />
     </FormItem>
+    <!-- password -->
     <FormItem name="password" class="enter-x">
       <InputPassword
         size="large"
@@ -19,7 +21,30 @@
         :placeholder="t('sys.login.password')"
       />
     </FormItem>
-
+    <!-- picture captcha -->
+    <FormItem name="codeValue" class="enter-x">
+      <Input
+        size="large"
+        v-model:value="formData.codeValue"
+        :placeholder="t('sys.login.picCode')"
+        autocomplete="off"
+        style="min-width: 50%; width: calc(60% - 10px)"
+      />
+      <img
+        @click="handlePicCaptcha"
+        :src="state.picCaptcha"
+        class="w-1/2 -mt-16 -enter-x"
+        height="40px"
+        style="
+          width: 40%;
+          height: 40px;
+          float: right;
+          margin: 0px;
+          border-radius: 2px;
+          cursor: pointer;
+        "
+      />
+    </FormItem>
     <ARow class="enter-x">
       <ACol :span="12">
         <FormItem>
@@ -91,10 +116,10 @@
 
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
-
+  import { useDesign } from '/@/hooks/web/useDesign';
   import { useUserStore } from '/@/store/modules/user';
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
-  import { useDesign } from '/@/hooks/web/useDesign';
+  import { getPicCaptcha } from '/@/api/sys/user';
   //import { onKeyStroke } from '@vueuse/core';
 
   export default defineComponent({
@@ -130,8 +155,11 @@
       const rememberMe = ref(false);
 
       const formData = reactive({
-        account: 'vben',
+        type: '',
+        account: 'admin',
         password: '123456',
+        codeKey: '',
+        codeValue: '',
       });
 
       const { validForm } = useFormValid(formRef);
@@ -139,34 +167,47 @@
       //onKeyStroke('Enter', handleLogin);
 
       const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN);
+      const state = reactive({
+        picCaptcha: '',
+      });
 
+      /**
+       * 获取图片验证码事件
+       */
+      async function handlePicCaptcha() {
+        getPicCaptcha().then((res) => {
+          state.picCaptcha = res.data.data.codeImage;
+          formData.codeKey = res.data.data.codeKey;
+        });
+      }
+
+      /**
+       * 登录事件
+       */
       async function handleLogin() {
         const data = await validForm();
         if (!data) return;
-        try {
-          loading.value = true;
-          const userInfo = await userStore.login(
+        loading.value = true;
+        const userInfo = await userStore
+          .login(
             toRaw({
+              type: data.type,
               password: data.password,
               username: data.account,
+              codeKey: formData.codeKey,
+              codeValue: data.codeValue,
               mode: 'none', //不要默认的错误提示
             })
-          );
-          if (userInfo) {
-            notification.success({
-              message: t('sys.login.loginSuccessTitle'),
-              description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.realName}`,
-              duration: 3,
-            });
-          }
-        } catch (error) {
-          createErrorModal({
-            title: t('sys.api.errorTip'),
-            content: error.message || t('sys.api.networkExceptionMsg'),
-            getContainer: () => document.body.querySelector(`.${prefixCls}`) || document.body,
+          )
+          .catch(() => {
+            loading.value = false;
           });
-        } finally {
-          loading.value = false;
+        if (userInfo) {
+          notification.success({
+            message: t('sys.login.loginSuccessTitle'),
+            description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.realName}`,
+            duration: 3,
+          });
         }
       }
 
@@ -175,14 +216,19 @@
         prefixCls,
         formRef,
         formData,
+        state,
         getFormRules,
         rememberMe,
         handleLogin,
+        handlePicCaptcha,
         loading,
         setLoginState,
         LoginStateEnum,
         getShow,
       };
+    },
+    created() {
+      this.handlePicCaptcha();
     },
   });
 </script>

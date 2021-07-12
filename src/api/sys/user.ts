@@ -8,7 +8,7 @@ enum Api {
   Logout = '/auth/logout',
   GetPicCaptcha = '/auth/captcha',
   GetUserInfo = '/sys/user/currentUser',
-  GetPermCode = '/getPermCode',
+  GetPermCode = '/sys/user/getPermCode',
 }
 
 /**

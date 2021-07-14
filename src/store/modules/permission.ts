@@ -6,7 +6,11 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { useUserStore } from './user';
 import { useAppStoreWithOut } from './app';
 import { toRaw } from 'vue';
-import { transformObjToRoute, flatMultiLevelRoutes } from '/@/router/helper/routeHelper';
+import {
+  transformObjToRoute,
+  flatMultiLevelRoutes,
+  transformListToTree,
+} from '/@/router/helper/routeHelper';
 import { transformRouteToMenu } from '/@/router/helper/menuHelper';
 
 import projectSetting from '/@/settings/projectSetting';
@@ -140,7 +144,7 @@ export const usePermissionStore = defineStore({
           routes = flatMultiLevelRoutes(routes);
           break;
 
-        //  If you are sure that you do not need to do background dynamic permissions, please comment the entire judgment below
+        // 后台动态权限
         case PermissionModeEnum.BACK:
           const { createMessage } = useMessage();
 
@@ -149,24 +153,27 @@ export const usePermissionStore = defineStore({
             duration: 1,
           });
 
-          // !Simulate to obtain permission codes from the background,
-          // this function may only need to be executed once, and the actual project can be put at the right time by itself
+          // 从后台获取权限列表
           let routeList: AppRouteRecordRaw[] = [];
+          let list = [];
           try {
             this.changePermissionCode();
-            routeList = (await getMenuList()) as AppRouteRecordRaw[];
+            const response = await getMenuList();
+            list = response?.data?.data;
           } catch (error) {
             console.error(error);
           }
+          // list转为tree
+          routeList = transformListToTree(list);
 
-          // Dynamically introduce components
+          // 动态引入组件
           routeList = transformObjToRoute(routeList);
 
-          //  Background routing to menu structure
+          // 后台路由到菜单结构
           const backMenuList = transformRouteToMenu(routeList);
           this.setBackMenuList(backMenuList);
 
-          // remove meta.ignoreRoute item
+          // 移除 meta.ignoreRoute 项
           routeList = filter(routeList, routeRmoveIgnoreFilter);
           routeList = routeList.filter(routeRmoveIgnoreFilter);
 

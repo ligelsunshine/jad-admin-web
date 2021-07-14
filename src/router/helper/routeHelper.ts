@@ -1,10 +1,10 @@
 import type { AppRouteModule, AppRouteRecordRaw } from '/@/router/types';
 import type { Router, RouteRecordNormalized } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 
 import { getParentLayout, LAYOUT } from '/@/router/constant';
 import { cloneDeep, omit } from 'lodash-es';
 import { warn } from '/@/utils/log';
-import { createRouter, createWebHashHistory } from 'vue-router';
 
 export type LayoutMapKey = 'LAYOUT';
 const IFRAME = () => import('/@/views/sys/iframe/FrameBlank.vue');
@@ -63,7 +63,7 @@ function dynamicImport(
   }
 }
 
-// Turn background objects into routing objects
+// 动态引入组件
 export function transformObjToRoute<T = AppRouteModule>(routeList: AppRouteModule[]): T[] {
   routeList.forEach((route) => {
     const component = route.component as string;
@@ -84,6 +84,105 @@ export function transformObjToRoute<T = AppRouteModule>(routeList: AppRouteModul
     route.children && asyncImportRoute(route.children);
   });
   return routeList as unknown as T[];
+}
+
+// 列表转树形结构
+const routeTree: AppRouteRecordRaw[] = [];
+export function transformListToTree(routeList): AppRouteRecordRaw[] {
+  if (!routeList) return [];
+  // 得到根路由
+  let rootRoutes = [];
+  routeList.forEach((route) => {
+    const component = route.component as string;
+    if (component && component.toUpperCase() === 'LAYOUT') {
+      // @ts-ignore
+      rootRoutes.push(route);
+    }
+  });
+  // 排序
+  rootRoutes = rootRoutes.sort((item1, item2) => {
+    // @ts-ignore
+    return item1.orderNo - item2.orderNo;
+  });
+  rootRoutes.forEach((item) => {
+    const menuModel = generateMenuModel(item);
+    // @ts-ignore
+    const childs = foundChildList(routeList, item.id);
+    if (childs && childs.length > 0) {
+      // @ts-ignore
+      const child = getChild(routeList, item.id);
+      if (child && child.length > 0) {
+        menuModel['children'] = child;
+      }
+    } else {
+      delete menuModel['redirect'];
+    }
+    routeTree.push(menuModel);
+  });
+  return routeTree;
+}
+function getChild(routeList, id) {
+  const childMenus = [];
+  const childs = foundChildList(routeList, id);
+  if (childs && childs.length > 0) {
+    childs.forEach((item) => {
+      const menuModel = generateMenuModel(item);
+      // @ts-ignore
+      if (foundChildList(routeList, item.id)?.length > 0) {
+        // @ts-ignore
+        menuModel['children'] = getChild(routeList, item.id);
+      } else {
+        delete menuModel['redirect'];
+      }
+      // @ts-ignore
+      childMenus.push(menuModel);
+    });
+  } else {
+    return [];
+  }
+  return childMenus;
+}
+
+function generateMenuModel(route) {
+  return {
+    path: route.path,
+    name: route.name,
+    component: route.component,
+    redirect: route.redirect,
+    meta: {
+      title: route.title,
+      affix: route.affix,
+      ignoreKeepAlive: route.ignoreKeepAlive,
+      icon: route.icon,
+      frameSrc: route.frameSrc,
+      transitionName: route.transitionName,
+      carryParam: route.carryParam,
+      hideChildrenInMenu: route.hideChildrenInMenu,
+      hideTab: route.hideTab,
+      hideMenu: route.hideMenu,
+      orderNo: route.orderNo,
+      ignoreRoute: route.ignoreRoute,
+      hidePathForChildren: route.hidePathForChildren,
+    },
+    children: [],
+  };
+}
+
+function foundChildList(routeList, id: string) {
+  let list = [];
+  routeList.forEach((route) => {
+    const pId = route.pid as string;
+    if (pId && id && pId == id) {
+      // @ts-ignore
+      list.push(route);
+    }
+  });
+  // 排序
+  list = list.sort((item1, item2) => {
+    // @ts-ignore
+    return item1.orderNo - item2.orderNo;
+  });
+  return list;
 }
 
 /**

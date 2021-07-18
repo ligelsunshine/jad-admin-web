@@ -4,7 +4,6 @@
 import type { AxiosResponse } from 'axios';
 import type { AxiosTransform, CreateAxiosOptions } from './axiosTransform';
 import { VAxios } from './Axios';
-import { checkStatus } from './checkStatus';
 import { useGlobSetting } from '/@/hooks/setting';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { RequestEnum, ContentTypeEnum } from '/@/enums/httpEnum';
@@ -13,6 +12,9 @@ import { getToken } from '/@/utils/auth';
 import { setObjToUrlParams, deepMerge } from '/@/utils';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { joinTimestamp, formatRequestDate } from './helper';
+import { SessionTimeoutProcessingEnum } from '/@/enums/appEnum';
+import { useUserStoreWithOut } from '/@/store/modules/user';
+import projectSetting from '/@/settings/projectSetting';
 
 const globSetting = useGlobSetting();
 const urlPrefix = globSetting.urlPrefix;
@@ -105,6 +107,8 @@ const transform: AxiosTransform = {
     const { config, response, message } = error || {};
     const status: number = response?.status;
     const errorMessageMode = config?.requestOptions?.errorMessageMode || 'none';
+    const userStore = useUserStoreWithOut();
+    const stp = projectSetting.sessionTimeoutProcessing;
 
     let msg = '';
     try {
@@ -116,6 +120,14 @@ const transform: AxiosTransform = {
         msg = response?.data?.msg || t('sys.api.errMsg400');
       } else if (status == 401) {
         msg = response?.data?.msg || t('sys.api.errMsg401');
+        if (stp === SessionTimeoutProcessingEnum.PAGE_COVERAGE) {
+          userStore.setToken(undefined);
+          userStore.setSessionTimeout(true);
+        } else {
+          userStore.logout(true);
+        }
+        createMessage.warning(msg);
+        return Promise.reject(error);
       } else if (status == 403) {
         msg = response?.data?.msg || t('sys.api.errMsg403');
       } else if (status == 404) {
@@ -145,13 +157,10 @@ const transform: AxiosTransform = {
         } else if (errorMessageMode === 'message') {
           createMessage.error(msg);
         }
-        return Promise.reject(error);
       }
     } catch (error) {
       throw new Error(error);
     }
-
-    checkStatus(error?.response?.status, msg, errorMessageMode);
     return Promise.reject(error);
   },
 };

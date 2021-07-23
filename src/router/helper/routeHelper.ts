@@ -87,7 +87,6 @@ export function transformObjToRoute<T = AppRouteModule>(routeList: AppRouteModul
 }
 
 // 列表转树形结构
-const routeTree: AppRouteRecordRaw[] = [];
 export function transformListToTree(routeList): AppRouteRecordRaw[] {
   if (!routeList) return [];
   // 得到根路由
@@ -104,6 +103,7 @@ export function transformListToTree(routeList): AppRouteRecordRaw[] {
     // @ts-ignore
     return item1.orderNo - item2.orderNo;
   });
+  const routeTree: AppRouteRecordRaw[] = [];
   rootRoutes.forEach((item) => {
     const menuModel = generateMenuModel(item);
     // @ts-ignore

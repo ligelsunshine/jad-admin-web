@@ -1,13 +1,19 @@
 import { defHttp } from '/@/utils/http/axios';
 
 enum Api {
-  GetMenuList = '/sys/user/getMenuList',
+  GetMenuList = '/sys/menu/getMenuList',
+  GetMenuTree = '/sys/menu/getMenuTree',
 }
 
 /**
- * @description: Get user menu based on id
+ * 获取用户菜单列表
  */
-
 export const getMenuList = () => {
   return defHttp.get({ url: Api.GetMenuList });
+};
+/**
+ * 获取用户菜单树
+ */
+export const getMenuTree = () => {
+  return defHttp.get({ url: Api.GetMenuTree });
 };

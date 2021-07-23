@@ -51,7 +51,7 @@ const setting: ProjectConfig = {
   showLogo: true,
 
   // Whether to show footer
-  showFooter: false,
+  showFooter: true,
 
   // Header configuration
   headerSetting: {
@@ -87,7 +87,7 @@ const setting: ProjectConfig = {
     collapsedShowTitle: false,
     // Whether it can be dragged
     // Only limited to the opening of the left menu, the mouse has a drag bar on the right side of the menu
-    canDrag: false,
+    canDrag: true,
     // Whether to show no dom
     show: true,
     // Whether to show dom
@@ -145,7 +145,7 @@ const setting: ProjectConfig = {
     openPageLoading: true,
 
     // Whether to open the top progress bar
-    openNProgress: false,
+    openNProgress: true,
   },
 
   // Whether to enable KeepAlive cache is best to close during development, otherwise the cache needs to be cleared every time
@@ -158,7 +158,7 @@ const setting: ProjectConfig = {
   showBreadCrumb: true,
 
   // Whether to show the breadcrumb icon
-  showBreadCrumbIcon: false,
+  showBreadCrumbIcon: true,
 
   // Use error-handler-plugin
   useErrorHandle: false,

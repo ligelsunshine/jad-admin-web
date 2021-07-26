@@ -9,7 +9,7 @@ import { toRaw } from 'vue';
 import {
   transformObjToRoute,
   flatMultiLevelRoutes,
-  transformListToTree,
+  transformMenuTree,
 } from '/@/router/helper/routeHelper';
 import { transformRouteToMenu } from '/@/router/helper/menuHelper';
 
@@ -22,7 +22,7 @@ import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 
 import { filter } from '/@/utils/helper/treeHelper';
 
-import { getMenuList } from '/@/api/sys/menu';
+import { getMenuTree } from '/@/api/sys/menu';
 import { getPermCode } from '/@/api/sys/user';
 
 import { useMessage } from '/@/hooks/web/useMessage';
@@ -155,17 +155,16 @@ export const usePermissionStore = defineStore({
 
           // 从后台获取权限列表
           let routeList: AppRouteRecordRaw[] = [];
-          let list = [];
           try {
             this.changePermissionCode();
-            const response = await getMenuList();
-            list = response?.data?.data;
+            routeList = await getMenuTree();
           } catch (error) {
             console.error(error);
           }
-          // list转为tree
-          routeList = transformListToTree(list);
+          // 格式化菜单树
+          routeList = transformMenuTree(routeList);
 
+          // debugger
           // 动态引入组件
           routeList = transformObjToRoute(routeList);
 

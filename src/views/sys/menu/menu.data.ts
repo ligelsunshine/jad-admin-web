@@ -21,7 +21,7 @@ export const columns: BasicColumn[] = [
   },
   {
     title: '权限标识',
-    dataIndex: 'permission',
+    dataIndex: 'permissions',
     width: 180,
   },
   {
@@ -105,7 +105,7 @@ export const formSchema: FormSchema[] = [
     component: 'TreeSelect',
     componentProps: {
       replaceFields: {
-        title: 'name',
+        title: 'title',
         key: 'id',
         value: 'id',
       },
@@ -141,7 +141,7 @@ export const formSchema: FormSchema[] = [
     show: ({ values }) => isMenu(values.type),
   },
   {
-    field: 'permission',
+    field: 'permissions',
     label: '权限标识',
     component: 'Input',
     show: ({ values }) => !isDir(values.type),

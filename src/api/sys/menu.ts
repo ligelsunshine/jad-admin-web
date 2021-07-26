@@ -14,6 +14,7 @@ export const getMenuList = () => {
 /**
  * 获取用户菜单树
  */
-export const getMenuTree = () => {
-  return defHttp.get({ url: Api.GetMenuTree });
+export const getMenuTree = async () => {
+  const response = await defHttp.get({ url: Api.GetMenuTree });
+  return response.data?.data;
 };

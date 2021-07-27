@@ -94,34 +94,29 @@ export function transformMenuTree(menuTree): AppRouteRecordRaw[] {
     } else {
       delete menu.children;
     }
+    menu = generateMenuModel(menu);
   });
   return menuTree;
 }
-//
-// function generateMenuModel(route) {
-//   return {
-//     path: route.path,
-//     name: route.name,
-//     component: route.component,
-//     redirect: route.redirect,
-//     meta: {
-//       title: route.title,
-//       affix: route.affix,
-//       ignoreKeepAlive: route.ignoreKeepAlive,
-//       icon: route.icon,
-//       frameSrc: route.frameSrc,
-//       transitionName: route.transitionName,
-//       carryParam: route.carryParam,
-//       hideChildrenInMenu: route.hideChildrenInMenu,
-//       hideTab: route.hideTab,
-//       hideMenu: route.hideMenu,
-//       orderNo: route.orderNo,
-//       ignoreRoute: route.ignoreRoute,
-//       hidePathForChildren: route.hidePathForChildren,
-//     },
-//     children: [],
-//   };
-// }
+
+function generateMenuModel(route) {
+  route.meta = {
+    title: route.title,
+    affix: route.affix,
+    ignoreKeepAlive: route.ignoreKeepAlive,
+    icon: route.icon,
+    frameSrc: route.frameSrc,
+    transitionName: route.transitionName,
+    carryParam: route.carryParam,
+    hideChildrenInMenu: route.hideChildrenInMenu,
+    hideTab: route.hideTab,
+    hideMenu: route.hideMenu,
+    orderNo: route.orderNo,
+    ignoreRoute: route.ignoreRoute,
+    hidePathForChildren: route.hidePathForChildren,
+  };
+  return route;
+}
 
 /**
  * Convert multi-level routing to level 2 routing

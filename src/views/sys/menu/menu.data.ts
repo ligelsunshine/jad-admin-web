@@ -8,8 +8,29 @@ export const columns: BasicColumn[] = [
   {
     title: '菜单标题',
     dataIndex: 'title',
-    width: 200,
+    width: 180,
     align: 'left',
+  },
+  {
+    title: '类型',
+    dataIndex: 'type',
+    width: 80,
+    customRender: ({ record }) => {
+      const type = record.type;
+      let color;
+      let text;
+      if (type == 0) {
+        color = 'orange';
+        text = '目录';
+      } else if (type == 1) {
+        color = 'green';
+        text = '菜单';
+      } else if (type == 2) {
+        color = '';
+        text = '按钮';
+      }
+      return h(Tag, { color: color }, () => text);
+    },
   },
   {
     title: '图标',
@@ -22,7 +43,6 @@ export const columns: BasicColumn[] = [
   {
     title: '权限标识',
     dataIndex: 'permissions',
-    width: 180,
   },
   {
     title: '组件',
@@ -31,7 +51,7 @@ export const columns: BasicColumn[] = [
   {
     title: '排序',
     dataIndex: 'orderNo',
-    width: 50,
+    width: 100,
   },
   {
     title: '状态',
@@ -44,11 +64,6 @@ export const columns: BasicColumn[] = [
       const text = enable ? '启用' : '停用';
       return h(Tag, { color: color }, () => text);
     },
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    width: 180,
   },
 ];
 

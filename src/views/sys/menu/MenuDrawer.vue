@@ -44,7 +44,7 @@
         }
         const treeData = await getMenuTree();
         updateSchema({
-          field: 'parentMenu',
+          field: 'pid',
           componentProps: { treeData },
         });
       });

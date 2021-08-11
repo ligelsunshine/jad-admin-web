@@ -88,15 +88,22 @@ export function transformObjToRoute<T = AppRouteModule>(routeList: AppRouteModul
 
 // 格式化菜单树
 export function transformMenuTree(menuTree): AppRouteRecordRaw[] {
+  const routeList: AppRouteRecordRaw[] = [];
   menuTree.forEach((menu) => {
+    if (menu.type !== 2) {
+      routeList.push(menu);
+    }
+  });
+  routeList.forEach((menu) => {
+    // @ts-ignore
     if (menu.children?.length > 0) {
       menu.children = transformMenuTree(menu.children);
     } else {
       delete menu.children;
     }
-    menu = generateMenuModel(menu);
+    generateMenuModel(menu);
   });
-  return menuTree;
+  return routeList;
 }
 
 function generateMenuModel(route) {

@@ -95,8 +95,15 @@ const transform: AxiosTransform = {
   /**
    * @description: 响应拦截器处理
    */
-  responseInterceptors: (res: AxiosResponse<any>) => {
-    return res;
+  responseInterceptors: (response: AxiosResponse<any>) => {
+    const { code, msg, data } = response.data;
+    response.status = code;
+
+    if (code == 400) {
+      createErrorModal({ title: msg, content: data });
+      throw new Error(msg);
+    }
+    return response;
   },
 
   /**
@@ -109,7 +116,6 @@ const transform: AxiosTransform = {
     const errorMessageMode = config?.requestOptions?.errorMessageMode || 'none';
     const userStore = useUserStoreWithOut();
     const stp = projectSetting.sessionTimeoutProcessing;
-
     let msg = '';
     try {
       if (message?.includes('Network Error')) {
@@ -117,7 +123,9 @@ const transform: AxiosTransform = {
       } else if (message?.indexOf('timeout') !== -1) {
         msg = t('sys.api.apiTimeoutMessage');
       } else if (status == 400) {
-        msg = response?.data?.msg || t('sys.api.errMsg400');
+        // msg = response?.data?.msg || t('sys.api.errMsg400');
+        createErrorModal({ title: response?.data?.msg, content: response?.data?.data });
+        return Promise.reject(error);
       } else if (status == 401) {
         msg = response?.data?.msg || t('sys.api.errMsg401');
         if (stp === SessionTimeoutProcessingEnum.PAGE_COVERAGE) {

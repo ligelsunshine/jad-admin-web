@@ -8,8 +8,14 @@
         <TableAction
           :actions="[
             {
+              icon: 'ic:baseline-add',
+              onClick: handleCreate.bind(null, record),
+              tooltip: '添加子菜单',
+            },
+            {
               icon: 'clarity:note-edit-line',
               onClick: handleEdit.bind(null, record),
+              tooltip: '编辑',
             },
             {
               icon: 'ant-design:delete-outlined',
@@ -18,6 +24,7 @@
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
               },
+              tooltip: '删除',
             },
           ]"
         />
@@ -27,15 +34,14 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, nextTick } from 'vue';
-
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getMenuTree } from '/@/api/sys/menu';
-
-  import { useDrawer } from '/@/components/Drawer';
   import MenuDrawer from './MenuDrawer.vue';
-
+  import { defineComponent, nextTick } from 'vue';
+  import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { deleteMenu, getMenuTree } from '/@/api/sys/menu';
+  import { useDrawer } from '/@/components/Drawer';
   import { columns, searchFormSchema } from './menu.data';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  const { createMessage } = useMessage();
 
   export default defineComponent({
     name: 'MenuManagement',
@@ -60,7 +66,7 @@
         showIndexColumn: false,
         canResize: false,
         actionColumn: {
-          width: 80,
+          width: 120,
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
@@ -68,8 +74,9 @@
         },
       });
 
-      function handleCreate() {
+      function handleCreate(record: Recordable) {
         openDrawer(true, {
+          record,
           isUpdate: false,
         });
       }
@@ -82,7 +89,10 @@
       }
 
       function handleDelete(record: Recordable) {
-        console.log(record);
+        deleteMenu(record.id).then((res) => {
+          createMessage.success(res.data.msg);
+          reload();
+        });
       }
 
       function handleSuccess() {

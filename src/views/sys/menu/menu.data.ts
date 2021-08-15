@@ -41,6 +41,11 @@ export const columns: BasicColumn[] = [
     },
   },
   {
+    title: '路由地址',
+    dataIndex: 'path',
+    align: 'left',
+  },
+  {
     title: '权限标识',
     dataIndex: 'permissions',
   },
@@ -156,6 +161,7 @@ export const formSchema: FormSchema[] = [
     field: 'component',
     label: '组件路径',
     component: 'Input',
+    required: ({ values }) => isMenu(values.type),
     show: ({ values }) => isMenu(values.type),
   },
   {
@@ -163,6 +169,12 @@ export const formSchema: FormSchema[] = [
     label: '权限标识',
     component: 'Input',
     show: ({ values }) => !isDir(values.type),
+  },
+  {
+    field: 'frameSrc',
+    label: '外部页面嵌套地址',
+    component: 'Input',
+    show: ({ values }) => isMenu(values.type),
   },
   {
     field: 'status',
@@ -187,7 +199,7 @@ export const formSchema: FormSchema[] = [
         { label: '是', value: true },
       ],
     },
-    show: ({ values }) => !isButton(values.type),
+    show: ({ values }) =>isMenu(values.type),
   },
   {
     field: 'ignoreKeepAlive',

@@ -15,8 +15,7 @@
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from './menu.data';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
-
-  import { getMenuTree } from '/@/api/sys/menu';
+  import { getMenuTree, saveMenu, updateMenu } from '/@/api/sys/menu';
 
   export default defineComponent({
     name: 'MenuDrawer',
@@ -41,6 +40,12 @@
           await setFieldsValue({
             ...data.record,
           });
+        } else {
+          // 设置上级菜单id
+          data.record = { pid: data.record.id };
+          await setFieldsValue({
+            ...data.record,
+          });
         }
         const treeData = await getMenuTree();
         await updateSchema({
@@ -53,10 +58,14 @@
 
       async function handleSubmit() {
         try {
-          const values = await validate();
+          const menu = await validate();
           setDrawerProps({ confirmLoading: true });
-          // TODO custom api
-          console.log(values);
+          // API
+          if (unref(isUpdate)) {
+            await updateMenu(menu);
+          } else {
+            await saveMenu(menu);
+          }
           closeDrawer();
           emit('success');
         } finally {

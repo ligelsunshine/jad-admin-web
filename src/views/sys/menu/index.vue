@@ -3,6 +3,14 @@
     <BasicTable @register="registerTable" @fetch-success="onFetchSuccess">
       <template #toolbar>
         <a-button type="primary" @click="handleCreate"> 新增菜单 </a-button>
+        <div class="table-settings-arrow">
+          <a @click="collapse">
+            <span class="iconify" data-icon="mdi:arrow-collapse-vertical"></span>
+          </a>
+          <a @click="expand">
+            <span class="iconify" data-icon="mdi:arrow-expand-vertical"></span>
+          </a>
+        </div>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -13,12 +21,12 @@
               tooltip: '添加子菜单',
             },
             {
-              icon: 'clarity:note-edit-line',
+              icon: 'ic:baseline-edit',
               onClick: handleEdit.bind(null, record),
               tooltip: '编辑',
             },
             {
-              icon: 'ant-design:delete-outlined',
+              icon: 'ic:baseline-delete',
               color: 'error',
               popConfirm: {
                 title: '是否确认删除',
@@ -41,6 +49,7 @@
   import { useDrawer } from '/@/components/Drawer';
   import { columns, searchFormSchema } from './menu.data';
   import { useMessage } from '/@/hooks/web/useMessage';
+
   const { createMessage } = useMessage();
 
   export default defineComponent({
@@ -49,7 +58,7 @@
     setup() {
       const [registerDrawer, { openDrawer }] = useDrawer();
 
-      const [registerTable, { reload, expandAll }] = useTable({
+      const [registerTable, { reload, expandAll, collapseAll }] = useTable({
         title: '菜单列表',
         api: getMenuTree,
         columns,
@@ -57,14 +66,18 @@
           labelWidth: 120,
           schemas: searchFormSchema,
         },
+        tableSetting: {
+          redo: true,
+          size: true,
+          setting: true,
+          fullScreen: true,
+        },
         isTreeTable: true,
         pagination: false,
         striped: false,
         useSearchForm: true,
         showTableSetting: true,
         bordered: true,
-        showIndexColumn: false,
-        canResize: false,
         actionColumn: {
           width: 120,
           title: '操作',
@@ -104,6 +117,14 @@
         nextTick(expandAll);
       }
 
+      function collapse() {
+        // 折叠所有
+        nextTick(collapseAll);
+      }
+      function expand() {
+        // 展开所有
+        nextTick(expandAll);
+      }
       return {
         registerTable,
         registerDrawer,
@@ -112,7 +133,19 @@
         handleDelete,
         handleSuccess,
         onFetchSuccess,
+        collapse,
+        expand,
       };
     },
   });
 </script>
+<style lang="less">
+  .table-settings-arrow a {
+    cursor: pointer;
+    font-size: 20px;
+    color: #1a1a1a;
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: -0.23em !important;
+  }
+</style>

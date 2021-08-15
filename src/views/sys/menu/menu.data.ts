@@ -48,15 +48,18 @@ export const columns: BasicColumn[] = [
   {
     title: '权限标识',
     dataIndex: 'permissions',
+    align: 'left',
   },
   {
     title: '组件',
     dataIndex: 'component',
+    align: 'left',
   },
   {
     title: '排序',
     dataIndex: 'orderNo',
     width: 100,
+    edit: true,
   },
   {
     title: '状态',
@@ -148,6 +151,7 @@ export const formSchema: FormSchema[] = [
     field: 'icon',
     label: '图标',
     component: 'IconPicker',
+    defaultValue: '',
     show: ({ values }) => !isButton(values.type),
   },
   {

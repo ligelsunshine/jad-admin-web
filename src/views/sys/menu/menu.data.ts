@@ -10,6 +10,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'title',
     width: 180,
     align: 'left',
+    fixed: 'left',
   },
   {
     title: '类型',
@@ -58,8 +59,10 @@ export const columns: BasicColumn[] = [
   {
     title: '排序',
     dataIndex: 'orderNo',
-    width: 100,
+    width: 200,
     edit: true,
+    editRule: true,
+    editComponent: 'InputNumber',
   },
   {
     title: '状态',
@@ -146,6 +149,7 @@ export const formSchema: FormSchema[] = [
     label: '排序',
     component: 'InputNumber',
     defaultValue: 0,
+    helpMessage: '默认排序为升序',
   },
   {
     field: 'icon',
@@ -203,7 +207,7 @@ export const formSchema: FormSchema[] = [
         { label: '是', value: true },
       ],
     },
-    show: ({ values }) =>isMenu(values.type),
+    show: ({ values }) => isMenu(values.type),
   },
   {
     field: 'ignoreKeepAlive',

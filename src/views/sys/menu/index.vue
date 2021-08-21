@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BasicTable @register="registerTable" @fetch-success="onFetchSuccess">
+    <BasicTable @register="registerTable" @fetch-success="onFetchSuccess" @edit-end="handleEditEnd">
       <template #toolbar>
         <a-button type="primary" @click="handleCreate"> 新增菜单 </a-button>
         <div class="table-settings-arrow">
@@ -29,10 +29,21 @@
               icon: 'ic:baseline-delete',
               color: 'error',
               popConfirm: {
-                title: '是否确认删除',
+                title: '是否确认删除？',
                 confirm: handleDelete.bind(null, record),
               },
               tooltip: '删除',
+            },
+          ]"
+          :dropDownActions="[
+            {
+              label: '删除子菜单',
+              icon: 'ic:baseline-delete',
+              color: 'error',
+              popConfirm: {
+                title: '是否确认删除？',
+                confirm: handleDeleteChildren.bind(null, record),
+              },
             },
           ]"
         />
@@ -43,9 +54,9 @@
 </template>
 <script lang="ts">
   import MenuDrawer from './MenuDrawer.vue';
-  import { defineComponent, nextTick } from 'vue';
+  import { defineComponent, nextTick, unref } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { deleteMenu, getMenuTree } from '/@/api/sys/menu';
+  import { deleteMenu, deleteChildrenMenu, getMenuTree, updateMenu, saveMenu } from "/@/api/sys/menu";
   import { useDrawer } from '/@/components/Drawer';
   import { columns, searchFormSchema } from './menu.data';
   import { useMessage } from '/@/hooks/web/useMessage';
@@ -59,13 +70,14 @@
       const [registerDrawer, { openDrawer }] = useDrawer();
 
       const [registerTable, { reload, expandAll, collapseAll }] = useTable({
-        title: '菜单列表',
+        title: '菜单管理',
         api: getMenuTree,
         columns,
         formConfig: {
           labelWidth: 120,
           schemas: searchFormSchema,
         },
+        showTableSetting: true,
         tableSetting: {
           redo: true,
           size: true,
@@ -76,14 +88,14 @@
         pagination: false,
         striped: false,
         useSearchForm: true,
-        showTableSetting: true,
         bordered: true,
+        canResize: false,
         actionColumn: {
-          width: 120,
+          width: 180,
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
-          fixed: undefined,
+          fixed: 'right',
         },
       });
 
@@ -101,8 +113,22 @@
         });
       }
 
+      function handleEditEnd(record: Recordable) {
+        updateMenu(record).then((res) => {
+          createMessage.success(res.data.msg);
+          reload();
+        });
+      }
+
       function handleDelete(record: Recordable) {
         deleteMenu(record.id).then((res) => {
+          createMessage.success(res.data.msg);
+          reload();
+        });
+      }
+
+      function handleDeleteChildren(record: Recordable) {
+        deleteChildrenMenu(record.id).then((res) => {
           createMessage.success(res.data.msg);
           reload();
         });
@@ -130,7 +156,9 @@
         registerDrawer,
         handleCreate,
         handleEdit,
+        handleEditEnd,
         handleDelete,
+        handleDeleteChildren,
         handleSuccess,
         onFetchSuccess,
         collapse,

@@ -22,6 +22,12 @@ export const deleteMenu = (id) => {
   return defHttp.delete({ url: Api.Delete + '/' + id });
 };
 /**
+ * 删除子菜单
+ */
+export const deleteChildrenMenu = (id) => {
+  return defHttp.delete({ url: Api.Delete + '/' + id + '?delChildren=true' });
+};
+/**
  * 修改
  */
 export const updateMenu = (menu) => {

@@ -2,7 +2,7 @@
   <div>
     <BasicTable @register="registerTable" @fetch-success="onFetchSuccess" @edit-end="handleEditEnd">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate"> 新增菜单 </a-button>
+        <a-button type="primary" @click="handleCreate"> 新增部门 </a-button>
         <div class="table-settings-arrow">
           <div @click="collapse" class="collapse-and-expand">
             <span class="iconify" data-icon="mdi:arrow-collapse-vertical"></span>
@@ -18,7 +18,7 @@
             {
               icon: 'ic:baseline-add',
               onClick: handleCreate.bind(null, record),
-              tooltip: '添加子菜单',
+              tooltip: '添加子部门',
             },
             {
               icon: 'clarity:note-edit-line',
@@ -29,7 +29,7 @@
               icon: 'ant-design:delete-outlined',
               color: 'error',
               popConfirm: {
-                title: '是否确认删除？',
+                title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
               },
               tooltip: '删除',
@@ -37,7 +37,7 @@
           ]"
           :dropDownActions="[
             {
-              label: '删除子菜单',
+              label: '删除子部门',
               icon: 'ic:baseline-delete',
               color: 'error',
               popConfirm: {
@@ -49,29 +49,28 @@
         />
       </template>
     </BasicTable>
-    <MenuDrawer @register="registerDrawer" @success="handleSuccess" />
+    <DeptModal @register="registerModal" @success="handleSuccess" />
   </div>
 </template>
 <script lang="ts">
-  import MenuDrawer from './MenuDrawer.vue';
   import { defineComponent, nextTick } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { useDrawer } from '/@/components/Drawer';
-  import { columns, searchFormSchema } from './menu.data';
+  import { useModal } from '/@/components/Modal';
+  import DeptModal from './DeptModal.vue';
+  import { columns, searchFormSchema } from './dept.data';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { deleteMenu, deleteMenuChildren, getMenuTree, updateMenu } from '/@/api/sys/menu';
+  import { deleteDept, deleteDeptChildren, getDeptTree, updateDept } from '/@/api/sys/dept';
 
   const { createMessage } = useMessage();
 
   export default defineComponent({
-    name: 'MenuManagement',
-    components: { BasicTable, MenuDrawer, TableAction },
+    name: 'DeptManagement',
+    components: { BasicTable, DeptModal, TableAction },
     setup() {
-      const [registerDrawer, { openDrawer }] = useDrawer();
-
+      const [registerModal, { openModal }] = useModal();
       const [registerTable, { reload, expandAll, collapseAll }] = useTable({
-        title: '菜单列表',
-        api: getMenuTree,
+        title: '部门列表',
+        api: getDeptTree,
         columns,
         useSearchForm: true,
         formConfig: {
@@ -100,35 +99,35 @@
       });
 
       function handleCreate(record: Recordable) {
-        openDrawer(true, {
+        openModal(true, {
           record,
           isUpdate: false,
         });
       }
 
       function handleEdit(record: Recordable) {
-        openDrawer(true, {
+        openModal(true, {
           record,
           isUpdate: true,
         });
       }
 
       function handleEditEnd({ record }: Recordable) {
-        updateMenu(record).then((res) => {
+        updateDept(record).then((res) => {
           createMessage.success(res.data.msg);
           reload();
         });
       }
 
       function handleDelete(record: Recordable) {
-        deleteMenu(record.id).then((res) => {
+        deleteDept(record.id).then((res) => {
           createMessage.success(res.data.msg);
           reload();
         });
       }
 
       function handleDeleteChildren(record: Recordable) {
-        deleteMenuChildren(record.id).then((res) => {
+        deleteDeptChildren(record.id).then((res) => {
           createMessage.success(res.data.msg);
           reload();
         });
@@ -147,13 +146,15 @@
         // 折叠所有
         nextTick(collapseAll);
       }
+
       function expand() {
         // 展开所有
         nextTick(expandAll);
       }
+
       return {
         registerTable,
-        registerDrawer,
+        registerModal,
         handleCreate,
         handleEdit,
         handleEditEnd,

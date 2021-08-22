@@ -26,3 +26,13 @@
     },
   });
 </script>
+
+<style lang="less">
+  .table-settings-arrow .collapse-and-expand {
+    cursor: pointer;
+    font-size: 20px;
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: -0.23em !important;
+  }
+</style>

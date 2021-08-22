@@ -1,25 +1,18 @@
 <template>
-  <BasicDrawer
-    v-bind="$attrs"
-    @register="registerDrawer"
-    showFooter
-    :title="getTitle"
-    width="50%"
-    @ok="handleSubmit"
-  >
+  <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit">
     <BasicForm @register="registerForm" />
-  </BasicDrawer>
+  </BasicModal>
 </template>
 <script lang="ts">
   import { defineComponent, ref, computed, unref } from 'vue';
-  import { formSchema } from './menu.data';
-  import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
+  import { formSchema } from './dept.data';
+  import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, useForm } from '/@/components/Form/index';
-  import { saveMenu, updateMenu, getMenuTree } from '/@/api/sys/menu';
+  import { saveDept, updateDept, getDeptTree } from '/@/api/sys/dept';
 
   export default defineComponent({
-    name: 'MenuDrawer',
-    components: { BasicDrawer, BasicForm },
+    name: 'DeptModal',
+    components: { BasicModal, BasicForm },
     emits: ['success', 'register'],
     setup(_, { emit }) {
       const isUpdate = ref(true);
@@ -28,12 +21,11 @@
         labelWidth: 100,
         schemas: formSchema,
         showActionButtonGroup: false,
-        baseColProps: { lg: 12, md: 24 },
       });
 
-      const [registerDrawer, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
+      const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
         await resetFields();
-        setDrawerProps({ confirmLoading: false });
+        setModalProps({ confirmLoading: false });
         isUpdate.value = !!data?.isUpdate;
 
         if (unref(isUpdate)) {
@@ -47,33 +39,32 @@
             ...data.record,
           });
         }
-        const treeData = await getMenuTree();
+        const treeData = await getDeptTree();
         await updateSchema({
           field: 'pid',
           componentProps: { treeData },
         });
       });
 
-      const getTitle = computed(() => (!unref(isUpdate) ? '新增菜单' : '编辑菜单'));
+      const getTitle = computed(() => (!unref(isUpdate) ? '新增部门' : '编辑部门'));
 
       async function handleSubmit() {
         try {
           const values = await validate();
-          setDrawerProps({ confirmLoading: true });
+          setModalProps({ confirmLoading: true });
           // API
           if (unref(isUpdate)) {
-            await updateMenu(values);
+            await updateDept(values);
           } else {
-            await saveMenu(values);
+            await saveDept(values);
           }
-          closeDrawer();
+          closeModal();
           emit('success');
         } finally {
-          setDrawerProps({ confirmLoading: false });
+          setModalProps({ confirmLoading: false });
         }
       }
-
-      return { registerDrawer, registerForm, getTitle, handleSubmit };
+      return { registerModal, registerForm, getTitle, handleSubmit };
     },
   });
 </script>

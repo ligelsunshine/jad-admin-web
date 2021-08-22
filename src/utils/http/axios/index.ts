@@ -145,7 +145,9 @@ const transform: AxiosTransform = {
       } else if (status == 408) {
         msg = response?.data?.msg || t('sys.api.errMsg408');
       } else if (status == 500) {
-        msg = response?.data?.msg || t('sys.api.errMsg500');
+        // msg = response?.data?.msg || t('sys.api.errMsg500');
+        createErrorModal({ title: response?.data?.msg, content: response?.data?.data });
+        return Promise.reject(error);
       } else if (status == 501) {
         msg = response?.data?.msg || t('sys.api.errMsg501');
       } else if (status == 502) {

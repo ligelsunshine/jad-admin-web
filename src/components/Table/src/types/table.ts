@@ -9,6 +9,7 @@ import type {
 import { ComponentType } from './componentType';
 import { VueNode } from '/@/utils/propTypes';
 import { RoleEnum } from '/@/enums/roleEnum';
+import { isNumber } from "/@/utils/is";
 
 export declare type SortOrder = 'ascend' | 'descend';
 
@@ -439,4 +440,40 @@ export type ColumnChangeParam = {
 
 export interface InnerHandlers {
   onColumnsChange: (data: ColumnChangeParam[]) => void;
+}
+
+export interface WhereItem {
+  column: string;
+  condition: string;
+  value: any;
+}
+
+export interface SearchForm {
+  page: number;
+  pageSize: number;
+  whereItems: WhereItem[];
+}
+export function beforeFetchFun(params, searchFormSchema) {
+  const result: SearchForm = {
+    page: params.page,
+    pageSize: params.pageSize,
+    whereItems: [],
+  };
+  searchFormSchema.forEach((item) => {
+    if (params[item.field]) {
+      let condition = 'LIKE';
+      if (item.field === 'rangeTime') {
+        condition = 'RANGE_TIME';
+      } else if (isNumber(params[item.field])) {
+        condition = 'EQ';
+      }
+      const whereItem: WhereItem = {
+        column: item.field,
+        condition: condition,
+        value: params[item.field],
+      };
+      result.whereItems.push(whereItem);
+    }
+  });
+  return result;
 }

@@ -1,5 +1,5 @@
 import { defHttp } from '/@/utils/http/axios';
-import qs from "qs";
+import qs from 'qs';
 
 enum Api {
   Save = '/sys/role/save',
@@ -7,6 +7,8 @@ enum Api {
   Update = '/sys/role/update',
   UpdateStatus = '/sys/role/update/status',
   ListPage = '/sys/role/get/page',
+  GetRoleMenuIds = '/sys/role/getRoleMenuIds',
+  AssignPermissions = '/sys/role/assignPermissions',
 }
 
 /**
@@ -41,4 +43,18 @@ export const updateRoleStatus = (id, status) => {
 export const getRoleListPage = async (params) => {
   const response = await defHttp.post({ url: Api.ListPage, params: params });
   return response.data?.data;
+};
+/**
+ * 获取角色菜单列表
+ */
+export const getRoleMenuIds = async (roleId) => {
+  const response = await defHttp.get({ url: `${Api.GetRoleMenuIds}?roleId=${roleId}` });
+  return response.data?.data;
+};
+
+/**
+ * 分配权限
+ */
+export const AssignPermissions = async (params) => {
+  return defHttp.put({ url: Api.AssignPermissions, params: params });
 };

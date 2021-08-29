@@ -100,7 +100,12 @@ const transform: AxiosTransform = {
     response.status = code;
 
     if (code == 400) {
+      createMessage.error(msg);
+      console.error(msg, data);
+      throw new Error(msg);
+    } else if (code == 500) {
       createErrorModal({ title: msg, content: data });
+      console.error(msg, data);
       throw new Error(msg);
     }
     return response;
@@ -124,7 +129,8 @@ const transform: AxiosTransform = {
         msg = t('sys.api.apiTimeoutMessage');
       } else if (status == 400) {
         // msg = response?.data?.msg || t('sys.api.errMsg400');
-        createErrorModal({ title: response?.data?.msg, content: response?.data?.data });
+        createMessage.error(response?.data?.msg);
+        console.error(response?.data?.msg, response?.data?.data);
         return Promise.reject(error);
       } else if (status == 401) {
         msg = response?.data?.msg || t('sys.api.errMsg401');

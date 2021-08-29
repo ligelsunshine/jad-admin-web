@@ -89,7 +89,7 @@ export const searchFormSchema: FormSchema[] = [
   },
 ];
 
-export const formSchema: FormSchema[] = [
+export const roleFormSchema: FormSchema[] = [
   {
     field: 'id',
     label: 'ID',
@@ -136,10 +136,13 @@ export const formSchema: FormSchema[] = [
     field: 'remark',
     component: 'InputTextArea',
   },
+];
+
+export const menuFormSchema: FormSchema[] = [
   {
-    label: ' ',
-    field: 'menu',
-    slot: 'menu',
+    label: '',
+    field: 'menuIds',
+    slot: 'menuIds',
     component: 'Input',
   },
 ];

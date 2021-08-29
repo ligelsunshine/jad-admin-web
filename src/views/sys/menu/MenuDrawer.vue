@@ -15,7 +15,7 @@
   import { formSchema } from './menu.data';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicForm, useForm } from '/@/components/Form/index';
-  import { saveMenu, updateMenu, getMenuTree } from '/@/api/sys/menu';
+  import { saveMenu, updateMenu, getUserMenuTree } from '/@/api/sys/menu';
 
   export default defineComponent({
     name: 'MenuDrawer',
@@ -47,7 +47,7 @@
             ...data.record,
           });
         }
-        const treeData = await getMenuTree();
+        const treeData = await getUserMenuTree();
         await updateSchema({
           field: 'pid',
           componentProps: { treeData },

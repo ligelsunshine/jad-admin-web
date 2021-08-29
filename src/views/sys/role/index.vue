@@ -10,6 +10,12 @@
             {
               icon: 'clarity:note-edit-line',
               onClick: handleEdit.bind(null, record),
+              tooltip: '编辑',
+            },
+            {
+              icon: 'clarity:menu-line',
+              onClick: handleMenu.bind(null, record),
+              tooltip: '分配菜单权限',
             },
             {
               icon: 'ant-design:delete-outlined',
@@ -18,12 +24,14 @@
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
               },
+              tooltip: '删除',
             },
           ]"
         />
       </template>
     </BasicTable>
-    <RoleDrawer @register="registerDrawer" @success="handleSuccess" />
+    <RoleDrawer @register="registerRoleDrawer" @success="handleSuccess" />
+    <MenuDrawer @register="registerMenuDrawer" @success="handleSuccess" />
   </div>
 </template>
 <script lang="ts">
@@ -31,6 +39,7 @@
   import { useDrawer } from '/@/components/Drawer';
   import { BasicTable, useTable, TableAction, beforeFetchFun } from '/@/components/Table';
   import RoleDrawer from './RoleDrawer.vue';
+  import MenuDrawer from './MenuDrawer.vue';
   import { columns, searchFormSchema } from './role.data';
   import { deleteRole, getRoleListPage } from '/@/api/sys/role';
   import { useMessage } from '/@/hooks/web/useMessage';
@@ -39,9 +48,10 @@
 
   export default defineComponent({
     name: 'RoleManagement',
-    components: { BasicTable, RoleDrawer, TableAction },
+    components: { MenuDrawer, BasicTable, RoleDrawer, TableAction },
     setup() {
-      const [registerDrawer, { openDrawer }] = useDrawer();
+      const [registerRoleDrawer, { openDrawer: openRoleDrawer }] = useDrawer();
+      const [registerMenuDrawer, { openDrawer: openMenuDrawer }] = useDrawer();
       const [registerTable, { reload }] = useTable({
         title: '角色列表',
         api: getRoleListPage,
@@ -64,7 +74,7 @@
         bordered: true,
         showIndexColumn: true,
         actionColumn: {
-          width: 80,
+          width: 120,
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
@@ -73,15 +83,21 @@
       });
 
       function handleCreate() {
-        openDrawer(true, {
+        openRoleDrawer(true, {
           isUpdate: false,
         });
       }
 
       function handleEdit(record: Recordable) {
-        openDrawer(true, {
+        openRoleDrawer(true, {
           record,
           isUpdate: true,
+        });
+      }
+
+      function handleMenu(record: Recordable) {
+        openMenuDrawer(true, {
+          record,
         });
       }
 
@@ -98,9 +114,11 @@
 
       return {
         registerTable,
-        registerDrawer,
+        registerRoleDrawer,
+        registerMenuDrawer,
         handleCreate,
         handleEdit,
+        handleMenu,
         handleDelete,
         handleSuccess,
       };

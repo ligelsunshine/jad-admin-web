@@ -5,7 +5,8 @@ enum Api {
   Delete = '/sys/menu/delete',
   Update = '/sys/menu/update',
   Get = '/sys/menu/get',
-  GetMenuTree = '/sys/menu/getMenuTree',
+  getUserMenuTree = '/sys/menu/getUserMenuTree',
+  GetRoleMenuList = '/sys/menu/getRoleMenuList',
 }
 
 /**
@@ -35,7 +36,14 @@ export const updateMenu = (menu) => {
 /**
  * 获取用户菜单树
  */
-export const getMenuTree = async () => {
-  const response = await defHttp.get({ url: Api.GetMenuTree });
+export const getUserMenuTree = async () => {
+  const response = await defHttp.get({ url: Api.getUserMenuTree });
+  return response.data?.data;
+};
+/**
+ * 获取角色菜单列表
+ */
+export const getRoleMenuList = async (id) => {
+  const response = await defHttp.get({ url: `${Api.GetRoleMenuList}?id=${id}` });
   return response.data?.data;
 };

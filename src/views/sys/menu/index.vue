@@ -59,7 +59,7 @@
   import { useDrawer } from '/@/components/Drawer';
   import { columns, searchFormSchema } from './menu.data';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { deleteMenu, deleteMenuChildren, getMenuTree, updateMenu } from '/@/api/sys/menu';
+  import { deleteMenu, deleteMenuChildren, getUserMenuTree, updateMenu } from '/@/api/sys/menu';
 
   const { createMessage } = useMessage();
 
@@ -71,7 +71,7 @@
 
       const [registerTable, { reload, expandAll, collapseAll }] = useTable({
         title: '菜单列表',
-        api: getMenuTree,
+        api: getUserMenuTree,
         columns,
         useSearchForm: true,
         formConfig: {

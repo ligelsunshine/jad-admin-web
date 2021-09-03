@@ -63,16 +63,9 @@
           labelWidth: 120,
           schemas: searchFormSchema,
         },
-        tableSetting: {
-          redo: true,
-          size: true,
-          setting: true,
-          fullScreen: true,
-        },
         useSearchForm: true,
         showTableSetting: true,
         bordered: true,
-        showIndexColumn: true,
         actionColumn: {
           width: 120,
           title: '操作',

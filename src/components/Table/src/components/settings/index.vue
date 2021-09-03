@@ -39,7 +39,7 @@
           redo: true,
           size: true,
           setting: true,
-          fullScreen: false,
+          fullScreen: true,
           ...props.setting,
         };
       });

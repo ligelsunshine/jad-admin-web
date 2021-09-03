@@ -97,7 +97,17 @@ export function transformMenuTree(menuTree): AppRouteRecordRaw[] {
   routeList.forEach((menu) => {
     // @ts-ignore
     if (menu.children?.length > 0) {
-      menu.children = transformMenuTree(menu.children);
+      let notHide = 0;
+      menu.children?.forEach((item) => {
+        if (!item['hideMenu']) {
+          notHide = 1;
+        }
+      });
+      if (notHide == 1) {
+        menu.children = transformMenuTree(menu.children);
+      } else {
+        delete menu.children;
+      }
     } else {
       delete menu.children;
     }

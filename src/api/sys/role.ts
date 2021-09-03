@@ -6,7 +6,8 @@ enum Api {
   Delete = '/sys/role/delete',
   Update = '/sys/role/update',
   UpdateStatus = '/sys/role/update/status',
-  ListPage = '/sys/role/get/page',
+  GetRoleList = '/sys/role/get/list',
+  GetRoleListPage = '/sys/role/get/page',
   GetRoleMenuIds = '/sys/role/getRoleMenuIds',
   AssignPermissions = '/sys/role/assignPermissions',
 }
@@ -38,10 +39,17 @@ export const updateRoleStatus = (id, status) => {
   return defHttp.put({ url: Api.UpdateStatus + '?' + params });
 };
 /**
+ * 获取所有
+ */
+export const getRoleList = async () => {
+  const response = await defHttp.get({ url: Api.GetRoleList });
+  return response.data?.data;
+};
+/**
  * 分页获取
  */
 export const getRoleListPage = async (params) => {
-  const response = await defHttp.post({ url: Api.ListPage, params: params });
+  const response = await defHttp.post({ url: Api.GetRoleListPage, params: params });
   return response.data?.data;
 };
 /**

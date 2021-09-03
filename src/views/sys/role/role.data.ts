@@ -65,11 +65,6 @@ export const columns: BasicColumn[] = [
 
 export const searchFormSchema: FormSchema[] = [
   {
-    field: 'rangeTime',
-    label: '创建时间',
-    component: 'RangePicker',
-  },
-  {
     field: 'name',
     label: '角色名称',
     component: 'Input',
@@ -86,6 +81,11 @@ export const searchFormSchema: FormSchema[] = [
       ],
     },
     colProps: { span: 8 },
+  },
+  {
+    field: 'rangeTime',
+    label: '创建时间',
+    component: 'RangePicker',
   },
 ];
 
@@ -118,7 +118,7 @@ export const roleFormSchema: FormSchema[] = [
     field: 'status',
     label: '状态',
     component: 'RadioButtonGroup',
-    defaultValue: '0',
+    defaultValue: 0,
     componentProps: {
       options: [
         { label: '启用', value: 0 },

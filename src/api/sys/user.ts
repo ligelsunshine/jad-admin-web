@@ -9,6 +9,11 @@ enum Api {
   GetPicCaptcha = '/auth/captcha',
   GetUserInfo = '/sys/user/currentUser',
   GetPermCode = '/sys/user/getPermCode',
+  Save = '/sys/user/save',
+  Delete = '/sys/user/delete',
+  Update = '/sys/user/update',
+  GetList = '/sys/user/get/list',
+  GetListPage = '/sys/user/get/page',
 }
 
 /**
@@ -41,3 +46,36 @@ export function getPermCode() {
 export function doLogout() {
   return defHttp.get({ url: Api.Logout });
 }
+
+/**
+ * 添加
+ */
+export const saveUser = (user) => {
+  return defHttp.post({ url: Api.Save, params: user }, { isTransformResponse: true });
+};
+/**
+ * 删除
+ */
+export const deleteUser = (id) => {
+  return defHttp.delete({ url: Api.Delete + '/' + id }, { isTransformResponse: true });
+};
+/**
+ * 修改
+ */
+export const updateUser = (user) => {
+  return defHttp.put({ url: Api.Update, params: user });
+};
+/**
+ * 获取所有
+ */
+export const getUserList = async () => {
+  const response = await defHttp.post({ url: Api.GetList });
+  return response.data?.data;
+};
+/**
+ * 分页获取
+ */
+export const getUserListPage = async (params) => {
+  const response = await defHttp.post({ url: Api.GetListPage, params: params });
+  return response.data?.data;
+};

@@ -7,6 +7,8 @@ export interface RequestOptions {
   formatDate?: boolean;
   // 是否处理请求结果
   isTransformResponse?: boolean;
+  // 返回数据进行处理消息提示类型
+  messageMode?: string;
   // 是否返回本机响应头
   // 例如:当你需要获得响应头时使用这个属性
   isReturnNativeResponse?: boolean;

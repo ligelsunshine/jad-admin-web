@@ -180,7 +180,7 @@ export const formSchema: FormSchema[] = [
   },
   {
     field: 'frameSrc',
-    label: '外部页面嵌套地址',
+    label: '外部嵌套地址',
     component: 'Input',
     show: ({ values }) => isMenu(values.type),
   },
@@ -221,6 +221,19 @@ export const formSchema: FormSchema[] = [
       ],
     },
     show: ({ values }) => isMenu(values.type),
+  },
+  {
+    field: 'hideChildrenInMenu',
+    label: '隐藏子菜单',
+    component: 'RadioButtonGroup',
+    defaultValue: false,
+    componentProps: {
+      options: [
+        { label: '否', value: false },
+        { label: '是', value: true },
+      ],
+    },
+    show: ({ values }) => !isButton(values.type),
   },
   {
     field: 'hideMenu',

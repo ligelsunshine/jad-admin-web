@@ -42,6 +42,10 @@ export interface User {
   city: string;
   lastLogin: Date;
   remark?: string;
+  deptId?: string;
+  dept?: any;
+  roleIds?: string[];
+  roles?: any[];
 }
 
 export interface BeforeMiniState {

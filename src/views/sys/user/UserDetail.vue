@@ -1,10 +1,5 @@
 <template>
-  <PageWrapper
-    :title="`用户` + userId + `的资料`"
-    content="这是用户资料详情页面。本页面仅用于演示相同路由在tab中打开多个页面并且显示不同的数据"
-    contentBackground
-    @back="goBack"
-  >
+  <PageWrapper :title="`用户` + userInfo.username + `的资料`" contentBackground @back="goBack">
     <template #extra>
       <a-button type="danger"> 禁用账号 </a-button>
       <a-button type="primary"> 修改密码 </a-button>
@@ -16,26 +11,72 @@
       </a-tabs>
     </template>
     <div class="pt-4 m-4 desc-wrap">
-      <template v-if="currentKey == 'detail'">
-        <div v-for="i in 10" :key="i">这是用户{{ userId }}资料Tab</div>
+      <template v-if="currentKey === 'detail'">
+        <div class="ant-descriptions-view">
+          <table>
+            <tbody>
+              <tr class="ant-descriptions-row">
+                <td class="ant-descriptions-item" colspan="1">
+                  <div class="ant-descriptions-item-container">
+                    <span class="ant-descriptions-item-content">
+                      <Avatar :src="userInfo.avatar" :size="100" style="margin-bottom: 20px" />
+                    </span>
+                  </div>
+                </td>
+              </tr>
+              <tr class="ant-descriptions-row">
+                <td class="ant-descriptions-item" colspan="1">
+                  <div class="ant-descriptions-item-container">
+                    <span class="ant-descriptions-item-label">部门</span>
+                    <span class="ant-descriptions-item-content">
+                      {{ userInfo.dept?.name }}
+                    </span>
+                  </div>
+                </td>
+                <td class="ant-descriptions-item" colspan="2">
+                  <div class="ant-descriptions-item-container">
+                    <span class="ant-descriptions-item-label">角色</span>
+                    <span class="ant-descriptions-item-content">
+                      <Tag color="green" v-for="role in userInfo.roles" :key="role.id">
+                        {{ role?.name }}
+                      </Tag>
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <Description
+          size="middle"
+          :bordered="false"
+          :column="3"
+          :data="userInfo"
+          :schema="userSchema"
+        />
       </template>
-      <template v-if="currentKey == 'logs'">
-        <div v-for="i in 10" :key="i">这是用户{{ userId }}操作日志Tab</div>
+      <template v-if="currentKey === 'logs'">
+        <div></div>
       </template>
     </div>
   </PageWrapper>
 </template>
 
-<script>
-  import { defineComponent, ref } from 'vue';
-  import { Tabs } from 'ant-design-vue';
-  import { useRoute } from 'vue-router';
+<script lang="ts">
+  import { Tabs, Avatar, Tag } from 'ant-design-vue';
+  import { Description } from '/@/components/Description';
   import { PageWrapper } from '/@/components/Page';
+  import { useRoute } from 'vue-router';
+  import { defineComponent, ref } from 'vue';
+  import { getUser } from '/@/api/sys/user';
   import { useGo } from '/@/hooks/web/usePage';
   import { useTabs } from '/@/hooks/web/useTabs';
+  import { userSchema } from './user.data';
+  import { User } from '/#/store';
+
   export default defineComponent({
     name: 'UserDetail',
-    components: { PageWrapper, ATabs: Tabs, ATabPane: Tabs.TabPane },
+    components: { PageWrapper, ATabs: Tabs, ATabPane: Tabs.TabPane, Description, Avatar, Tag },
     setup() {
       const route = useRoute();
       const go = useGo();
@@ -43,18 +84,20 @@
       const userId = ref(route.params?.id);
       const currentKey = ref('detail');
       const { setTitle } = useTabs();
-      // TODO
-      // 本页代码仅作演示，实际应当通过userId从接口获得用户的相关资料
-
-      // 设置Tab的标题（不会影响页面标题）
-      setTitle('详情：用户' + userId.value);
+      let userInfo: User = ref({});
+      getUser(userId.value).then((res) => {
+        const data = res.data?.data;
+        userInfo.value = data;
+        // 设置Tab的标题（不会影响页面标题）
+        setTitle('详情：用户' + data.username);
+      });
 
       // 页面左侧点击返回链接时的操作
       function goBack() {
         // 本例的效果时点击返回始终跳转到账号列表页，实际应用时可返回上一页
-        go('/system/account');
+        go('/sys/user');
       }
-      return { userId, currentKey, goBack };
+      return { userId, userInfo, userSchema, currentKey, goBack };
     },
   });
 </script>

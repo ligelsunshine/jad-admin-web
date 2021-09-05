@@ -1,10 +1,17 @@
+import { Avatar } from 'ant-design-vue';
+import { Icon } from '/@/components/Icon';
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
+import { DescItem } from '/@/components/Description';
+import { h } from 'vue';
 
 export const columns: BasicColumn[] = [
   {
     title: '头像',
     dataIndex: 'avatar',
+    customRender: ({ record }) => {
+      return h(Avatar, { src: record.avatar, size: 50 });
+    },
   },
   {
     title: '账号',
@@ -170,5 +177,71 @@ export const formSchemas: FormSchema[] = [
     label: '备注',
     field: 'remark',
     component: 'InputTextArea',
+  },
+];
+
+export const userSchema: DescItem[] = [
+  {
+    field: 'username',
+    label: '用户名',
+  },
+  {
+    field: 'phone',
+    label: '手机号',
+  },
+  {
+    field: 'email',
+    label: '邮箱',
+  },
+  {
+    field: 'name',
+    label: '姓名',
+  },
+  {
+    field: 'sex',
+    label: '性别',
+    render: (val) => {
+      const sex = `${val}`;
+      let icon;
+      if (sex == `1`) {
+        icon = 'ant-design:man-outlined';
+      } else if (sex == `2`) {
+        icon = 'ant-design:woman-outlined';
+      } else {
+        icon = 'ant-design:question-circle-outlined';
+      }
+      return h(Icon, {
+        icon: icon,
+        size: '20px',
+      });
+    },
+  },
+  {
+    field: 'age',
+    label: '年龄',
+  },
+  {
+    field: 'birthday',
+    label: '出生年月',
+  },
+  {
+    field: 'city',
+    label: '所在城市',
+  },
+  {
+    field: 'lastLogin',
+    label: '最后登录时间',
+  },
+  {
+    field: 'remark',
+    label: '备注',
+  },
+  {
+    field: 'createTime',
+    label: '创建时间',
+  },
+  {
+    field: 'updateTime',
+    label: '修改时间',
   },
 ];

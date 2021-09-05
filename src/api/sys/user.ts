@@ -12,6 +12,7 @@ enum Api {
   Save = '/sys/user/save',
   Delete = '/sys/user/delete',
   Update = '/sys/user/update',
+  Get = '/sys/user/get',
   GetList = '/sys/user/get/list',
   GetListPage = '/sys/user/get/page',
 }
@@ -63,7 +64,13 @@ export const deleteUser = (id) => {
  * 修改
  */
 export const updateUser = (user) => {
-  return defHttp.put({ url: Api.Update, params: user });
+  return defHttp.put({ url: Api.Update, params: user }, { isTransformResponse: true });
+};
+/**
+ * 获取单个用户
+ */
+export const getUser = async (id) => {
+  return defHttp.get({ url: Api.Get + '/' + id });
 };
 /**
  * 获取所有

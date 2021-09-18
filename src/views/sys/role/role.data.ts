@@ -2,7 +2,6 @@ import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Switch } from 'ant-design-vue';
-import { useMessage } from '/@/hooks/web/useMessage';
 import { updateRoleStatus } from '/@/api/sys/role';
 
 export const columns: BasicColumn[] = [
@@ -37,14 +36,9 @@ export const columns: BasicColumn[] = [
         onChange(checked: boolean) {
           record.pendingStatus = true;
           const newStatus = checked ? 0 : 1;
-          const { createMessage } = useMessage();
           updateRoleStatus(record.id, newStatus)
             .then(() => {
               record.status = newStatus;
-              createMessage.success(`已成功修改角色状态`);
-            })
-            .catch(() => {
-              createMessage.error('修改角色状态失败');
             })
             .finally(() => {
               record.pendingStatus = false;

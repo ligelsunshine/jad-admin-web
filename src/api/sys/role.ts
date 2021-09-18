@@ -33,10 +33,10 @@ export const updateRole = (role) => {
 /**
  * 修改状态
  */
-export const updateRoleStatus = (id, status) => {
+export const updateRoleStatus = async (id, status) => {
   status = status == 0 ? 'ENABLE' : 'DISABLE';
   const params = qs.stringify({ id, status });
-  return defHttp.put({ url: Api.UpdateStatus + '?' + params });
+  return defHttp.put({ url: Api.UpdateStatus + '?' + params }, { isTransformResponse: true });
 };
 /**
  * 获取所有

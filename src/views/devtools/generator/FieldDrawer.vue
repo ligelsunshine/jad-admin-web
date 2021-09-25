@@ -118,11 +118,12 @@
     },
     emits: ['success', 'register'],
     setup(_, { emit }) {
+      const message = useMessage().createMessage;
       const isUpdate = ref(true);
       const generatorId = ref('');
       const enumVals: EnumVal[] = reactive([]);
       const rules: Rule[] = reactive([]);
-      const message = useMessage().createMessage;
+
 
       const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
         labelWidth: 120,
@@ -142,10 +143,10 @@
             ...data.record,
           });
           // 枚举值
+          // 先清空
+          enumVals.splice(0, enumVals.length);
           if (data.record.type == 'ENUM') {
             if (data.record.enumVal?.length > 0) {
-              // 先清空
-              enumVals.splice(0, enumVals.length);
               // 再添加
               data.record.enumVal.forEach((enumVlue) => {
                 enumVals.push(enumVlue);
@@ -153,9 +154,9 @@
             }
           }
           // 自定义校验规则
+          // 先清空
+          rules.splice(0, rules.length);
           if (data.record.rules?.length > 0) {
-            // 先清空
-            rules.slice(0, rules.length);
             // 再添加
             data.record.rules.forEach((rule) => {
               rules.push(rule);
@@ -176,14 +177,14 @@
             } else if (!validEnumVals()) {
               return;
             }
-            values.enumVal = enumVals;
           }
+          values.enumVal = enumVals;
           if (rules.length > 0) {
             if (!validRules()) {
               return;
             }
-            values.rules = rules;
           }
+          values.rules = rules;
           setDrawerProps({ confirmLoading: true });
           // API
           if (unref(isUpdate)) {

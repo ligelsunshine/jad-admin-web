@@ -15,7 +15,7 @@
       />
     </a-card>
     <a-card title="Field Schema" :bordered="false">
-      <BasicTable @register="registerTable">
+      <BasicTable @register="registerTable" @edit-end="handleEditFieldEnd">
         <template #action="{ record }">
           <TableAction
             :actions="[
@@ -51,8 +51,8 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useGo } from '/@/hooks/web/usePage';
   import { useTabs } from '/@/hooks/web/useTabs';
-  import { deleteFieldApi, getApi } from '/@/api/devtools/generator';
-  import { descriptionSchema, fieldColumns, FieldSchema, Generator } from './generator.data';
+  import { deleteFieldApi, getApi, getFieldsApi, updateFieldApi } from "/@/api/devtools/generator";
+  import { descriptionSchema, fieldColumns, Generator } from './generator.data';
   import { Card } from 'ant-design-vue';
   import { useDrawer } from '/@/components/Drawer';
   import FieldDrawer from '/@/views/devtools/generator/FieldDrawer.vue';
@@ -72,19 +72,20 @@
       const go = useGo();
       // 此处可以得到ID
       const id = ref(route.params?.id);
-      const { setTitle, refreshPage } = useTabs();
+      const { setTitle } = useTabs();
       const generator: Generator = ref({});
-      const fieldSchema: FieldSchema[] = ref([]);
       getApi(id.value).then((res) => {
         const data = res.data?.data;
         generator.value = data;
-        fieldSchema.value = data.model.fieldSchema;
         // 设置Tab的标题（不会影响页面标题）
         setTitle('设计 ' + data.title + ' Model');
       });
       const [registerDrawer, { openDrawer: openDrawer }] = useDrawer();
       const [registerTable, { reload }] = useTable({
-        dataSource: fieldSchema,
+        api: getFieldsApi,
+        beforeFetch: () => {
+          return id.value;
+        },
         columns: fieldColumns,
         bordered: true,
         canResize: false,
@@ -117,21 +118,24 @@
           generatorId: id,
         });
       }
+      function handleEditFieldEnd({ record }: Recordable) {
+        updateFieldApi(id.value, record);
+      }
       async function handleDeleteField(record: Recordable) {
         await deleteFieldApi(id.value, record.id);
-        await refreshPage();
+        await reload();
       }
       function handleSuccess() {
-        refreshPage();
+        reload();
       }
       return {
         descriptionSchema,
         generator,
-        fieldSchema,
         goBack,
         registerTable,
         handleAddField,
         handleEditField,
+        handleEditFieldEnd,
         handleDeleteField,
         registerDrawer,
         handleSuccess,

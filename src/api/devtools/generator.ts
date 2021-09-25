@@ -10,6 +10,7 @@ enum Api {
   DeleteField = '/devtools/generator/deleteField',
   Update = '/devtools/generator/update',
   UpdateField = '/devtools/generator/updateField',
+  GetFieldsApi = '/devtools/generator/getFields',
   Get = '/devtools/generator/get',
   GetPage = '/devtools/generator/get/page',
   GetModule = '/devtools/generator/getModule',
@@ -65,6 +66,14 @@ export const updateFieldApi = (id, fieldSchema: FieldSchema) => {
     { url: Api.UpdateField + '/' + id, params: fieldSchema },
     { isTransformResponse: true }
   );
+};
+
+/**
+ * 获取所有Field列表
+ */
+export const getFieldsApi = async (id) => {
+  const response = await defHttp.get({ url: Api.GetFieldsApi + '/' + id });
+  return response.data?.data;
 };
 
 /**

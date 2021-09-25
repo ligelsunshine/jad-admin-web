@@ -3,7 +3,7 @@ import { FormSchema } from '/@/components/Table';
 import { ComponentType } from '/@/components/Form/src/types';
 import { DescItem } from '/@/components/Description';
 import { h } from 'vue';
-import { Switch } from 'ant-design-vue';
+import { Switch, Tag } from 'ant-design-vue';
 
 interface BaseField {
   module?: string;
@@ -19,6 +19,7 @@ export interface Generator extends BaseField {
   ds?: string;
   modelJson?: string;
   model?: Model;
+  value?: any;
 }
 
 export interface Model extends BaseField {
@@ -322,6 +323,39 @@ export const fieldColumns: BasicColumn[] = [
   {
     title: '字段排序',
     dataIndex: 'orderNo',
+    width: 200,
+    edit: true,
+    editRule: true,
+    editComponent: 'InputNumber',
+  },
+  {
+    title: '字段控制',
+    dataIndex: 'present',
+    width: 300,
+    customRender: ({ record }) => {
+      return h(
+        'div',
+        {},
+        record.presents.map((present) => {
+          let text;
+          switch (present) {
+            case 'LIST':
+              text = '列表展示';
+              break;
+            case 'ADD_FORM':
+              text = '添加表单';
+              break;
+            case 'EDIT_FORM':
+              text = '编辑表单';
+              break;
+            case 'SEARCH_FORM':
+              text = '查询表单';
+              break;
+          }
+          return h(Tag, {}, ()=>text);
+        })
+      );
+    },
   },
 ];
 
@@ -424,7 +458,7 @@ export const fieldFormSchema: FormSchema[] = [
         { label: '文件上传（Upload）', value: 'Upload' },
         { label: 'ICON选择器（IconPicker）', value: 'IconPicker' },
         { label: '渲染器（Render）', value: 'Render' },
-        { label: '分离器（Slider）', value: 'Slider' },
+        { label: '滑动输入条（Slider）', value: 'Slider' },
         { label: '评分（Rate）', value: 'Rate' },
       ],
     },
@@ -449,5 +483,20 @@ export const fieldFormSchema: FormSchema[] = [
     label: '自定义校验规则',
     component: 'Input',
     slot: 'RulesSlot',
+  },
+  {
+    field: 'presents',
+    label: '字段控制',
+    component: 'Select',
+    componentProps: {
+      mode: 'multiple',
+      options: [
+        { label: '列表展示', value: 'LIST' },
+        { label: '添加表单', value: 'ADD_FORM' },
+        { label: '编辑表单', value: 'EDIT_FORM' },
+        { label: '查询表单', value: 'SEARCH_FORM' },
+      ],
+    },
+    defaultValue: ['LIST', 'ADD_FORM', 'EDIT_FORM'],
   },
 ];

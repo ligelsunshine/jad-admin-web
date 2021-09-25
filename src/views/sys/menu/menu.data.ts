@@ -54,6 +54,7 @@ export const columns: BasicColumn[] = [
   {
     title: '组件',
     dataIndex: 'component',
+    width: 300,
     align: 'left',
   },
   {

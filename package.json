@@ -81,6 +81,7 @@
     "@vue/compiler-sfc": "3.1.4",
     "@vue/test-utils": "^2.0.0-rc.9",
     "autoprefixer": "^10.2.6",
+    "codemirror": "^5.63.1",
     "commitizen": "^4.2.4",
     "conventional-changelog-cli": "^2.1.1",
     "cross-env": "^7.0.3",
@@ -125,6 +126,7 @@
     "vite-plugin-svg-icons": "^1.0.0",
     "vite-plugin-theme": "^0.8.1",
     "vue-eslint-parser": "^7.7.2",
+    "vue-json-pretty": "^1.8.1",
     "vue-tsc": "^0.2.0"
   },
   "resolutions": {

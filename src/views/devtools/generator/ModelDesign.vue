@@ -5,6 +5,12 @@
     contentBackground
     @back="goBack"
   >
+    <template #extra>
+      <a-button shape="round" size="large" @click="handleGenerateModal">
+        <Icon icon="cib:visual-studio-code" :size="20" />
+        Generator
+      </a-button>
+    </template>
     <a-card title="Model" :bordered="false">
       <Description
         size="middle"
@@ -38,6 +44,7 @@
         </template>
       </BasicTable>
       <FieldDrawer @register="registerDrawer" @success="handleSuccess" />
+      <GenerateModal @register="registerModal" />
       <a-button block class="mt-5" type="dashed" @click="handleAddField"> 新增字段 </a-button>
     </a-card>
   </PageWrapper>
@@ -46,16 +53,19 @@
 <script lang="ts">
   import { PageWrapper } from '/@/components/Page';
   import { Description } from '/@/components/Description';
+  import { Icon } from '/@/components/Icon/index';
   import { useRoute } from 'vue-router';
   import { defineComponent, ref } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useGo } from '/@/hooks/web/usePage';
   import { useTabs } from '/@/hooks/web/useTabs';
-  import { deleteFieldApi, getApi, getFieldsApi, updateFieldApi } from "/@/api/devtools/generator";
+  import { deleteFieldApi, getApi, getFieldsApi, updateFieldApi } from '/@/api/devtools/generator';
   import { descriptionSchema, fieldColumns, Generator } from './generator.data';
   import { Card } from 'ant-design-vue';
   import { useDrawer } from '/@/components/Drawer';
+  import { useModal } from '/@/components/Modal';
   import FieldDrawer from '/@/views/devtools/generator/FieldDrawer.vue';
+  import GenerateModal from '/@/views/devtools/generator/GenerateModal.vue';
 
   export default defineComponent({
     name: 'ModelDesign',
@@ -65,22 +75,17 @@
       [Card.name]: Card,
       BasicTable,
       TableAction,
+      Icon,
       FieldDrawer,
+      GenerateModal,
     },
     setup() {
       const route = useRoute();
       const go = useGo();
-      // 此处可以得到ID
-      const id = ref(route.params?.id);
       const { setTitle } = useTabs();
-      const generator: Generator = ref({});
-      getApi(id.value).then((res) => {
-        const data = res.data?.data;
-        generator.value = data;
-        // 设置Tab的标题（不会影响页面标题）
-        setTitle('设计 ' + data.title + ' Model');
-      });
-      const [registerDrawer, { openDrawer: openDrawer }] = useDrawer();
+      // 此处可以得到ID
+      const [registerDrawer, { openDrawer }] = useDrawer();
+      const [registerModal, { openModal }] = useModal();
       const [registerTable, { reload }] = useTable({
         api: getFieldsApi,
         beforeFetch: () => {
@@ -97,6 +102,15 @@
           slots: { customRender: 'action' },
           fixed: 'right',
         },
+      });
+      const id = ref(route.params?.id);
+      const generator: Generator = ref({});
+
+      getApi(id.value).then((res) => {
+        const data = res.data?.data;
+        generator.value = data;
+        // 设置Tab的标题（不会影响页面标题）
+        setTitle('设计 ' + data.title + ' Model');
       });
 
       // 页面左侧点击返回链接时的操作
@@ -128,17 +142,24 @@
       function handleSuccess() {
         reload();
       }
+      function handleGenerateModal() {
+        openModal(true, {
+          id: generator.value.id,
+        });
+      }
       return {
         descriptionSchema,
         generator,
-        goBack,
         registerTable,
+        registerModal,
+        registerDrawer,
+        goBack,
         handleAddField,
         handleEditField,
         handleEditFieldEnd,
         handleDeleteField,
-        registerDrawer,
         handleSuccess,
+        handleGenerateModal,
       };
     },
   });

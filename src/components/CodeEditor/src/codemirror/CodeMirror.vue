@@ -25,6 +25,9 @@
   import 'codemirror/mode/javascript/javascript';
   import 'codemirror/mode/css/css';
   import 'codemirror/mode/htmlmixed/htmlmixed';
+  import 'codemirror/mode/sql/sql';
+  import 'codemirror/mode/xml/xml';
+  import 'codemirror/mode/clike/clike';
 
   const props = {
     mode: { type: String, default: 'application/json' },
@@ -93,8 +96,10 @@
           readOnly: props.readonly,
           tabSize: 2,
           theme: 'material-palenight',
-          lineWrapping: true,
+          lineWrapping: false,
           lineNumbers: true,
+          spellcheck: true,
+          autocorrect: true,
           ...addonOptions,
         });
         editor?.setValue(props.value);

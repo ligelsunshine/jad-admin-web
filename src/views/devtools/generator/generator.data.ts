@@ -330,7 +330,7 @@ export const fieldColumns: BasicColumn[] = [
   },
   {
     title: '字段控制',
-    dataIndex: 'present',
+    dataIndex: 'presents',
     width: 300,
     customRender: ({ record }) => {
       return h(
@@ -352,7 +352,7 @@ export const fieldColumns: BasicColumn[] = [
               text = '查询表单';
               break;
           }
-          return h(Tag, {}, ()=>text);
+          return h(Tag, {}, () => text);
         })
       );
     },

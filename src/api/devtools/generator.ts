@@ -1,5 +1,5 @@
 import { defHttp } from '/@/utils/http/axios';
-import { FieldSchema } from '/@/views/devtools/generator/generator.data';
+import { FieldSchema, GenerateConfig } from '/@/views/devtools/generator/generator.data';
 import { SearchForm } from '/@/components/Table';
 import { stringify } from 'qs';
 
@@ -18,6 +18,8 @@ enum Api {
   GenerateBack = '/devtools/generator/back',
   GenerateFront = '/devtools/generator/front',
 }
+
+type GenerateType = 'VIEW' | 'CREATE';
 
 /**
  * 添加Model
@@ -101,20 +103,36 @@ export const getModuleApi = async () => {
 /**
  * 生成数据库表
  */
-export const generateTableApi = (id) => {
-  return defHttp.post({ url: Api.GenerateTable + '/' + id }, { isTransformResponse: true });
+export const generateTableApi = async (id: string, type: GenerateType) => {
+  let isTransformResponse = false;
+  if (type === 'CREATE') {
+    isTransformResponse = true;
+  }
+  const response = await defHttp.post(
+    { url: Api.GenerateTable + '/' + id + '?type=' + type },
+    { isTransformResponse: isTransformResponse }
+  );
+  return response.data?.data;
 };
 
 /**
  * 生成后端代码
  */
-export const GenerateBackApi = (id) => {
-  return defHttp.post({ url: Api.GenerateBack + '/' + id }, { isTransformResponse: true });
+export const generateBackApi = async (id: string, type: GenerateType, config: GenerateConfig) => {
+  let isTransformResponse = false;
+  if (type === 'CREATE') {
+    isTransformResponse = true;
+  }
+  const response = await defHttp.post(
+    { url: Api.GenerateBack + '/' + id + '?type=' + type, params: config },
+    { isTransformResponse: isTransformResponse }
+  );
+  return response.data?.data;
 };
 
 /**
  * 生成前端代码
  */
-export const GenerateFrontApi = (id) => {
+export const generateFrontApi = (id) => {
   return defHttp.post({ url: Api.GenerateFront + '/' + id }, { isTransformResponse: true });
 };

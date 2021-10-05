@@ -49,14 +49,14 @@
               <span>数据库表：</span>
               <a-button-group>
                 <a-button @click="handleViewTable">预览</a-button>
-                <a-button type="primary">生成</a-button>
+                <a-button type="primary" @click="handleGenerateTable">生成</a-button>
               </a-button-group>
             </p>
             <p>
               <span>后端代码：</span>
               <a-button-group>
                 <a-button @click="handleViewBack">预览</a-button>
-                <a-button type="primary">生成</a-button>
+                <a-button type="primary" @click="handleGenerateBack">生成</a-button>
               </a-button-group>
             </p>
             <p>
@@ -75,8 +75,13 @@
         <Result :status="result.status" :title="result.title" :sub-title="result.subTitle">
           <template #extra>
             <a-button type="primary" @click="closeModal"> 关闭弹窗 </a-button>
-            <a-button @click="handleCloseView"> 关闭预览 </a-button>
-            <Tabs tab-position="left" style="margin-top: 30px">
+          </template>
+          <div class="desc" v-show="result.show && result.listShow">
+            <p style="font-size: 16px; text-align: left">Generate result: </p>
+            <p v-for="item in result.data" :key="item" style="text-align: left">{{ item }}</p>
+          </div>
+          <div class="desc" v-show="result.show && result.tabShow">
+            <Tabs tab-position="left">
               <TabPane v-for="item in result.data" :key="item.name" :tab="item.name">
                 <p style="text-align: left">{{ item.path }}</p>
                 <CodeMirrorEditor
@@ -87,7 +92,7 @@
                 />
               </TabPane>
             </Tabs>
-          </template>
+          </div>
         </Result>
       </div>
     </Spin>
@@ -98,7 +103,7 @@
   import { defineComponent, reactive, ref } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, FormSchema, useForm } from '/@/components/Form';
-  import { Row, Col, Card, Result, Tabs, TabPane, Spin } from 'ant-design-vue';
+  import { Card, Col, Result, Row, Spin, TabPane, Tabs } from 'ant-design-vue';
   import CodeMirrorEditor from '/@/components/CodeEditor/src/codemirror/CodeMirror.vue';
   import { generateBackApi, generateTableApi } from '/@/api/devtools/generator';
 
@@ -150,13 +155,17 @@
     setup(_, { emit }) {
       const result: {
         show: boolean;
-        spin: { tip: string; spinning: boolean; };
+        tabShow: boolean;
+        listShow: boolean;
+        spin: { tip: string; spinning: boolean };
         status: string;
         title: string;
         subTitle: string;
-        data: { name: string; path: string; model: string; content: string }[];
+        data: { name: string; path: string; model: string; content: string }[] | string[] | string;
       } = reactive({
         show: false,
+        tabShow: false,
+        listShow: false,
         spin: { tip: 'loading', spinning: false },
         status: 'success',
         title: '生成成功',
@@ -231,9 +240,6 @@
           console.debug('choice file err:', error);
         }
       }
-      function handleCloseView() {
-        result.show = false;
-      }
       function addMode() {
         result.data.forEach((item) => {
           if (item.name && item.name.endsWith('.sql')) {
@@ -253,9 +259,38 @@
         result.data = await data;
         addMode();
         result.show = true;
+        result.tabShow = true;
+        result.listShow = false;
         result.spin.spinning = false;
         result.spin.tip = '预览加载中';
+        result.status = 'success';
+        result.title = '生成成功';
         result.subTitle = '当前为预览模式';
+      }
+      async function handleGenerateTable() {
+        try {
+          result.spin.spinning = true;
+          await generateTableApi(id.value, 'CREATE');
+          result.data = ['创建成功'];
+          result.show = true;
+          result.tabShow = false;
+          result.listShow = true;
+          result.spin.spinning = false;
+          result.spin.tip = '数据库表创建中';
+          result.status = 'success';
+          result.title = '生成成功';
+          result.subTitle = '数据库表创建成功';
+        } catch (e) {
+          result.show = true;
+          result.tabShow = false;
+          result.listShow = true;
+          result.spin.spinning = false;
+          result.spin.tip = '数据库表创建中';
+          result.status = 'error';
+          result.title = '生成失败';
+          result.subTitle = '数据库表创建失败';
+          result.data = [e.response.data?.data];
+        }
       }
       async function handleViewBack() {
         result.spin.spinning = true;
@@ -264,9 +299,37 @@
         result.data = await data;
         addMode();
         result.show = true;
+        result.tabShow = true;
+        result.listShow = false;
         result.spin.spinning = false;
         result.spin.tip = '预览加载中';
+        result.status = 'success';
+        result.title = '生成成功';
         result.subTitle = '当前为预览模式';
+      }
+      async function handleGenerateBack() {
+        try {
+          result.spin.spinning = true;
+          const config = getFieldsValue();
+          result.data = await generateBackApi(id.value, 'CREATE', config);
+          result.show = true;
+          result.tabShow = false;
+          result.listShow = true;
+          result.spin.spinning = false;
+          result.spin.tip = '代码生成中';
+          result.status = 'success';
+          result.title = '生成成功';
+          result.subTitle = '代码生成成功，详情请查看项目工程代码';
+        } catch (e) {
+          result.show = true;
+          result.tabShow = false;
+          result.listShow = true;
+          result.spin.spinning = false;
+          result.status = 'error';
+          result.title = '生成失败';
+          result.subTitle = '代码生成失败';
+          result.data = [e.response.data?.data];
+        }
       }
       return {
         registerModal,
@@ -275,13 +338,14 @@
         handleNoneSelect,
         handleReverseSelect,
         closeModal,
-        handleCloseView,
         handleSubmit,
         handleSelect,
         fileChange,
         result,
         handleViewTable,
+        handleGenerateTable,
         handleViewBack,
+        handleGenerateBack,
       };
     },
   });

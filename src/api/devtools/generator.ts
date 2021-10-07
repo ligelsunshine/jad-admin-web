@@ -14,6 +14,9 @@ enum Api {
   Get = '/devtools/generator/get',
   GetPage = '/devtools/generator/get/page',
   GetModule = '/devtools/generator/getModule',
+  GetLocalPath = '/devtools/generator/getLocalPath',
+  IsDirectory = '/devtools/generator/isDirectory',
+  GetParentPath = '/devtools/generator/getParentPath',
   GenerateTable = '/devtools/generator/table',
   GenerateBack = '/devtools/generator/back',
   GenerateFront = '/devtools/generator/front',
@@ -100,6 +103,31 @@ export const getModuleApi = async () => {
   const response = await defHttp.get({ url: Api.GetModule });
   return response.data?.data;
 };
+
+/**
+ * 获取本地路径
+ */
+export const getLocalPathApi = async (param: { path: string }) => {
+  const response = await defHttp.get({ url: Api.GetLocalPath + '?path=' + param.path });
+  return response.data?.data;
+};
+
+/**
+ * 判断是否是路径
+ */
+export const isDirectoryApi = async (param: { path: string }) => {
+  const response = await defHttp.get({ url: Api.IsDirectory + '?path=' + param.path });
+  return response.data?.data;
+};
+
+/**
+ * 获取上级路径
+ */
+export const getParentPathApi = async (param: { path: string }) => {
+  const response = await defHttp.get({ url: Api.GetParentPath + '?path=' + param.path });
+  return response.data?.data;
+};
+
 /**
  * 生成数据库表
  */

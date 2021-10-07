@@ -24,7 +24,10 @@
     setup(_, { emit }) {
       const isUpdate = ref(true);
 
-      const [registerForm, { resetFields, setFieldsValue, updateSchema, validate }] = useForm({
+      const [
+        registerForm,
+        { resetFields, setFieldsValue, getFieldsValue, updateSchema, validate },
+      ] = useForm({
         labelWidth: 120,
         schemas: formSchema,
         showActionButtonGroup: false,
@@ -47,9 +50,34 @@
             componentProps: { treeData },
           },
         ]);
+        updateModel();
       });
 
       const getTitle = computed(() => (!unref(isUpdate) ? '新增Model' : '编辑Model'));
+
+      function updateModel() {
+        const modelStr = localStorage.getItem('model');
+        if (modelStr) {
+          const model = JSON.parse(modelStr);
+          setFieldsValue({
+            ...{
+              ds: model.ds,
+              namespace: model.namespace,
+              module: model.module,
+            },
+          });
+        }
+      }
+
+      function saveModel() {
+        const value = getFieldsValue();
+        const model = {
+          ds: value.ds,
+          namespace: value.namespace,
+          module: value.module,
+        };
+        localStorage.setItem('model', JSON.stringify(model));
+      }
 
       async function handleSubmit() {
         try {
@@ -65,6 +93,7 @@
         } finally {
           setDrawerProps({ confirmLoading: false });
         }
+        saveModel();
       }
 
       return {

@@ -16,23 +16,8 @@
       <Row>
         <Col :span="14">
           <BasicForm @register="registerForm">
-            <template #pathSelect="{ record }">
-              <input
-                type="file"
-                id="file"
-                @change="fileChange"
-                webkitdirectory
-                mozdirectory
-                msdirectory
-                odirectory
-                directory
-                multiple
-              />
-              <a-input-search
-                placeholder="前端代码生成路径"
-                enter-button="选择"
-                @search="handleSelect"
-              />
+            <template #pathSelect="{ model, field }">
+              <LocalPathSelect v-model:value="model[field]" />
             </template>
           </BasicForm>
         </Col>
@@ -106,40 +91,84 @@
   import { Card, Col, Result, Row, Spin, TabPane, Tabs } from 'ant-design-vue';
   import CodeMirrorEditor from '/@/components/CodeEditor/src/codemirror/CodeMirror.vue';
   import { generateBackApi, generateTableApi } from '/@/api/devtools/generator';
+  import { isArray, isBoolean } from '/@/utils/is';
+  import LocalPathSelect from '/@/components/Selector/LocalPathSelect.vue';
 
-  const fields: string[] = [
-    'entity',
-    'mapper',
-    'mapperXml',
-    'service',
-    'serviceImpl',
-    'controller',
-  ];
-  const schemas: FormSchema[] = [];
-  fields.forEach((field) => {
-    schemas.push({
-      field: field,
+  const schemas: FormSchema[] = [
+    {
+      field: 'entity',
       label: '',
       component: 'Checkbox',
-      renderComponentContent: field.charAt(0).toUpperCase() + field.substr(1),
+      renderComponentContent: 'Entity',
       defaultValue: true,
       colProps: {
         span: 8,
       },
-    });
-  });
-  schemas.push({
-    field: 'frontPath',
-    label: '',
-    component: 'Input',
-    slot: 'pathSelect',
-    colProps: {
-      span: 24,
     },
-  });
+    {
+      field: 'mapper',
+      label: '',
+      component: 'Checkbox',
+      renderComponentContent: 'Mapper',
+      defaultValue: true,
+      colProps: {
+        span: 8,
+      },
+    },
+    {
+      field: 'mapperXml',
+      label: '',
+      component: 'Checkbox',
+      renderComponentContent: 'MapperXml',
+      defaultValue: true,
+      colProps: {
+        span: 8,
+      },
+    },
+    {
+      field: 'service',
+      label: '',
+      component: 'Checkbox',
+      renderComponentContent: 'Service',
+      defaultValue: true,
+      colProps: {
+        span: 8,
+      },
+    },
+    {
+      field: 'serviceImpl',
+      label: '',
+      component: 'Checkbox',
+      renderComponentContent: 'ServiceImpl',
+      defaultValue: true,
+      colProps: {
+        span: 8,
+      },
+    },
+    {
+      field: 'controller',
+      label: '',
+      component: 'Checkbox',
+      renderComponentContent: 'Controller',
+      defaultValue: true,
+      colProps: {
+        span: 8,
+      },
+    },
+    {
+      field: 'frontPath',
+      label: '',
+      component: 'Input',
+      slot: 'pathSelect',
+      colProps: {
+        span: 24,
+      },
+    },
+  ];
   export default defineComponent({
     name: 'GenerateModal',
     components: {
+      LocalPathSelect,
       BasicModal,
       BasicForm,
       Row,
@@ -152,7 +181,7 @@
       CodeMirrorEditor,
     },
     emits: ['success', 'register'],
-    setup(_, { emit }) {
+    setup: function () {
       const result: {
         show: boolean;
         tabShow: boolean;
@@ -174,7 +203,7 @@
       });
       // generate id
       const id = ref('');
-      const [registerForm, { getFieldsValue, setFieldsValue, resetFields, validate }] = useForm({
+      const [registerForm, { getFieldsValue, setFieldsValue, resetFields }] = useForm({
         schemas: schemas,
         showActionButtonGroup: false,
       });
@@ -182,77 +211,79 @@
         await resetFields();
         setModalProps({ confirmLoading: false });
         id.value = data?.id;
+        await updateConfig();
       });
+
+      function saveConfig() {
+        const config = getFieldsValue();
+        if (config) {
+          localStorage.setItem('generateConfig', JSON.stringify(config));
+        }
+      }
+
+      async function updateConfig() {
+        const configStr = localStorage.getItem('generateConfig');
+        if (configStr) {
+          const config = JSON.parse(configStr);
+          await setFieldsValue(config);
+        }
+      }
+
       async function handleFullSelect() {
         const data = getFieldsValue();
         for (let key in data) {
-          if (data.hasOwnProperty(key) && !data[key]) {
+          if (data.hasOwnProperty(key) && isBoolean(data[key]) && !data[key]) {
             data[key] = true;
           }
         }
         await setFieldsValue({
           ...data,
         });
+        saveConfig();
       }
+
       async function handleNoneSelect() {
         const data = getFieldsValue();
         for (let key in data) {
-          if (data.hasOwnProperty(key)) {
+          if (data.hasOwnProperty(key) && isBoolean(data[key])) {
             data[key] = false;
           }
         }
         await setFieldsValue({
           ...data,
         });
+        saveConfig();
       }
+
       async function handleReverseSelect() {
         const data = getFieldsValue();
         for (let key in data) {
-          if (data.hasOwnProperty(key)) {
+          if (data.hasOwnProperty(key) && isBoolean(data[key])) {
             data[key] = !data[key];
           }
         }
         await setFieldsValue({
           ...data,
         });
+        saveConfig();
       }
-      async function handleSubmit() {
-        try {
-          const values = await validate();
-          setModalProps({ confirmLoading: true });
-          console.log(values);
-          emit('success');
-        } finally {
-          setModalProps({ confirmLoading: false });
-        }
-      }
-      function handleSelect() {
-        var file = document.getElementById('file');
-        file.click();
-      }
-      function fileChange() {
-        try {
-          console.log('change');
-          const fu = document.getElementById('file');
-          // if (fu == null) return;
-          console.log(fu.files[0].path);
-        } catch (error) {
-          console.debug('choice file err:', error);
-        }
-      }
+
       function addMode() {
-        result.data.forEach((item) => {
-          if (item.name && item.name.endsWith('.sql')) {
-            item['mode'] = 'text/x-mysql';
-          }
-          if (item.name && item.name.endsWith('.java')) {
-            item['mode'] = 'text/x-java';
-          }
-          if (item.name && item.name.endsWith('.xml')) {
-            item['mode'] = 'application/xml';
-          }
-        });
+        if (isArray(result.data)) {
+          result.data?.forEach((item) => {
+            if (item.name && item.name.endsWith('.sql')) {
+              item['mode'] = 'text/x-mysql';
+            }
+            if (item.name && item.name.endsWith('.java')) {
+              item['mode'] = 'text/x-java';
+            }
+            if (item.name && item.name.endsWith('.xml')) {
+              item['mode'] = 'application/xml';
+            }
+          });
+        }
       }
+
       async function handleViewTable() {
         result.spin.spinning = true;
         const data = generateTableApi(id.value, 'VIEW');
@@ -266,7 +297,9 @@
         result.status = 'success';
         result.title = '生成成功';
         result.subTitle = '当前为预览模式';
+        saveConfig();
       }
+
       async function handleGenerateTable() {
         try {
           result.spin.spinning = true;
@@ -291,7 +324,9 @@
           result.subTitle = '数据库表创建失败';
           result.data = [e.response.data?.data];
         }
+        saveConfig();
       }
+
       async function handleViewBack() {
         result.spin.spinning = true;
         const config = getFieldsValue();
@@ -306,7 +341,9 @@
         result.status = 'success';
         result.title = '生成成功';
         result.subTitle = '当前为预览模式';
+        saveConfig();
       }
+
       async function handleGenerateBack() {
         try {
           result.spin.spinning = true;
@@ -330,7 +367,9 @@
           result.subTitle = '代码生成失败';
           result.data = [e.response.data?.data];
         }
+        saveConfig();
       }
+
       return {
         registerModal,
         registerForm,
@@ -338,9 +377,6 @@
         handleNoneSelect,
         handleReverseSelect,
         closeModal,
-        handleSubmit,
-        handleSelect,
-        fileChange,
         result,
         handleViewTable,
         handleGenerateTable,

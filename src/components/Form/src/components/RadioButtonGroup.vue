@@ -4,7 +4,7 @@
 <template>
   <RadioGroup v-bind="attrs" v-model:value="state" button-style="solid">
     <template v-for="item in getOptions" :key="`${item.value}`">
-      <RadioButton :="itemvalue.value" :disabled="item.disabled">
+      <RadioButton :value="item.value" :disabled="item.disabled">
         {{ item.label }}
       </RadioButton>
     </template>

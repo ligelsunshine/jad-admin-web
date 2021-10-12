@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <div class="copy"><a-button @click="handleCopy">复制</a-button></div>
-    <div class="relative !h-full w-full overflow-hidden codemirror" ref="el"> </div>
+    <div class="copy" v-if="copyButton"><a-button @click="handleCopy">复制</a-button></div>
+    <div class="relative !h-full w-full overflow-hidden" ref="el"> </div>
   </div>
 </template>
 
@@ -38,7 +38,9 @@
   const props = {
     mode: { type: String, default: 'application/json' },
     value: { type: String, default: '' },
+    maxHeight: { type: Number, default: null },
     readonly: { type: Boolean, default: false },
+    copyButton: { type: Boolean, default: false },
   };
 
   export default defineComponent({
@@ -135,19 +137,20 @@
       }
       return { el, handleCopy };
     },
+    mounted() {
+      const maxHeight = this.$props.maxHeight;
+      if (maxHeight) {
+        this.$refs.el.style.maxHeight = maxHeight + 'px';
+        this.$refs.el.style.overflowY = 'scroll';
+      }
+    },
   });
 </script>
 <style scoped>
-  .codemirror {
-    overflow-y: scroll;
-    -ms-overflow-y: scroll;
-    max-height: 760px;
-  }
   .copy {
     position: absolute;
     z-index: 10;
     right: 0;
-    /*display: none;*/
     -webkit-transition: opacity 0.3s linear;
     -moz-transition: opacity 0.3s linear;
     -o-transition: opacity 0.3s linear;

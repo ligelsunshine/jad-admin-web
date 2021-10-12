@@ -1,5 +1,8 @@
 <template>
-  <div class="relative !h-full w-full overflow-hidden" ref="el"> </div>
+  <div class="container">
+    <div class="copy"><a-button @click="handleCopy">复制</a-button></div>
+    <div class="relative !h-full w-full overflow-hidden codemirror" ref="el"> </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -13,9 +16,11 @@
     unref,
     nextTick,
   } from 'vue';
+  import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
+  import { useWindowSizeFn } from '/@/hooks/event/useWindowSizeFn';
+  import { useMessage } from '/@/hooks/web/useMessage';
   import { useDebounceFn } from '@vueuse/core';
   import { useAppStore } from '/@/store/modules/app';
-  import { useWindowSizeFn } from '/@/hooks/event/useWindowSizeFn';
   import CodeMirror from 'codemirror';
   // css
   import './codemirror.css';
@@ -23,6 +28,7 @@
   import 'codemirror/theme/material-palenight.css';
   // modes
   import 'codemirror/mode/javascript/javascript';
+  import 'codemirror/mode/vue/vue';
   import 'codemirror/mode/css/css';
   import 'codemirror/mode/htmlmixed/htmlmixed';
   import 'codemirror/mode/sql/sql';
@@ -44,6 +50,8 @@
 
       const debounceRefresh = useDebounceFn(refresh, 100);
       const appStore = useAppStore();
+      const { clipboardRef, copiedRef } = useCopyToClipboard();
+      const { createMessage } = useMessage();
 
       watch(
         () => props.value,
@@ -119,7 +127,36 @@
         editor = null;
       });
 
-      return { el };
+      function handleCopy() {
+        clipboardRef.value = editor?.getValue();
+        if (unref(copiedRef)) {
+          createMessage.success('复制成功');
+        }
+      }
+      return { el, handleCopy };
     },
   });
 </script>
+<style scoped>
+  .codemirror {
+    overflow-y: scroll;
+    -ms-overflow-y: scroll;
+    max-height: 760px;
+  }
+  .copy {
+    position: absolute;
+    z-index: 10;
+    right: 0;
+    /*display: none;*/
+    -webkit-transition: opacity 0.3s linear;
+    -moz-transition: opacity 0.3s linear;
+    -o-transition: opacity 0.3s linear;
+    transition: opacity 0.3s linear;
+    opacity: 0;
+    filter: alpha(opacity=0);
+  }
+  .container:hover .copy {
+    opacity: 100;
+    filter: alpha(opacity=100);
+  }
+</style>

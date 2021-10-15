@@ -161,6 +161,23 @@ export const generateBackApi = async (id: string, type: GenerateType, config: Ge
 /**
  * 生成前端代码
  */
-export const generateFrontApi = (id) => {
-  return defHttp.post({ url: Api.GenerateFront + '/' + id }, { isTransformResponse: true });
+export const generateFrontApi = async (id: string, type: GenerateType, frontPath: string) => {
+  let isTransformResponse = false;
+  if (type === 'CREATE') {
+    isTransformResponse = true;
+  }
+  const response = await defHttp.post(
+    {
+      url:
+        Api.GenerateFront +
+        '/' +
+        id +
+        '?type=' +
+        type +
+        '&frontPath=' +
+        encodeURIComponent(frontPath),
+    },
+    { isTransformResponse: isTransformResponse }
+  );
+  return response.data?.data;
 };

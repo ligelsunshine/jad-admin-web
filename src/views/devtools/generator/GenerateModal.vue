@@ -47,8 +47,8 @@
             <p>
               <span>前端代码：</span>
               <a-button-group>
-                <a-button>预览</a-button>
-                <a-button type="primary">生成</a-button>
+                <a-button @click="handleViewFront">预览</a-button>
+                <a-button type="primary" @click="handleGenerateFront">生成</a-button>
               </a-button-group>
             </p>
           </div>
@@ -65,14 +65,15 @@
             <p style="font-size: 16px; text-align: left">Generate result: </p>
             <p v-for="item in result.data" :key="item" style="text-align: left">{{ item }}</p>
           </div>
-          <div class="desc" v-show="result.show && result.tabShow">
+          <div class="desc" v-if="result.show && result.tabShow">
             <Tabs tab-position="left">
               <TabPane v-for="item in result.data" :key="item.name" :tab="item.name">
-                <p style="text-align: left">{{ item.path }}</p>
+                <p style="text-align: left" v-if="item.path">路径：{{ item.path }}</p>
                 <CodeMirrorEditor
                   :value="item.content"
                   :mode="item.mode"
-                  :readonly="false"
+                  :max-height="760"
+                  copy-button
                   style="text-align: left"
                 />
               </TabPane>
@@ -86,13 +87,13 @@
 
 <script lang="ts">
   import { defineComponent, reactive, ref } from 'vue';
-  import { BasicModal, useModalInner } from '/@/components/Modal';
-  import { BasicForm, FormSchema, useForm } from '/@/components/Form';
-  import { Card, Col, Result, Row, Spin, TabPane, Tabs } from 'ant-design-vue';
   import CodeMirrorEditor from '/@/components/CodeEditor/src/codemirror/CodeMirror.vue';
-  import { generateBackApi, generateTableApi } from '/@/api/devtools/generator';
-  import { isArray, isBoolean } from '/@/utils/is';
   import LocalPathSelect from '/@/components/Selector/LocalPathSelect.vue';
+  import { Card, Col, Result, Row, Spin, TabPane, Tabs } from 'ant-design-vue';
+  import { BasicForm, FormSchema, useForm } from '/@/components/Form';
+  import { BasicModal, useModalInner } from '/@/components/Modal';
+  import { isArray, isBoolean } from '/@/utils/is';
+  import { generateBackApi, generateFrontApi, generateTableApi } from '/@/api/devtools/generator';
 
   const schemas: FormSchema[] = [
     {
@@ -280,6 +281,12 @@
             if (item.name && item.name.endsWith('.xml')) {
               item['mode'] = 'application/xml';
             }
+            if (item.name && item.name.endsWith('.ts')) {
+              item['mode'] = 'text/typescript';
+            }
+            if (item.name && item.name.endsWith('.vue')) {
+              item['mode'] = 'text/x-vue';
+            }
           });
         }
       }
@@ -296,7 +303,8 @@
         result.spin.tip = '预览加载中';
         result.status = 'success';
         result.title = '生成成功';
-        result.subTitle = '当前为预览模式';
+        result.subTitle =
+          '当前为预览模式，并未生成文件，需要生成代码文件请点击"生成"按钮，将会生成在相应路径下';
         saveConfig();
       }
 
@@ -340,7 +348,8 @@
         result.spin.tip = '预览加载中';
         result.status = 'success';
         result.title = '生成成功';
-        result.subTitle = '当前为预览模式';
+        result.subTitle =
+          '当前为预览模式，并未生成文件，需要生成代码文件请点击"生成"按钮，将会生成在相应路径下';
         saveConfig();
       }
 
@@ -356,7 +365,51 @@
           result.spin.tip = '代码生成中';
           result.status = 'success';
           result.title = '生成成功';
-          result.subTitle = '代码生成成功，详情请查看项目工程代码';
+          result.subTitle = '代码生成成功，详情请查看项目工程代码，或打开相应路径查看';
+        } catch (e) {
+          result.show = true;
+          result.tabShow = false;
+          result.listShow = true;
+          result.spin.spinning = false;
+          result.status = 'error';
+          result.title = '生成失败';
+          result.subTitle = '代码生成失败';
+          result.data = [e.response.data?.data];
+        }
+        saveConfig();
+      }
+
+      async function handleViewFront() {
+        result.spin.spinning = true;
+        const config = getFieldsValue();
+        const data = generateFrontApi(id.value, 'VIEW', config.frontPath);
+        result.data = await data;
+        addMode();
+        result.show = true;
+        result.tabShow = true;
+        result.listShow = false;
+        result.spin.spinning = false;
+        result.spin.tip = '预览加载中';
+        result.status = 'success';
+        result.title = '生成成功';
+        result.subTitle =
+          '当前为预览模式，并未生成文件，需要生成代码文件请点击"生成"按钮，将会生成在相应路径下';
+        saveConfig();
+      }
+
+      async function handleGenerateFront() {
+        try {
+          result.spin.spinning = true;
+          const config = getFieldsValue();
+          result.data = await generateFrontApi(id.value, 'CREATE', config.frontPath);
+          result.show = true;
+          result.tabShow = false;
+          result.listShow = true;
+          result.spin.spinning = false;
+          result.spin.tip = '代码生成中';
+          result.status = 'success';
+          result.title = '生成成功';
+          result.subTitle = '代码生成成功，详情请查看项目工程代码，或打开相应路径查看';
         } catch (e) {
           result.show = true;
           result.tabShow = false;
@@ -382,6 +435,8 @@
         handleGenerateTable,
         handleViewBack,
         handleGenerateBack,
+        handleViewFront,
+        handleGenerateFront,
       };
     },
   });

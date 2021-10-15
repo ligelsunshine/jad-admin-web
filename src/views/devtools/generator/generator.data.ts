@@ -351,6 +351,9 @@ export const fieldColumns: BasicColumn[] = [
             case 'SEARCH_FORM':
               text = '查询表单';
               break;
+            case 'DETAIL':
+              text = '详情页展示';
+              break;
           }
           return h(Tag, {}, () => text);
         })
@@ -360,6 +363,94 @@ export const fieldColumns: BasicColumn[] = [
 ];
 
 const isEnum = (type: FieldType) => type === 'ENUM';
+const switchComponentProps = (formModel: Recordable) => {
+  let props;
+  switch (formModel.type) {
+    case 'STRING':
+    case 'TEXT':
+      props = {
+        options: [
+          { label: '普通文本框（Input）', value: 'Input' },
+          { label: '密码框（InputPassword）', value: 'InputPassword' },
+          { label: '文本域（InputTextArea）', value: 'InputTextArea' },
+          { label: '日期选择器（DatePicker）', value: 'DatePicker' },
+          { label: '月份选择器（MonthPicker）', value: 'MonthPicker' },
+          { label: '日期范围选择器（RangePicker）', value: 'RangePicker' },
+          { label: '周选择器（WeekPicker）', value: 'WeekPicker' },
+          { label: '时间选择器（TimePicker）', value: 'TimePicker' },
+          { label: '密码强度校验组件（StrengthMeter）', value: 'StrengthMeter' },
+          { label: '文件上传（Upload）', value: 'Upload' },
+          { label: 'ICON选择器（IconPicker）', value: 'IconPicker' },
+        ],
+      };
+      break;
+    case 'INT':
+    case 'FLOAT':
+    case 'DOUBLE':
+    case 'LONG':
+    case 'DECIMAL':
+      props = {
+        options: [
+          { label: '数字框（InputNumber）', value: 'InputNumber' },
+          { label: '评分（Rate）', value: 'Rate' },
+        ],
+      };
+      break;
+    case 'BOOLEAN':
+      props = {
+        options: [
+          { label: '开关（Switch）', value: 'Switch' },
+          { label: '下拉框（Select）', value: 'Select' },
+          { label: '单选方形按钮组（RadioButtonGroup）', value: 'RadioButtonGroup' },
+          { label: '单选圆形按钮组（RadioGroup）', value: 'RadioGroup' },
+          { label: '复选框（Checkbox）', value: 'Checkbox' },
+          { label: '复选框组（CheckboxGroup）', value: 'CheckboxGroup' },
+        ],
+      };
+      break;
+    case 'DATE':
+      props = {
+        options: [{ label: '日期选择器（DatePicker）', value: 'DatePicker' }],
+      };
+      break;
+    case 'ENUM':
+      props = {
+        options: [
+          { label: '下拉框（Select）', value: 'Select' },
+          { label: '单选方形按钮组（RadioButtonGroup）', value: 'RadioButtonGroup' },
+          { label: '单选圆形按钮组（RadioGroup）', value: 'RadioGroup' },
+        ],
+      };
+      break;
+    case 'OBJECT':
+    default:
+      props = {
+        options: [
+          { label: '普通文本框（Input）', value: 'Input' },
+          { label: '密码框（InputPassword）', value: 'InputPassword' },
+          { label: '文本域（InputTextArea）', value: 'InputTextArea' },
+          { label: '数字框（InputNumber）', value: 'InputNumber' },
+          { label: '下拉框（Select）', value: 'Select' },
+          { label: '单选方形按钮组（RadioButtonGroup）', value: 'RadioButtonGroup' },
+          { label: '单选圆形按钮组（RadioGroup）', value: 'RadioGroup' },
+          { label: '复选框（Checkbox）', value: 'Checkbox' },
+          { label: '复选框组（CheckboxGroup）', value: 'CheckboxGroup' },
+          { label: '日期选择器（DatePicker）', value: 'DatePicker' },
+          { label: '月份选择器（MonthPicker）', value: 'MonthPicker' },
+          { label: '日期范围选择器（RangePicker）', value: 'RangePicker' },
+          { label: '周选择器（WeekPicker）', value: 'WeekPicker' },
+          { label: '时间选择器（TimePicker）', value: 'TimePicker' },
+          { label: '开关（Switch）', value: 'Switch' },
+          { label: '密码强度校验组件（StrengthMeter）', value: 'StrengthMeter' },
+          { label: '文件上传（Upload）', value: 'Upload' },
+          { label: 'ICON选择器（IconPicker）', value: 'IconPicker' },
+          { label: '评分（Rate）', value: 'Rate' },
+        ],
+      };
+  }
+  formModel.component = props.options[0].value;
+  return props;
+};
 export const fieldFormSchema: FormSchema[] = [
   {
     field: 'id',
@@ -428,41 +519,10 @@ export const fieldFormSchema: FormSchema[] = [
   {
     field: 'component',
     label: '组件',
+    defaultValue: 'Input',
     component: 'Select',
     required: true,
-    componentProps: {
-      options: [
-        { label: '普通文本框（Input）', value: 'Input' },
-        { label: '输入组（InputGroup）', value: 'InputGroup' },
-        { label: '密码框（InputPassword）', value: 'InputPassword' },
-        { label: '搜索框（InputSearch）', value: 'InputSearch' },
-        { label: '文本域（InputTextArea）', value: 'InputTextArea' },
-        { label: '数字框（InputNumber）', value: 'InputNumber' },
-        { label: '倒计时输入框（InputCountDown）', value: 'InputCountDown' },
-        { label: '下拉框（Select）', value: 'Select' },
-        { label: 'API下拉框（ApiSelect）', value: 'ApiSelect' },
-        { label: '树形选择器（TreeSelect）', value: 'TreeSelect' },
-        { label: '单选方形按钮组（RadioButtonGroup）', value: 'RadioButtonGroup' },
-        { label: '单选圆形按钮组（RadioGroup）', value: 'RadioGroup' },
-        { label: '复选框（Checkbox）', value: 'Checkbox' },
-        { label: '复选框组（CheckboxGroup）', value: 'CheckboxGroup' },
-        { label: '自动匹配输入框（AutoComplete）', value: 'AutoComplete' },
-        { label: '级联（Cascader）', value: 'Cascader' },
-        { label: '日期选择器（DatePicker）', value: 'DatePicker' },
-        { label: '月份选择器（MonthPicker）', value: 'MonthPicker' },
-        { label: '日期范围选择器（RangePicker）', value: 'RangePicker' },
-        { label: '周选择器（WeekPicker）', value: 'WeekPicker' },
-        { label: '时间选择器（TimePicker）', value: 'TimePicker' },
-        { label: '开关（Switch）', value: 'Switch' },
-        { label: '强度计（StrengthMeter）', value: 'StrengthMeter' },
-        { label: '文件上传（Upload）', value: 'Upload' },
-        { label: 'ICON选择器（IconPicker）', value: 'IconPicker' },
-        { label: '渲染器（Render）', value: 'Render' },
-        { label: '滑动输入条（Slider）', value: 'Slider' },
-        { label: '评分（Rate）', value: 'Rate' },
-      ],
-    },
-    defaultValue: 'Input',
+    componentProps: ({ formModel }) => switchComponentProps(formModel),
   },
   {
     field: 'orderNo',
@@ -495,8 +555,9 @@ export const fieldFormSchema: FormSchema[] = [
         { label: '添加表单', value: 'ADD_FORM' },
         { label: '编辑表单', value: 'EDIT_FORM' },
         { label: '查询表单', value: 'SEARCH_FORM' },
+        { label: '详情页展示', value: 'DETAIL' },
       ],
     },
-    defaultValue: ['LIST', 'ADD_FORM', 'EDIT_FORM'],
+    defaultValue: ['LIST', 'ADD_FORM', 'EDIT_FORM', 'DETAIL'],
   },
 ];

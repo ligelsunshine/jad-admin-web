@@ -9,7 +9,7 @@ import type {
 import { ComponentType } from './componentType';
 import { VueNode } from '/@/utils/propTypes';
 import { RoleEnum } from '/@/enums/roleEnum';
-import { isNumber } from "/@/utils/is";
+import { isBoolean, isNumber } from '/@/utils/is';
 
 export declare type SortOrder = 'ascend' | 'descend';
 
@@ -444,9 +444,11 @@ export interface InnerHandlers {
 
 export interface WhereItem {
   column: string;
-  condition: string;
+  condition: Condition;
   value: any;
 }
+
+export type Condition = 'EQ' | 'NE' | 'GT' | 'GE' | 'LT' | 'LE' | 'LIKE' | 'RANGE_TIME';
 
 export interface SearchForm {
   page: number;
@@ -460,19 +462,30 @@ export function beforeFetchFun(params, searchFormSchema) {
     whereItems: [],
   };
   searchFormSchema.forEach((item) => {
-    if (params[item.field]) {
-      let condition = 'LIKE';
+    if (params[item.field] != undefined) {
+      let condition: Condition = 'EQ';
       if (item.field === 'rangeTime') {
         condition = 'RANGE_TIME';
-      } else if (isNumber(params[item.field])) {
+      } else if (isNumber(params[item.field]) || isBoolean(params[item.field])) {
         condition = 'EQ';
+      } else if (item.component == 'Input') {
+        condition = 'LIKE';
       }
-      const whereItem: WhereItem = {
-        column: item.field,
-        condition: condition,
-        value: params[item.field],
-      };
-      result.whereItems.push(whereItem);
+      if (params[item.field] === 'true' || params[item.field] === 'false') {
+        const whereItem: WhereItem = {
+          column: item.field,
+          condition: 'EQ',
+          value: params[item.field] === 'true',
+        };
+        result.whereItems.push(whereItem);
+      } else {
+        const whereItem: WhereItem = {
+          column: item.field,
+          condition: condition,
+          value: params[item.field],
+        };
+        result.whereItems.push(whereItem);
+      }
     }
   });
   return result;

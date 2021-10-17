@@ -7,8 +7,9 @@ import { formatToDateTime } from '/@/utils/dateUtil';
  */
 export interface Datasource {
   id: string;
+  code?: string;
   name?: string;
-  type?: Type;
+  type?: DBType;
   url?: string;
   username?: string;
   password?: string;
@@ -17,7 +18,7 @@ export interface Datasource {
 /**
  * 类型枚举
  */
-export enum Type {
+export enum DBType {
   Oracle = 0,
   MySQL = 1,
   DB2 = 2,
@@ -32,15 +33,15 @@ export enum Type {
  */
 export function renderOfType(type) {
   switch (type) {
-    case Type.Oracle:
+    case DBType.Oracle:
       return 'Oracle';
-    case Type.MySQL:
+    case DBType.MySQL:
       return 'MySQL';
-    case Type.DB2:
+    case DBType.DB2:
       return 'DB2';
-    case Type.PostgreSQL:
+    case DBType.PostgreSQL:
       return 'PostgreSQL';
-    case Type.H2:
+    case DBType.H2:
       return 'H2';
     default:
       return 'undefined';
@@ -56,6 +57,10 @@ export const columns: BasicColumn[] = [
     title: '数据库名称',
   },
   {
+    dataIndex: 'code',
+    title: '编码',
+  },
+  {
     dataIndex: 'type',
     title: '类型',
     customRender: ({ record }) => renderOfType(record.type),
@@ -67,10 +72,6 @@ export const columns: BasicColumn[] = [
   {
     dataIndex: 'username',
     title: '用户名',
-  },
-  {
-    dataIndex: 'password',
-    title: '密码',
   },
 ];
 
@@ -85,16 +86,22 @@ export const searchFormSchema: FormSchema[] = [
     colProps: { span: 8 },
   },
   {
+    field: 'code',
+    label: '编码',
+    component: 'Input',
+    colProps: { span: 8 },
+  },
+  {
     field: 'type',
     label: '类型',
     component: 'Select',
     componentProps: {
       options: [
-        { label: 'Oracle', value: Type.Oracle },
-        { label: 'MySQL', value: Type.MySQL },
-        { label: 'DB2', value: Type.DB2 },
-        { label: 'PostgreSQL', value: Type.PostgreSQL },
-        { label: 'H2', value: Type.H2 },
+        { label: 'Oracle', value: DBType.Oracle },
+        { label: 'MySQL', value: DBType.MySQL },
+        { label: 'DB2', value: DBType.DB2 },
+        { label: 'PostgreSQL', value: DBType.PostgreSQL },
+        { label: 'H2', value: DBType.H2 },
       ],
     },
     colProps: { span: 8 },
@@ -141,19 +148,26 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
   },
   {
+    field: 'code',
+    label: '编码',
+    component: 'Input',
+    required: true,
+    helpMessage: '编码与后端多数据源配置中组名一样，例如：master、salve',
+  },
+  {
     field: 'type',
     label: '类型',
     component: 'Select',
-    defaultValue: Type.MySQL,
     componentProps: {
       options: [
-        { label: 'Oracle', value: Type.Oracle },
-        { label: 'MySQL', value: Type.MySQL },
-        { label: 'DB2', value: Type.DB2 },
-        { label: 'PostgreSQL', value: Type.PostgreSQL },
-        { label: 'H2', value: Type.H2 },
+        { label: 'Oracle', value: DBType.Oracle },
+        { label: 'MySQL', value: DBType.MySQL },
+        { label: 'DB2', value: DBType.DB2 },
+        { label: 'PostgreSQL', value: DBType.PostgreSQL },
+        { label: 'H2', value: DBType.H2 },
       ],
     },
+    required: true,
   },
   {
     field: 'url',
@@ -170,8 +184,13 @@ export const formSchema: FormSchema[] = [
   {
     field: 'password',
     label: '密码',
-    component: 'Input',
+    component: 'InputPassword',
     required: true,
+  },
+  {
+    field: 'remark',
+    label: '备注',
+    component: 'InputTextArea',
   },
 ];
 
@@ -184,6 +203,10 @@ export const descSchema: DescItem[] = [
     label: '数据库名称',
   },
   {
+    field: 'code',
+    label: '编码',
+  },
+  {
     field: 'type',
     label: '类型',
     render: (val) => renderOfType(val),
@@ -191,6 +214,7 @@ export const descSchema: DescItem[] = [
   {
     field: 'url',
     label: 'URL',
+    span: 3,
   },
   {
     field: 'username',

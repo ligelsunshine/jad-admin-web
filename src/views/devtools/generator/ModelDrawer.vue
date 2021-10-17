@@ -13,9 +13,10 @@
 <script lang="ts">
   import { defineComponent, ref, computed, unref } from 'vue';
   import { BasicForm, useForm } from '/@/components/Form/index';
-  import { formSchema } from './generator.data';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
+
   import { getModuleApi, saveApi, updateApi } from '/@/api/devtools/generator';
+  import { formSchema } from './generator.data';
 
   export default defineComponent({
     name: 'ModelDrawer',
@@ -32,7 +33,6 @@
         schemas: formSchema,
         showActionButtonGroup: false,
       });
-
       const [registerDrawer, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
         await resetFields();
         setDrawerProps({ confirmLoading: false });
@@ -42,6 +42,8 @@
           await setFieldsValue({
             ...data.record,
           });
+        } else {
+          updateModel();
         }
         const treeData = await getModuleApi();
         await updateSchema([
@@ -50,7 +52,6 @@
             componentProps: { treeData },
           },
         ]);
-        updateModel();
       });
 
       const getTitle = computed(() => (!unref(isUpdate) ? '新增Model' : '编辑Model'));

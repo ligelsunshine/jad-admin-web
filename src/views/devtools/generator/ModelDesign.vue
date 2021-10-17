@@ -6,6 +6,7 @@
     @back="goBack"
   >
     <template #extra>
+      <a-button type="link" @click="handleViewJson">View JSON</a-button>
       <a-button shape="round" size="large" @click="handleGenerateModal">
         <Icon icon="cib:visual-studio-code" :size="20" />
         Generator
@@ -19,6 +20,9 @@
         :data="generator"
         :schema="descriptionSchema"
       />
+      <template #extra>
+        <a-button type="link" class="ml-2" @click="handleEditGenerate">编辑</a-button>
+      </template>
     </a-card>
     <a-card title="Field Schema" :bordered="false">
       <BasicTable @register="registerTable" @edit-end="handleEditFieldEnd">
@@ -43,9 +47,19 @@
           />
         </template>
       </BasicTable>
+      <a-button block class="mt-5" type="dashed" @click="handleAddField"> 新增字段 </a-button>
+      <ModelDrawer @register="registerGenerateDrawer" @success="refreshPage" />
       <FieldDrawer @register="registerDrawer" @success="handleSuccess" />
       <GenerateModal @register="registerModal" />
-      <a-button block class="mt-5" type="dashed" @click="handleAddField"> 新增字段 </a-button>
+      <BasicModal
+        v-bind="$attrs"
+        @register="registerJsonViewerModal"
+        :title="model.title + ' Model' || 'Model JSON'"
+        width="50%"
+        :footer="null"
+      >
+        <JsonPreview :data="model" copyButton />
+      </BasicModal>
     </a-card>
   </PageWrapper>
 </template>
@@ -57,13 +71,15 @@
   import { useRoute } from 'vue-router';
   import { defineComponent, ref } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { JsonPreview } from '/@/components/CodeEditor';
   import { useGo } from '/@/hooks/web/usePage';
   import { useTabs } from '/@/hooks/web/useTabs';
   import { deleteFieldApi, getApi, getFieldsApi, updateFieldApi } from '/@/api/devtools/generator';
   import { descriptionSchema, fieldColumns, Generator } from './generator.data';
   import { Card } from 'ant-design-vue';
   import { useDrawer } from '/@/components/Drawer';
-  import { useModal } from '/@/components/Modal';
+  import { BasicModal, useModal } from '/@/components/Modal';
+  import ModelDrawer from '/@/views/devtools/generator/ModelDrawer.vue';
   import FieldDrawer from '/@/views/devtools/generator/FieldDrawer.vue';
   import GenerateModal from '/@/views/devtools/generator/GenerateModal.vue';
 
@@ -73,19 +89,23 @@
       PageWrapper,
       Description,
       [Card.name]: Card,
-      BasicTable,
       TableAction,
       Icon,
+      JsonPreview,
+      BasicTable,
+      BasicModal,
+      ModelDrawer,
       FieldDrawer,
       GenerateModal,
     },
     setup() {
       const route = useRoute();
       const go = useGo();
-      const { setTitle } = useTabs();
-      // 此处可以得到ID
+      const { setTitle, refreshPage } = useTabs();
+      const [registerGenerateDrawer, { openDrawer: openGenerateDrawer }] = useDrawer();
       const [registerDrawer, { openDrawer }] = useDrawer();
       const [registerModal, { openModal }] = useModal();
+      const [registerJsonViewerModal, { openModal: openJsonViewerModal }] = useModal();
       const [registerTable, { reload }] = useTable({
         api: getFieldsApi,
         beforeFetch: () => {
@@ -105,20 +125,33 @@
       });
       const id = ref(route.params?.id);
       const generator: Generator = ref({});
+      const model = ref({});
 
-      getApi(id.value).then((res) => {
-        const data = res.data?.data;
-        generator.value = data;
-        // 设置Tab的标题（不会影响页面标题）
-        setTitle('设计 ' + data.title + ' Model');
-      });
+      getData();
+      function getData() {
+        getApi(id.value).then((res) => {
+          const data = res.data?.data;
+          generator.value = data;
+          model.value = JSON.parse(generator.value.modelJson);
+          // 设置Tab的标题（不会影响页面标题）
+          setTitle('设计 ' + data.title + ' Model');
+        });
+      }
 
-      // 页面左侧点击返回链接时的操作
       function goBack() {
-        // 本例的效果时点击返回始终跳转到账号列表页，实际应用时可返回上一页
         go('/devtools/generator');
       }
 
+      function handleViewJson() {
+        getData();
+        openJsonViewerModal(true);
+      }
+      function handleEditGenerate() {
+        openGenerateDrawer(true, {
+          record: generator,
+          isUpdate: true,
+        });
+      }
       function handleAddField() {
         openDrawer(true, {
           isUpdate: false,
@@ -149,11 +182,17 @@
       }
       return {
         descriptionSchema,
-        generator,
+        registerGenerateDrawer,
         registerTable,
-        registerModal,
         registerDrawer,
+        registerModal,
+        registerJsonViewerModal,
+        generator,
+        model,
         goBack,
+        refreshPage,
+        handleViewJson,
+        handleEditGenerate,
         handleAddField,
         handleEditField,
         handleEditFieldEnd,

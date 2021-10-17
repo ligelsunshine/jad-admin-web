@@ -4,6 +4,7 @@ import { ComponentType } from '/@/components/Form/src/types';
 import { DescItem } from '/@/components/Description';
 import { h } from 'vue';
 import { Switch, Tag } from 'ant-design-vue';
+import { getAllApi } from "/@/api/sys/datasource/Datasource.api";
 
 interface BaseField {
   module?: string;
@@ -93,18 +94,8 @@ export const columns: BasicColumn[] = [
     width: 200,
   },
   {
-    title: 'Module',
-    dataIndex: 'module',
-    width: 180,
-  },
-  {
     title: 'Title',
     dataIndex: 'title',
-    width: 180,
-  },
-  {
-    title: 'Namespace',
-    dataIndex: 'namespace',
     width: 180,
   },
   {
@@ -126,7 +117,12 @@ export const searchFormSchema: FormSchema[] = [
   {
     field: 'ds',
     label: '数据源（DS）',
-    component: 'Input',
+    component: 'ApiSelect',
+    componentProps: {
+      api: getAllApi,
+      labelField: 'code',
+      valueField: 'code',
+    },
     colProps: { span: 6 },
   },
   {
@@ -171,7 +167,12 @@ export const formSchema: FormSchema[] = [
   {
     field: 'ds',
     label: '数据源(DS)',
-    component: 'Input',
+    component: 'ApiSelect',
+    componentProps: {
+      api: getAllApi,
+      labelField: 'code',
+      valueField: 'code',
+    },
     required: true,
   },
   {

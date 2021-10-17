@@ -90,7 +90,7 @@
     setup() {
       const message = useMessage().createMessage;
       const deleteArrLoading = ref(false);
-      const [registerTable, { reload, getSelectRowKeys, setSelectedRowKeys, getDataSource }] =
+      const [registerTable, { reload, getSelectRowKeys, getSelectRows, setSelectedRowKeys }] =
         useTable({
           title: '数据源列表',
           api: getPageApi,
@@ -171,7 +171,11 @@
       }
 
       function handleExport({ filename, bookType }: ExportModalResult) {
-        const data = getDataSource();
+        const data = getSelectRows();
+        if (data?.length === 0) {
+          message.info('请选择要导出的数据');
+          return;
+        }
         // 默认Object.keys(data[0])作为header
         jsonToSheetXlsx({
           data,

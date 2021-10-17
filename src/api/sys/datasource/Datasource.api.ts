@@ -8,6 +8,7 @@ enum Api {
   DeleteArr = '/sys/datasource/deleteArr',
   Update = '/sys/datasource/update',
   Get = '/sys/datasource/get',
+  GetAll = '/sys/datasource/getAll',
   GetPage = '/sys/datasource/get/page',
 }
 
@@ -47,6 +48,14 @@ export const updateApi = (datasource: Datasource) => {
  */
 export const getApi = async (id: string) => {
   const response = await defHttp.get({ url: Api.Get + '/' + id });
+  return response.data?.data;
+};
+
+/**
+ * 获取所有数据源
+ */
+export const getAllApi = async () => {
+  const response = await defHttp.get({ url: Api.GetAll });
   return response.data?.data;
 };
 

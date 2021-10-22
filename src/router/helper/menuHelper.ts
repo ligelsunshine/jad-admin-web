@@ -72,7 +72,8 @@ export function transformRouteToMenu(routeModList: AppRouteModule[], routerMappi
 /**
  * config menu with given params
  */
-const menuParamRegex = /(?<=:)([\s\S]+?)((?=\/)|$)/g;
+// const menuParamRegex = /(?<=:)([\s\S]+?)((?=\/)|$)/g;
+const menuParamRegex = new RegExp('(?=:)([\\s\\S]+?)((?=\\/)|$)', 'g');
 export function configureDynamicParamsMenu(menu: Menu, params: RouteParams) {
   const { path, paramPath } = toRaw(menu);
   let realPath = paramPath ? paramPath : path;

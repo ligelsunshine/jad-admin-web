@@ -10,6 +10,7 @@
     <BasicForm @register="registerForm">
       <template #menuIds="{ model, field }">
         <BasicTree
+          ref="menuTreeRef"
           v-model:value="model[field]"
           :treeData="treeData"
           :replaceFields="{ title: 'title', key: 'id' }"
@@ -26,7 +27,7 @@
 <script lang="ts">
   import { defineComponent, ref, unref } from 'vue';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
-  import { BasicTree, TreeItem } from '/@/components/Tree';
+  import { BasicTree, TreeActionType, TreeItem } from '/@/components/Tree';
   import { BasicForm, useForm } from '/@/components/Form';
   import { menuFormSchema } from '/@/views/sys/role/role.data';
   import { getUserMenuTree } from '/@/api/sys/menu';
@@ -40,16 +41,14 @@
     setup(_, { emit }) {
       const treeData = ref<TreeItem[]>([]);
       const roleId = ref<string>('');
-      let actionCheck: { halfChecked: string[]; checked: string[] } = {
-        halfChecked: [],
-        checked: [],
-      };
+      let menuIds: string[] = [];
       // 分配权限接口
       interface AssignPermissionsParams {
         roleId: string;
-        roleMenus: { menuId: string; halfChecked: boolean }[];
+        menuIds: string[];
       }
 
+      const menuTreeRef = ref<Nullable<TreeActionType>>(null);
       const [registerForm, { resetFields, setFieldsValue }] = useForm({
         schemas: menuFormSchema,
         showActionButtonGroup: false,
@@ -64,18 +63,20 @@
           treeData.value = (await getUserMenuTree()) as any as TreeItem[];
         }
         // 获取已分配的菜单权限
-        actionCheck = await getRoleMenuIds(data.record.id);
+        menuIds = await getRoleMenuIds(data.record.id);
         await setFieldsValue({
-          ...{ menuIds: actionCheck.checked },
+          ...{ menuIds: menuIds },
         });
       });
 
       async function handleSubmit() {
         try {
           setDrawerProps({ confirmLoading: true });
-          const params = processParams();
-          console.log(params);
-          if (!params) {
+          let params: AssignPermissionsParams = {
+            roleId: roleId.value,
+            menuIds: menuIds,
+          };
+          if (!menuIds || menuIds.length == 0) {
             message.error('最少必须分配一个菜单');
             return;
           }
@@ -88,38 +89,26 @@
         }
       }
 
-      function processParams() {
-        let params: AssignPermissionsParams = {
-          roleId: roleId.value,
-          roleMenus: [],
-        };
-        if (actionCheck.halfChecked.length == 0 && actionCheck.checked.length == 0) {
-          return null;
+      async function handleCheck(_, e) {
+        const keys: string[] = [];
+        if (e.checkedNodes.length > 0) {
+          // 只需要叶子节点
+          e.checkedNodes.forEach((node) => {
+            if (node.props.children == null || node.props.children.length == 0) {
+              keys.push(node.key);
+            }
+          });
         }
-        // 过滤未全选
-        actionCheck.halfChecked.forEach((menuId) => {
-          params.roleMenus.push({ menuId: menuId, halfChecked: true });
-        });
-        // 过滤全选
-        actionCheck.checked.forEach((menuId) => {
-          params.roleMenus.push({ menuId: menuId, halfChecked: false });
-        });
-        return params;
-      }
-
-      // 合并全选中和半选中
-      async function handleCheck(checkedKeys, e) {
-        actionCheck.checked = checkedKeys;
-        actionCheck.halfChecked = e.halfCheckedKeys;
+        menuIds = keys;
       }
 
       return {
         registerDrawer,
         registerForm,
-        handleSubmit,
+        menuTreeRef,
         treeData,
+        handleSubmit,
         handleCheck,
-        expandedKeys: [...actionCheck.halfChecked, ...actionCheck.checked],
       };
     },
   });

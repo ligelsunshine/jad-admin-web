@@ -1,8 +1,9 @@
+import { h } from 'vue';
+import { DescItem } from '/@/components/Description';
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
-import { h } from 'vue';
-import { Tag } from 'ant-design-vue';
 import { Icon } from '/@/components/Icon';
+import { Tag } from 'ant-design-vue';
 
 export const columns: BasicColumn[] = [
   {
@@ -248,5 +249,106 @@ export const formSchema: FormSchema[] = [
       ],
     },
     show: ({ values }) => !isButton(values.type),
+  },
+];
+
+export const descSchema: DescItem[] = [
+  {
+    field: 'type',
+    label: '菜单类型',
+    span: 2,
+    render: (val) => {
+      let color = 'orange';
+      let text = '目录';
+      if (val == 0) {
+        color = 'orange';
+        text = '目录';
+      } else if (val == 1) {
+        color = 'green';
+        text = '菜单';
+      } else if (val == 2) {
+        color = '';
+        text = '按钮';
+      }
+      return h(Tag, { color: color }, () => text);
+    },
+  },
+  {
+    field: 'title',
+    label: '菜单标题',
+    span: 2,
+  },
+  {
+    field: 'orderNo',
+    label: '排序',
+  },
+  {
+    field: 'icon',
+    label: '图标',
+    render: (val) => {
+      return h(Icon, {
+        icon: val,
+      });
+    },
+    show: (record) => !isButton(record.type),
+  },
+  {
+    field: 'path',
+    label: '路由地址',
+    show: (record) => !isButton(record.type),
+  },
+  {
+    field: 'component',
+    label: '组件路径',
+    show: (record) => isMenu(record.type),
+  },
+  {
+    field: 'permissions',
+    label: '权限标识',
+    show: (record) => !isDir(record.type),
+  },
+  {
+    field: 'frameSrc',
+    label: '外部嵌套地址',
+    show: (record) => isMenu(record.type),
+  },
+  {
+    field: 'status',
+    label: '状态',
+    render: (val) => {
+      return val == 1 ? '停用' : '启用';
+    },
+  },
+  {
+    field: 'external',
+    label: '是否外链',
+    render: (val) => {
+      return val ? '是' : '否';
+    },
+    show: (record) => isMenu(record.type),
+  },
+  {
+    field: 'ignoreKeepAlive',
+    label: '是否忽略缓存',
+    render: (val) => {
+      return val ? '是' : '否';
+    },
+    show: (record) => isMenu(record.type),
+  },
+  {
+    field: 'hideChildrenInMenu',
+    label: '隐藏子菜单',
+    render: (val) => {
+      return val ? '是' : '否';
+    },
+    show: (record) => !isButton(record.type),
+  },
+  {
+    field: 'hideMenu',
+    label: '是否隐藏',
+    render: (val) => {
+      return val ? '是' : '否';
+    },
+    show: (record) => !isButton(record.type),
   },
 ];

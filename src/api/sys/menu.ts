@@ -6,32 +6,38 @@ enum Api {
   Update = '/sys/menu/update',
   Get = '/sys/menu/get',
   getUserMenuTree = '/sys/menu/getUserMenuTree',
-  GetRoleMenuList = '/sys/menu/getRoleMenuList',
 }
 
 /**
  * 添加
  */
 export const saveMenu = (menu) => {
-  return defHttp.post({ url: Api.Save, params: menu });
+  return defHttp.post({ url: Api.Save, params: menu }, { isTransformResponse: true });
 };
 /**
  * 删除
  */
 export const deleteMenu = (id) => {
-  return defHttp.delete({ url: Api.Delete + '/' + id + '?includeSelf=true' });
+  return defHttp.delete({ url: Api.Delete + '/' + id + '?includeSelf=true' }, { isTransformResponse: true });
 };
 /**
  * 删除子菜单
  */
 export const deleteMenuChildren = (id) => {
-  return defHttp.delete({ url: Api.Delete + '/' + id + '?includeSelf=false' });
+  return defHttp.delete({ url: Api.Delete + '/' + id + '?includeSelf=false' }, { isTransformResponse: true });
 };
 /**
  * 修改
  */
 export const updateMenu = (menu) => {
-  return defHttp.put({ url: Api.Update, params: menu });
+  return defHttp.put({ url: Api.Update, params: menu }, { isTransformResponse: true });
+};
+/**
+ * 获取单条菜单
+ */
+export const getMenu = async (id: string) => {
+  const response = await defHttp.get({ url: Api.Get + '/' + id });
+  return response.data?.data;
 };
 /**
  * 获取用户菜单树
@@ -41,9 +47,8 @@ export const getUserMenuTree = async () => {
   return response.data?.data;
 };
 /**
- * 获取角色菜单列表
+ * 获取用户菜单树
  */
-export const getRoleMenuList = async (id) => {
-  const response = await defHttp.get({ url: `${Api.GetRoleMenuList}?id=${id}` });
-  return response.data?.data;
+export const getUserMenuTreeAsPromise = () => {
+  return defHttp.get({ url: Api.getUserMenuTree });
 };

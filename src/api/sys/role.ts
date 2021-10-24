@@ -8,7 +8,7 @@ enum Api {
   UpdateStatus = '/sys/role/update/status',
   GetRoleList = '/sys/role/get/list',
   GetRoleListPage = '/sys/role/get/page',
-  GetRoleMenuIds = '/sys/role/getRoleMenuIds',
+  GetRoleMenuItems = '/sys/role/getRoleMenuItems',
   AssignPermissions = '/sys/role/assignPermissions',
 }
 
@@ -55,8 +55,8 @@ export const getRoleListPage = async (params) => {
 /**
  * 获取角色菜单列表
  */
-export const getRoleMenuIds = async (roleId) => {
-  const response = await defHttp.get({ url: `${Api.GetRoleMenuIds}?roleId=${roleId}` });
+export const getRoleMenuItems = async (roleId) => {
+  const response = await defHttp.get({ url: `${Api.GetRoleMenuItems}?roleId=${roleId}` });
   return response.data?.data;
 };
 

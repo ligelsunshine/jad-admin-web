@@ -13,7 +13,7 @@
           ref="menuTreeRef"
           v-model:value="model[field]"
           :treeData="treeData"
-          :replaceFields="{ title: 'id', key: 'id' }"
+          :replaceFields="{ title: 'title', key: 'id' }"
           title="菜单"
           checkable
           search

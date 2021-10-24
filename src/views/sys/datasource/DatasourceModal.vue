@@ -8,7 +8,7 @@
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { Description } from '/@/components/Description';
   import { getApi } from '/@/api/sys/datasource/Datasource.api';
-  import { descSchema } from '/@/views/sys/datasource/Datasource.data';
+  import { descSchema, Datasource } from '/@/views/sys/datasource/Datasource.data';
 
   export default defineComponent({
     name: 'DatasourceModal',

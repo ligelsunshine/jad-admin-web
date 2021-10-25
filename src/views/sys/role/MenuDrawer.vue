@@ -10,15 +10,16 @@
     <BasicForm @register="registerForm">
       <template #menuIds="{ model, field }">
         <BasicTree
+          title="菜单列表"
+          helpMessage="最少必须分配一个菜单，否则用户无法登录系统"
           ref="menuTreeRef"
-          v-model:value="model[field]"
           :treeData="treeData"
+          v-model:value="model[field]"
           :replaceFields="{ title: 'title', key: 'id' }"
-          title="菜单"
+          :renderIcon="handleRenderIcon"
+          @check="handleCheck"
           checkable
           search
-          helpMessage="最少必须分配一个菜单，否则用户无法登录系统"
-          @check="handleCheck"
         />
       </template>
     </BasicForm>
@@ -26,13 +27,15 @@
 </template>
 <script lang="ts">
   import { defineComponent, ref, unref } from 'vue';
-  import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicTree, TreeActionType, TreeItem } from '/@/components/Tree';
+  import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicForm, useForm } from '/@/components/Form';
-  import { menuFormSchema } from '/@/views/sys/role/role.data';
-  import { getUserMenuTree } from '/@/api/sys/menu';
-  import { AssignPermissions, getRoleMenuItems } from '/@/api/sys/role';
   import { message } from 'ant-design-vue';
+
+  import { AssignPermissions, getRoleMenuItems } from '/@/api/sys/role';
+  import { getUserMenuTree } from '/@/api/sys/menu';
+  import { menuFormSchema } from '/@/views/sys/role/role.data';
+  import { getMenuType } from '/@/views/sys/menu/menu.data';
 
   export default defineComponent({
     name: 'MenuDrawer',
@@ -99,6 +102,10 @@
         }
       }
 
+      function handleRenderIcon({ type }) {
+        return getMenuType(type)?.icon;
+      }
+
       async function handleCheck(_, e) {
         menuItems.value = [];
         if (e.checkedNodes.length > 0) {
@@ -127,6 +134,7 @@
         menuTreeRef,
         treeData,
         handleSubmit,
+        handleRenderIcon,
         handleCheck,
       };
     },

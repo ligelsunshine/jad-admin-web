@@ -5,6 +5,40 @@ import { FormSchema } from '/@/components/Table';
 import { Icon } from '/@/components/Icon';
 import { Tag } from 'ant-design-vue';
 
+export interface MenuType {
+  type: number;
+  text?: string;
+  icon?: string;
+  color?: string;
+}
+
+export function getMenuType(type: number): MenuType {
+  let menuType: MenuType = { type: type };
+  if (type == 0) {
+    menuType = {
+      type: type,
+      text: '目录',
+      icon: 'ant-design:folder-open-outlined',
+      color: 'orange',
+    };
+  } else if (type == 1) {
+    menuType = {
+      type: type,
+      text: '菜单',
+      icon: 'ant-design:file-text-outlined',
+      color: 'green',
+    };
+  } else if (type == 2) {
+    menuType = {
+      type: type,
+      text: '按钮',
+      icon: 'codicon:symbol-interface',
+      color: 'green',
+    };
+  }
+  return menuType;
+}
+
 export const columns: BasicColumn[] = [
   {
     title: '菜单标题',
@@ -18,20 +52,8 @@ export const columns: BasicColumn[] = [
     dataIndex: 'type',
     width: 80,
     customRender: ({ record }) => {
-      const type = record.type;
-      let color;
-      let text;
-      if (type == 0) {
-        color = 'orange';
-        text = '目录';
-      } else if (type == 1) {
-        color = 'green';
-        text = '菜单';
-      } else if (type == 2) {
-        color = '';
-        text = '按钮';
-      }
-      return h(Tag, { color: color }, () => text);
+      const menuType = getMenuType(record.type);
+      return h(Tag, { color: menuType?.color }, () => menuType?.text);
     },
   },
   {
@@ -80,7 +102,7 @@ export const columns: BasicColumn[] = [
   },
 ];
 
-const isDir = (type: number) => type === 0;
+// const isDir = (type: number) => type === 0;
 const isMenu = (type: number) => type === 1;
 const isButton = (type: number) => type === 2;
 
@@ -178,7 +200,7 @@ export const formSchema: FormSchema[] = [
     field: 'permissions',
     label: '权限标识',
     component: 'Input',
-    show: ({ values }) => !isDir(values.type),
+    show: ({ values }) => isButton(values.type),
   },
   {
     field: 'frameSrc',
@@ -258,19 +280,8 @@ export const descSchema: DescItem[] = [
     label: '菜单类型',
     span: 2,
     render: (val) => {
-      let color = 'orange';
-      let text = '目录';
-      if (val == 0) {
-        color = 'orange';
-        text = '目录';
-      } else if (val == 1) {
-        color = 'green';
-        text = '菜单';
-      } else if (val == 2) {
-        color = '';
-        text = '按钮';
-      }
-      return h(Tag, { color: color }, () => text);
+      const menuType = getMenuType(val);
+      return h('p', [h(Icon, { icon: menuType?.icon }), ' ' + menuType?.text]);
     },
   },
   {
@@ -305,7 +316,7 @@ export const descSchema: DescItem[] = [
   {
     field: 'permissions',
     label: '权限标识',
-    show: (record) => !isDir(record.type),
+    show: (record) => isButton(record.type),
   },
   {
     field: 'frameSrc',

@@ -118,10 +118,8 @@
       } = useTree(treeDataRef, getReplaceFields);
 
       function getIcon(params: Recordable, icon?: string) {
-        if (!icon) {
-          if (props.renderIcon && isFunction(props.renderIcon)) {
-            return props.renderIcon(params);
-          }
+        if (props.renderIcon && isFunction(props.renderIcon)) {
+          return props.renderIcon(params);
         }
         return icon;
       }

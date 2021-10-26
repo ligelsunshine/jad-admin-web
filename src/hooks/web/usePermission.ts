@@ -72,8 +72,13 @@ export function usePermission() {
     }
 
     if (PermissionModeEnum.BACK === permMode) {
+      const superRole = permissionStore.getSuperRole;
       const allCodeList = permissionStore.getPermCodeList as string[];
       if (!isArray(value)) {
+        // 是否超级管理员
+        if (allCodeList.includes(superRole)){
+          return true;
+        }
         return allCodeList.includes(value);
       }
       return (intersection(value, allCodeList) as string[]).length > 0;

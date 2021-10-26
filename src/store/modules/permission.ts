@@ -28,6 +28,8 @@ import { getPermCode } from '/@/api/sys/user';
 import { useMessage } from '/@/hooks/web/useMessage';
 
 interface PermissionState {
+  // super role
+  superRole: string;
   // Permission code list
   permCodeList: string[] | number[];
   // Whether the route has been dynamically added
@@ -41,6 +43,7 @@ interface PermissionState {
 export const usePermissionStore = defineStore({
   id: 'app-permission',
   state: (): PermissionState => ({
+    superRole: '',
     permCodeList: [],
     // Whether the route has been dynamically added
     isDynamicAddedRoute: false,
@@ -52,6 +55,9 @@ export const usePermissionStore = defineStore({
     frontMenuList: [],
   }),
   getters: {
+    getSuperRole(): string {
+      return this.superRole;
+    },
     getPermCodeList(): string[] | number[] {
       return this.permCodeList;
     },
@@ -69,6 +75,10 @@ export const usePermissionStore = defineStore({
     },
   },
   actions: {
+    setSuperRole(role: string) {
+      this.superRole = role;
+    },
+
     setPermCodeList(codeList: string[]) {
       this.permCodeList = codeList;
     },
@@ -96,7 +106,8 @@ export const usePermissionStore = defineStore({
       this.lastBuildMenuTime = 0;
     },
     async changePermissionCode() {
-      const codeList = await getPermCode();
+      const { superRole, codeList } = await getPermCode();
+      this.setSuperRole(superRole);
       this.setPermCodeList(codeList);
     },
     async buildRoutesAction(): Promise<AppRouteRecordRaw[]> {

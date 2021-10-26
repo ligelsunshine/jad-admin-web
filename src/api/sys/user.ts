@@ -17,6 +17,11 @@ enum Api {
   GetListPage = '/sys/user/get/page',
 }
 
+interface PermCode {
+  superRole: string;
+  codeList: string[];
+}
+
 /**
  * @description: user login api
  */
@@ -40,8 +45,16 @@ export function getUserInfo() {
   return defHttp.get({ url: Api.GetUserInfo });
 }
 
-export function getPermCode() {
-  return defHttp.get<string[]>({ url: Api.GetPermCode });
+export async function getPermCode(): Promise<PermCode> {
+  const permCode: PermCode = {
+    superRole: '',
+    codeList: [],
+  };
+  const response = await defHttp.get({ url: Api.GetPermCode });
+  const data = response.data?.data;
+  permCode.superRole = data?.superRole;
+  permCode.codeList = data?.codeList;
+  return permCode;
 }
 
 export function doLogout() {

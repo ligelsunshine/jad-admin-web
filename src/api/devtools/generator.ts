@@ -108,7 +108,8 @@ export const getModuleApi = async () => {
  * 获取本地路径
  */
 export const getLocalPathApi = async (param: { path: string }) => {
-  const response = await defHttp.get({ url: Api.GetLocalPath + '?path=' + param.path });
+  const path = encodeURIComponent(param.path);
+  const response = await defHttp.get({ url: Api.GetLocalPath + '?path=' + path });
   return response.data?.data;
 };
 
@@ -116,7 +117,8 @@ export const getLocalPathApi = async (param: { path: string }) => {
  * 判断是否是路径
  */
 export const isDirectoryApi = async (param: { path: string }) => {
-  const response = await defHttp.get({ url: Api.IsDirectory + '?path=' + param.path });
+  const path = encodeURIComponent(param.path);
+  const response = await defHttp.get({ url: Api.IsDirectory + '?path=' + path });
   return response.data?.data;
 };
 
@@ -124,7 +126,8 @@ export const isDirectoryApi = async (param: { path: string }) => {
  * 获取上级路径
  */
 export const getParentPathApi = async (param: { path: string }) => {
-  const response = await defHttp.get({ url: Api.GetParentPath + '?path=' + param.path });
+  const path = encodeURIComponent(param.path);
+  const response = await defHttp.get({ url: Api.GetParentPath + '?path=' + path });
   return response.data?.data;
 };
 

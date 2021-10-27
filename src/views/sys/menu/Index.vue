@@ -27,7 +27,10 @@
       </Alert>
     </template>
     <Row :gutter="[16, 16]">
-      <Col :span="10">
+      <Col
+        :span="10"
+        style="max-height: calc(100vh - 210px); overflow-y: scroll; overflow-x: hidden !important"
+      >
         <Card @contextmenu="handleContext">
           <BasicTree
             title="菜单列表"

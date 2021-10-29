@@ -178,6 +178,7 @@
         getPicCaptcha().then((res) => {
           state.picCaptcha = res.data.data.codeImage;
           formData.codeKey = res.data.data.codeKey;
+          formData.codeValue = '';
         });
       }
 

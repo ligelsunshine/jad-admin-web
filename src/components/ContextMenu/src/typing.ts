@@ -10,6 +10,8 @@ export interface ContextMenuItem {
   handler?: Fn;
   divider?: boolean;
   children?: ContextMenuItem[];
+  auth?: string;
+  ifShow?: boolean | (() => boolean);
 }
 export interface CreateContextOptions {
   event: MouseEvent;

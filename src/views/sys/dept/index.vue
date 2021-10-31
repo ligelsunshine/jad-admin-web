@@ -2,7 +2,9 @@
   <div>
     <BasicTable @register="registerTable" @fetch-success="onFetchSuccess" @edit-end="handleEditEnd">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate"> 新增部门 </a-button>
+        <a-button v-auth="'sys:dept:save'" type="primary" @click="handleCreate">
+          新增部门
+        </a-button>
         <div class="table-settings-arrow">
           <div @click="collapse" class="collapse-and-expand">
             <span class="iconify" data-icon="mdi:arrow-collapse-vertical"></span>
@@ -19,11 +21,13 @@
               icon: 'ic:baseline-add',
               onClick: handleCreate.bind(null, record),
               tooltip: '添加子部门',
+              auth: 'sys:dept:save',
             },
             {
               icon: 'clarity:note-edit-line',
               onClick: handleEdit.bind(null, record),
               tooltip: '编辑',
+              auth: 'sys:dept:update',
             },
             {
               icon: 'ant-design:delete-outlined',
@@ -33,6 +37,7 @@
                 confirm: handleDelete.bind(null, record),
               },
               tooltip: '删除',
+              auth: 'sys:dept:delete',
             },
           ]"
           :dropDownActions="[
@@ -44,6 +49,7 @@
                 title: '是否确认删除？',
                 confirm: handleDeleteChildren.bind(null, record),
               },
+              auth: 'sys:dept:delete',
             },
           ]"
         />
@@ -56,17 +62,19 @@
   import { defineComponent, nextTick } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useModal } from '/@/components/Modal';
-  import DeptModal from './DeptModal.vue';
-  import { columns, searchFormSchema } from './dept.data';
+  import { usePermission } from '/@/hooks/web/usePermission';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { deleteDept, deleteDeptChildren, getDeptTree, updateDept } from '/@/api/sys/dept';
+  import DeptModal from './DeptModal.vue';
 
-  const { createMessage } = useMessage();
+  import { deleteDept, deleteDeptChildren, getDeptTree, updateDept } from '/@/api/sys/dept';
+  import { columns, searchFormSchema } from './dept.data';
 
   export default defineComponent({
     name: 'DeptManagement',
     components: { BasicTable, DeptModal, TableAction },
     setup() {
+      const { hasPermission } = usePermission();
+      const { createMessage } = useMessage();
       const [registerModal, { openModal }] = useModal();
       const [registerTable, { reload, expandAll, collapseAll }] = useTable({
         title: '部门列表',
@@ -95,6 +103,10 @@
           dataIndex: 'action',
           slots: { customRender: 'action' },
           fixed: 'right',
+          ifShow: () =>
+            hasPermission('sys:dept:save') ||
+            hasPermission('sys:dept:update') ||
+            hasPermission('sys:dept:delete'),
         },
       });
 

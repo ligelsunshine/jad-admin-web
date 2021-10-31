@@ -2,7 +2,9 @@
   <div>
     <BasicTable @register="registerTable">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate"> 新增角色 </a-button>
+        <a-button type="primary" @click="handleCreate" v-auth="'sys:role:save'">
+          新增角色
+        </a-button>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -11,11 +13,13 @@
               icon: 'clarity:note-edit-line',
               onClick: handleEdit.bind(null, record),
               tooltip: '编辑',
+              auth: 'sys:role:update',
             },
             {
               icon: 'clarity:menu-line',
               onClick: handleMenu.bind(null, record),
               tooltip: '分配菜单权限',
+              auth: 'sys:role:assignPermissions',
             },
             {
               icon: 'ant-design:delete-outlined',
@@ -25,6 +29,7 @@
                 confirm: handleDelete.bind(null, record),
               },
               tooltip: '删除',
+              auth: 'sys:role:delete',
             },
           ]"
         />
@@ -43,6 +48,7 @@
   import { columns, searchFormSchema } from './role.data';
   import { deleteRole, getRoleListPage } from '/@/api/sys/role';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { usePermission } from '/@/hooks/web/usePermission';
 
   const { createMessage } = useMessage();
 
@@ -50,6 +56,7 @@
     name: 'RoleManagement',
     components: { MenuDrawer, BasicTable, RoleDrawer, TableAction },
     setup() {
+      const { hasPermission } = usePermission();
       const [registerRoleDrawer, { openDrawer: openRoleDrawer }] = useDrawer();
       const [registerMenuDrawer, { openDrawer: openMenuDrawer }] = useDrawer();
       const [registerTable, { reload }] = useTable({
@@ -72,6 +79,10 @@
           dataIndex: 'action',
           slots: { customRender: 'action' },
           fixed: 'right',
+          ifShow: () =>
+            hasPermission('sys:role:update') ||
+            hasPermission('sys:role:assignPermissions') ||
+            hasPermission('sys:role:delete'),
         },
       });
 

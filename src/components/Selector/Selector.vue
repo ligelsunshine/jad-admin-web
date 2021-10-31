@@ -97,25 +97,32 @@
         await handlePathIn(data?.value);
       });
       async function handlePathIn(path: string) {
-        spinning.value = true;
-        pathData.shortcuts = await getLocalPathApi({ path: '' });
-        if (path) {
-          const isDirectory = await isDirectoryApi({ path: path });
-          if (isDirectory) {
-            pathData.addrPath = path;
-            pathData.paths = await getLocalPathApi({ path: path });
-          } else {
-            pathData.addrPath = pathData.shortcuts[pathData.shortcuts.length - 1].path;
-            pathData.paths = await getLocalPathApi({ path: pathData.addrPath });
+        try {
+          spinning.value = true;
+          pathData.shortcuts = await getLocalPathApi({ path: '' });
+          if (path) {
+            const isDirectory = await isDirectoryApi({ path: path });
+            if (isDirectory) {
+              pathData.addrPath = path;
+              pathData.paths = await getLocalPathApi({ path: path });
+            } else {
+              pathData.addrPath = pathData.shortcuts[pathData.shortcuts.length - 1].path;
+              pathData.paths = await getLocalPathApi({ path: pathData.addrPath });
+            }
           }
+        } finally {
+          spinning.value = false;
         }
-        spinning.value = false;
       }
       async function handlePathParent(path: string) {
-        spinning.value = true;
-        const parent = await getParentPathApi({ path: path });
-        spinning.value = false;
-        await handlePathIn(parent);
+        try {
+          spinning.value = true;
+          const parent = await getParentPathApi({ path: path });
+          spinning.value = false;
+          await handlePathIn(parent);
+        } catch (e) {
+          spinning.value = false;
+        }
       }
       async function handleSubmit() {
         if (!pathData.addrPath) {

@@ -29,7 +29,7 @@ import { useMessage } from '/@/hooks/web/useMessage';
 
 interface PermissionState {
   // super role
-  superRole: string;
+  superRole: string | number;
   // Permission code list
   permCodeList: string[] | number[];
   // Whether the route has been dynamically added
@@ -55,7 +55,7 @@ export const usePermissionStore = defineStore({
     frontMenuList: [],
   }),
   getters: {
-    getSuperRole(): string {
+    getSuperRole(): string | number {
       return this.superRole;
     },
     getPermCodeList(): string[] | number[] {

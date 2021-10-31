@@ -6,7 +6,9 @@
     @back="goBack"
   >
     <template #extra>
-      <a-button type="link" @click="handleViewJson">View JSON</a-button>
+      <a-button v-auth="'devtools:generator:get'" type="link" @click="handleViewJson"
+        >View JSON</a-button
+      >
       <a-button shape="round" size="large" @click="handleGenerateModal">
         <Icon icon="cib:visual-studio-code" :size="20" />
         Generator
@@ -21,7 +23,14 @@
         :schema="descriptionSchema"
       />
       <template #extra>
-        <a-button type="link" class="ml-2" @click="handleEditGenerate">编辑</a-button>
+        <a-button
+          v-auth="'devtools:generator:update'"
+          type="link"
+          class="ml-2"
+          @click="handleEditGenerate"
+        >
+          编辑
+        </a-button>
       </template>
     </a-card>
     <a-card title="Field Schema" :bordered="false">
@@ -33,6 +42,7 @@
                 icon: 'clarity:note-edit-line',
                 onClick: handleEditField.bind(null, record),
                 tooltip: '编辑',
+                auth: 'devtools:generator:updateField',
               },
               {
                 icon: 'ant-design:delete-outlined',
@@ -42,12 +52,21 @@
                   confirm: handleDeleteField.bind(null, record),
                 },
                 tooltip: '删除',
+                auth: 'devtools:generator:deleteField',
               },
             ]"
           />
         </template>
       </BasicTable>
-      <a-button block class="mt-5" type="dashed" @click="handleAddField"> 新增字段 </a-button>
+      <a-button
+        v-auth="'devtools:generator:saveField'"
+        block
+        class="mt-5"
+        type="dashed"
+        @click="handleAddField"
+      >
+        新增字段
+      </a-button>
       <ModelDrawer @register="registerGenerateDrawer" @success="refreshPage" />
       <FieldDrawer @register="registerDrawer" @success="handleSuccess" />
       <GenerateModal @register="registerModal" />

@@ -1,7 +1,7 @@
 <template>
   <PageWrapper title="菜单管理">
     <template #headerContent>
-      <Alert type="info" show-icon banner closable message="说明：">
+      <Alert type="info" show-icon banner closable message="说明：" v-auth="'showDesc'">
         <template #description>
           <ul style="list-style: outside">
             <li>
@@ -18,7 +18,7 @@
                 </li>
                 <li>
                   <Icon :icon="handleRenderIcon({ type: 2 })" />
-                  按钮：叶子节点，通常用于绑定接口权限使用
+                  按钮：叶子节点，通常用于绑定接口权限、按钮权限、组件权限使用
                 </li>
               </ul>
             </li>
@@ -46,8 +46,8 @@
           />
         </Card>
       </Col>
-      <Col :span="14">
-        <Card title="菜单预览">
+      <Col :span="14" v-auth="'sys:menu:get'">
+        <Card title="菜单详情">
           <Spin :spinning="spinning">
             <Empty v-if="!menu" />
             <Description
@@ -138,22 +138,26 @@
             label: '编辑',
             icon: 'clarity:note-edit-line',
             handler: () => handleEdit(),
+            auth: 'sys:menu:update',
           },
           {
             label: '删除',
             icon: 'ant-design:delete-outlined',
             divider: true,
             handler: () => handleDelete(node.eventKey),
+            auth: 'sys:menu:delete',
           },
           {
             label: '添加子菜单',
             icon: 'ant-design:plus-square-filled',
             handler: () => handleCreate(node),
+            auth: 'sys:menu:save',
           },
           {
             label: '删除子菜单',
             icon: 'ant-design:delete-filled',
             handler: () => handleDeleteChildren(node.eventKey),
+            auth: 'sys:menu:delete',
           },
         ];
       }
@@ -183,6 +187,7 @@
               label: '添加菜单',
               icon: 'ant-design:plus-outlined',
               handler: () => handleCreate(),
+              auth: 'sys:menu:save',
             },
           ],
         });

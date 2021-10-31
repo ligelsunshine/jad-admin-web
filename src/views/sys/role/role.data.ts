@@ -1,8 +1,11 @@
+import { h } from 'vue';
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
-import { h } from 'vue';
+import { usePermission } from '/@/hooks/web/usePermission';
 import { Switch } from 'ant-design-vue';
+
 import { updateRoleStatus } from '/@/api/sys/role';
+const { hasPermission } = usePermission();
 
 export const columns: BasicColumn[] = [
   {
@@ -46,6 +49,7 @@ export const columns: BasicColumn[] = [
         },
       });
     },
+    ifShow: () => hasPermission('sys:role:update:status'),
   },
   {
     title: '描述',

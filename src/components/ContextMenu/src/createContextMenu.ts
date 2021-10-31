@@ -1,7 +1,8 @@
 import contextMenuVue from './ContextMenu.vue';
-import { isClient } from '/@/utils/is';
-import { CreateContextOptions, ContextMenuProps } from './typing';
+import { isBoolean, isClient, isFunction } from '/@/utils/is';
+import { CreateContextOptions, ContextMenuProps, ContextMenuItem } from './typing';
 import { createVNode, render } from 'vue';
+import { usePermission } from '/@/hooks/web/usePermission';
 
 const menuManager: {
   domList: Element[];
@@ -11,12 +12,34 @@ const menuManager: {
   resolve: () => {},
 };
 
+const { hasPermission } = usePermission();
 export const createContextMenu = function (options: CreateContextOptions) {
   const { event } = options || {};
 
   event && event?.preventDefault();
 
   if (!isClient) {
+    return;
+  }
+
+  if (options.items) {
+    const items: ContextMenuItem[] = [];
+    options.items.forEach((item) => {
+      const ifShow = item.ifShow;
+      if (item.auth && hasPermission(item.auth)) {
+        items.push(item);
+      } else if (ifShow) {
+        if (isBoolean(ifShow) && ifShow) {
+          items.push(item);
+        }
+        if (isFunction(ifShow) && ifShow()) {
+          items.push(item);
+        }
+      }
+    });
+    options.items = items;
+  }
+  if (!options.items || options.items.length == 0) {
     return;
   }
   return new Promise((resolve) => {

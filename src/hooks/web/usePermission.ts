@@ -72,18 +72,26 @@ export function usePermission() {
     }
 
     if (PermissionModeEnum.BACK === permMode) {
-      const superRole = permissionStore.getSuperRole;
       const allCodeList = permissionStore.getPermCodeList as string[];
+      // 是否超级管理员
+      if (hasSuperRole()) {
+        return true;
+      }
       if (!isArray(value)) {
-        // 是否超级管理员
-        if (allCodeList.includes(superRole)){
-          return true;
-        }
         return allCodeList.includes(value);
       }
       return (intersection(value, allCodeList) as string[]).length > 0;
     }
     return true;
+  }
+
+  /**
+   * 是否拥有超级管理员角色
+   */
+  function hasSuperRole(): boolean {
+    const superRole = permissionStore.getSuperRole as string;
+    const allCodeList = permissionStore.getPermCodeList as string[];
+    return allCodeList.includes(superRole);
   }
 
   /**
@@ -111,5 +119,5 @@ export function usePermission() {
     resume();
   }
 
-  return { changeRole, hasPermission, togglePermissionMode, refreshMenu };
+  return { changeRole, hasPermission, hasSuperRole, togglePermissionMode, refreshMenu };
 }

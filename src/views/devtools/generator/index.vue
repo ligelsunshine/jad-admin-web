@@ -1,9 +1,15 @@
 <template>
   <PageWrapper dense contentFullHeight contentClass="flex">
-    <ModuleTree class="w-1/4 xl:w-1/5" @select="handleSelect" />
+    <ModuleTree
+      v-auth="'devtools:generator:getModule'"
+      class="w-1/4 xl:w-1/5"
+      @select="handleSelect"
+    />
     <BasicTable @register="registerTable" class="w-3/4 xl:w-4/5" :searchInfo="searchInfo">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate"> 新增Model </a-button>
+        <a-button v-auth="'devtools:generator:save'" type="primary" @click="handleCreate">
+          新增Model
+        </a-button>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -12,11 +18,13 @@
               icon: 'clarity:note-edit-line',
               onClick: handleEdit.bind(null, record),
               tooltip: '编辑',
+              auth: 'devtools:generator:update',
             },
             {
               icon: 'clarity:design-line',
               onClick: handleDesign.bind(null, record),
               tooltip: '设计',
+              auth: 'devtools:generator:design',
             },
             {
               icon: 'ant-design:delete-outlined',
@@ -26,6 +34,7 @@
                 confirm: handleDelete.bind(null, record),
               },
               tooltip: '删除',
+              auth: 'devtools:generator:delete',
             },
           ]"
         />
@@ -36,23 +45,25 @@
 </template>
 <script lang="ts">
   import { defineComponent, reactive } from 'vue';
-  import { PageWrapper } from '/@/components/Page';
   import { BasicTable, useTable, TableAction, beforeFetchFun } from '/@/components/Table';
-  import { columns, searchFormSchema } from '/@/views/devtools/generator/generator.data';
-  import { deleteApi, getPageApi } from '/@/api/devtools/generator';
-  import { useMessage } from '/@/hooks/web/useMessage';
-  import ModuleTree from '/@/views/devtools/generator/ModuleTree.vue';
-  import ModelDrawer from '/@/views/devtools/generator/ModelDrawer.vue';
+  import { PageWrapper } from '/@/components/Page';
   import { useDrawer } from '/@/components/Drawer';
+  import { usePermission } from '/@/hooks/web/usePermission';
+  import { useMessage } from '/@/hooks/web/useMessage';
   import { useGo } from '/@/hooks/web/usePage';
 
-  const { createMessage } = useMessage();
+  import { columns, searchFormSchema } from '/@/views/devtools/generator/generator.data';
+  import ModuleTree from '/@/views/devtools/generator/ModuleTree.vue';
+  import ModelDrawer from '/@/views/devtools/generator/ModelDrawer.vue';
+  import { deleteApi, getPageApi } from '/@/api/devtools/generator';
 
   export default defineComponent({
     name: 'Index',
     components: { ModelDrawer, PageWrapper, ModuleTree, BasicTable, TableAction },
     setup() {
       const go = useGo();
+      const { createMessage } = useMessage();
+      const { hasPermission } = usePermission();
       const [registerDrawer, { openDrawer: openDrawer }] = useDrawer();
       const searchInfo = reactive<Recordable>({});
       const [registerTable, { reload }] = useTable({
@@ -75,7 +86,10 @@
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
-          // fixed: 'right',
+          ifShow: () =>
+            hasPermission('devtools:generator:update') ||
+            hasPermission('devtools:generator:design') ||
+            hasPermission('devtools:generator:delete'),
         },
       });
 

@@ -86,7 +86,7 @@
   import MenuDrawer from '/@/views/sys/menu/MenuDrawer.vue';
 
   export default defineComponent({
-    name: 'Index',
+    name: '1455552881344921618',
     components: {
       Icon,
       MenuDrawer,

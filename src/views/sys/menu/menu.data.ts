@@ -190,6 +190,13 @@ export const formSchema: FormSchema[] = [
     show: ({ values }) => !isButton(values.type),
   },
   {
+    field: 'name',
+    label: '路由名称',
+    component: 'Input',
+    show: ({ values }) => isMenu(values.type),
+    helpMessage: '路由名称尽量唯一，不写默认自动生成，可以通过组件名称做页面缓存（切换标签页不刷新页面）',
+  },
+  {
     field: 'component',
     label: '组件路径',
     component: 'Input',
@@ -307,6 +314,11 @@ export const descSchema: DescItem[] = [
     field: 'path',
     label: '路由地址',
     show: (record) => !isButton(record.type),
+  },
+  {
+    field: 'name',
+    label: '路由名称',
+    show: (record) => isMenu(record.type),
   },
   {
     field: 'component',

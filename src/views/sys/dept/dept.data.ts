@@ -2,6 +2,23 @@ import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Tag } from 'ant-design-vue';
+import { DescItem } from '/@/components/Description';
+
+export enum Status {
+  ENABLE = 0,
+  DISABLE = 1,
+}
+
+export function renderOfStatus(status) {
+  switch (status) {
+    case Status.ENABLE:
+      return '启用';
+    case Status.DISABLE:
+      return '停用';
+    default:
+      return 'undefined';
+  }
+}
 
 export const columns: BasicColumn[] = [
   {
@@ -125,5 +142,27 @@ export const formSchema: FormSchema[] = [
     label: '备注',
     field: 'remark',
     component: 'InputTextArea',
+  },
+];
+
+export const descSchema: DescItem[] = [
+  {
+    field: 'name',
+    label: '部门名称',
+    span: 2,
+  },
+  {
+    field: 'code',
+    label: '编码',
+    span: 2,
+  },
+  {
+    field: 'status',
+    label: '状态',
+    render: (val) => renderOfStatus(val),
+  },
+  {
+    field: 'orderNo',
+    label: '排序',
   },
 ];

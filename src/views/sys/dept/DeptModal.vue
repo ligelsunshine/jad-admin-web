@@ -59,7 +59,7 @@
             await saveDept(values);
           }
           closeModal();
-          emit('success');
+          emit('success', { isUpdate: unref(isUpdate), record: values });
         } finally {
           setModalProps({ confirmLoading: false });
         }

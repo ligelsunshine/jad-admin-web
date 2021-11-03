@@ -64,10 +64,10 @@
   import { useModal } from '/@/components/Modal';
   import { usePermission } from '/@/hooks/web/usePermission';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import DeptModal from './DeptModal.vue';
 
   import { deleteDept, deleteDeptChildren, getDeptTree, updateDept } from '/@/api/sys/dept';
   import { columns, searchFormSchema } from './dept.data';
+  import DeptModal from './DeptModal.vue';
 
   export default defineComponent({
     name: 'DeptManagement',

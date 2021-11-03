@@ -1,58 +1,41 @@
 <template>
-  <PageWrapper title="菜单管理">
+  <PageWrapper title="部门管理">
     <template #headerContent>
       <Alert type="info" show-icon banner closable message="说明：">
         <template #description>
-          <ul style="list-style: outside">
-            <li>
-              右击空白处新增 '
-              <span style="color: red">根菜单</span>
-              '，右击菜单列表可操作菜单
-            </li>
-            <li>
-              <ul>
-                <li><Icon :icon="handleRenderIcon({ type: 0 })" /> 目录：下级只能为菜单或按钮</li>
-                <li>
-                  <Icon :icon="handleRenderIcon({ type: 1 })" />
-                  菜单：下级只能为菜单或按钮，通常用于route指向前端页面或作为外链使用
-                </li>
-                <li>
-                  <Icon :icon="handleRenderIcon({ type: 2 })" />
-                  按钮：叶子节点，通常用于绑定接口权限、按钮权限、组件权限使用
-                </li>
-              </ul>
-            </li>
-          </ul>
+          右击空白处新增<span style="color: red">根节点</span>，右击树节点可操作<span
+            style="color: red"
+            >树节点</span
+          >
         </template>
       </Alert>
     </template>
     <Row :gutter="[16, 16]">
       <Col
-        :span="10"
+        :span="12"
         style="max-height: calc(100vh - 210px); overflow-y: scroll; overflow-x: hidden !important"
       >
         <Card @contextmenu="handleContext">
           <BasicTree
-            title="菜单列表"
-            ref="menuTreeRef"
-            :treeData="menuTreeData"
-            :replaceFields="{ title: 'title', key: 'id' }"
+            title="部门列表"
+            ref="treeRef"
+            :treeData="treeData"
+            :replaceFields="{ title: 'name', key: 'id' }"
             :beforeRightClick="getRightMenuList"
-            :renderIcon="handleRenderIcon"
             @select="handleSelect"
             search
             toolbar
           />
         </Card>
       </Col>
-      <Col :span="14" v-auth="'sys:menu:get'">
-        <Card title="菜单详情">
+      <Col :span="12" v-auth="'sys:dept:get'">
+        <Card title="部门详情">
           <Spin :spinning="spinning">
-            <Empty v-if="!menu" />
+            <Empty v-if="!data" />
             <Description
               v-else
               size="middle"
-              :data="menu"
+              :data="data"
               :schema="descSchema"
               :bordered="true"
               :column="2"
@@ -62,33 +45,26 @@
         </Card>
       </Col>
     </Row>
-    <MenuDrawer @register="registerDrawer" @success="handleSuccess" />
+    <DeptModal @register="registerModal" @success="handleSuccess" />
   </PageWrapper>
 </template>
 <script lang="ts">
   import { defineComponent, ref, unref } from 'vue';
   import { BasicTree, ContextMenuItem, TreeItem, TreeActionType } from '/@/components/Tree/index';
   import { Description } from '/@/components/Description';
-  import Icon from '/@/components/Icon/src/Icon.vue';
   import { PageWrapper } from '/@/components/Page';
-  import { useDrawer } from '/@/components/Drawer';
+  import { useModal } from '/@/components/Modal';
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
   import { Row, Col, Card, Empty, Spin, Alert } from 'ant-design-vue';
 
-  import {
-    deleteMenu,
-    deleteMenuChildren,
-    getMenu,
-    getUserMenuTreeAsPromise,
-  } from '/@/api/sys/menu';
-  import { descSchema, getMenuType } from '/@/views/sys/menu/menu.data';
-  import MenuDrawer from '/@/views/sys/menu/MenuDrawer.vue';
+  import { deleteDept, deleteDeptChildren, getDept, getDeptTreeAsPromise } from '/@/api/sys/dept';
+  import { descSchema } from '/@/views/sys/dept/dept.data';
+  import DeptModal from './DeptModal.vue';
 
   export default defineComponent({
-    name: '1455552881344921618',
+    name: '1455552881344921682',
     components: {
-      Icon,
-      MenuDrawer,
+      DeptModal,
       BasicTree,
       Description,
       PageWrapper,
@@ -101,28 +77,28 @@
     },
     setup() {
       const spinning = ref<boolean>(false);
-      const menuTreeRef = ref<Nullable<TreeActionType>>(null);
-      const menuTreeData = ref<TreeItem[]>([]);
-      const menu = ref<any>();
-      const [registerDrawer, { openDrawer }] = useDrawer();
+      const treeRef = ref<Nullable<TreeActionType>>(null);
+      const treeData = ref<TreeItem[]>([]);
+      const data = ref<any>();
+      const [registerModal, { openModal }] = useModal();
       const [createContextMenu] = useContextMenu();
-      getMenuTreeData();
+      getTreeData();
       /**
        * 获取树对象
        */
       function getTree() {
-        const tree = unref(menuTreeRef);
+        const tree = unref(treeRef);
         if (!tree) {
           throw new Error('tree is null!');
         }
         return tree;
       }
       /**
-       * 获取菜单数据
+       * 获取树形数据
        */
-      function getMenuTreeData() {
-        getUserMenuTreeAsPromise().then((response) => {
-          menuTreeData.value = response.data?.data;
+      function getTreeData() {
+        getDeptTreeAsPromise().then((response) => {
+          treeData.value = response.data?.data;
         });
       }
       /**
@@ -137,26 +113,26 @@
             label: '编辑',
             icon: 'clarity:note-edit-line',
             handler: () => handleEdit(),
-            auth: 'sys:menu:update',
+            auth: 'sys:dept:update',
           },
           {
             label: '删除',
             icon: 'ant-design:delete-outlined',
             divider: true,
             handler: () => handleDelete(node.eventKey),
-            auth: 'sys:menu:delete',
+            auth: 'sys:dept:delete',
           },
           {
-            label: '添加子菜单',
+            label: '添加子部门',
             icon: 'ant-design:plus-square-filled',
             handler: () => handleCreate(node),
-            auth: 'sys:menu:save',
+            auth: 'sys:dept:save',
           },
           {
-            label: '删除子菜单',
+            label: '删除子部门',
             icon: 'ant-design:delete-filled',
             handler: () => handleDeleteChildren(node.eventKey),
-            auth: 'sys:menu:delete',
+            auth: 'sys:dept:delete',
           },
         ];
       }
@@ -167,9 +143,9 @@
       async function handleSelect(key) {
         spinning.value = true;
         if (key.length > 0) {
-          menu.value = await getMenu(key[0]);
+          data.value = await getDept(key[0]);
         } else {
-          menu.value = null;
+          data.value = null;
         }
         spinning.value = false;
       }
@@ -183,10 +159,10 @@
           event: e,
           items: [
             {
-              label: '添加菜单',
+              label: '添加部门/公司',
               icon: 'ant-design:plus-outlined',
               handler: () => handleCreate(),
-              auth: 'sys:menu:save',
+              auth: 'sys:dept:save',
             },
           ],
         });
@@ -194,48 +170,44 @@
       function handleCreate(id?: string) {
         let record = null;
         if (id) {
-          record = menu.value;
+          record = data.value;
         }
-        openDrawer(true, {
+        openModal(true, {
           record: record,
           isUpdate: false,
         });
       }
       function handleEdit() {
-        openDrawer(true, {
-          record: menu.value,
+        openModal(true, {
+          record: data.value,
           isUpdate: true,
         });
       }
       async function handleDelete(id: string) {
-        await deleteMenu(id);
+        await deleteDept(id);
         handleSuccess();
-        menu.value = null;
+        data.value = null;
       }
       async function handleDeleteChildren(id: string) {
-        await deleteMenuChildren(id);
+        await deleteDeptChildren(id);
         handleSuccess();
       }
-      function handleRenderIcon({ type }) {
-        return getMenuType(type)?.icon;
-      }
       function handleSuccess(response?: { isUpdate; record }) {
-        getMenuTreeData();
+        getTreeData();
         if (response?.isUpdate) {
-          menu.value = response?.record;
+          data.value = response?.record;
         }
       }
       return {
-        registerDrawer,
+        registerModal,
         spinning,
-        menuTreeRef,
-        menuTreeData,
-        menu,
+        treeRef,
+        treeData,
+        data,
         descSchema,
         getRightMenuList,
         handleSelect,
         handleContext,
-        handleRenderIcon,
         handleSuccess,
       };
     },

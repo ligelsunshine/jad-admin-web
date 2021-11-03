@@ -67,7 +67,7 @@
             await saveMenu(values);
           }
           closeDrawer();
-          emit('success');
+          emit('success', { isUpdate: unref(isUpdate), record: values });
         } finally {
           setDrawerProps({ confirmLoading: false });
         }

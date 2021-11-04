@@ -124,7 +124,6 @@
       const enumVals: EnumVal[] = reactive([]);
       const rules: Rule[] = reactive([]);
 
-
       const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
         labelWidth: 120,
         schemas: fieldFormSchema,

@@ -504,13 +504,6 @@ export const fieldFormSchema: FormSchema[] = [
     defaultValue: 'STRING',
   },
   {
-    field: 'enumVal',
-    label: '枚举值',
-    component: 'Input',
-    slot: 'EnumValSlot',
-    show: ({ values }) => isEnum(values.type),
-  },
-  {
     field: 'defaultVal',
     label: '默认值',
     component: 'Input',
@@ -540,12 +533,6 @@ export const fieldFormSchema: FormSchema[] = [
     defaultValue: false,
   },
   {
-    field: 'rules',
-    label: '自定义校验规则',
-    component: 'Input',
-    slot: 'RulesSlot',
-  },
-  {
     field: 'presents',
     label: '字段控制',
     component: 'Select',
@@ -560,5 +547,28 @@ export const fieldFormSchema: FormSchema[] = [
       ],
     },
     defaultValue: ['LIST', 'ADD_FORM', 'EDIT_FORM', 'DETAIL'],
+  },
+  {
+    field: 'enumVal',
+    label: '枚举值',
+    component: 'Input',
+    slot: 'EnumValSlot',
+    show: ({ values }) => isEnum(values.type),
+    colProps: {
+      lg: {
+        span: 24,
+      },
+    },
+  },
+  {
+    field: 'rules',
+    label: '自定义校验规则',
+    component: 'Input',
+    slot: 'RulesSlot',
+    colProps: {
+      lg: {
+        span: 24,
+      },
+    },
   },
 ];

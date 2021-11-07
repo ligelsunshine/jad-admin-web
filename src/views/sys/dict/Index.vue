@@ -12,7 +12,7 @@
             <Icon icon="ant-design:delete-outlined" />批量删除
           </PopConfirmButton>
         </Authority>
-        <a-button auth="sys:dict:save" type="primary" @click="handleCreate">
+        <a-button v-auth="'sys:dict:save'" type="primary" @click="handleCreate">
           <Icon icon="clarity:add-line" />新增
         </a-button>
       </template>

@@ -2,7 +2,7 @@
   <div>
     <BasicTable @register="registerTable">
       <template #toolbar>
-        <a-button auth="sys:dictData:save" color="success" type="primary" @click="handleCreate">
+        <a-button v-auth="'sys:dictData:save'" color="success" type="primary" @click="handleCreate">
           <Icon icon="clarity:add-line" />添加
         </a-button>
       </template>

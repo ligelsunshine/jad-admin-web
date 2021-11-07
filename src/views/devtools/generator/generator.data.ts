@@ -555,9 +555,7 @@ export const fieldFormSchema: FormSchema[] = [
     slot: 'EnumValSlot',
     show: ({ values }) => isEnum(values.type),
     colProps: {
-      lg: {
-        span: 24,
-      },
+      lg: 24,
     },
   },
   {
@@ -566,9 +564,7 @@ export const fieldFormSchema: FormSchema[] = [
     component: 'Input',
     slot: 'RulesSlot',
     colProps: {
-      lg: {
-        span: 24,
-      },
+      lg: 24,
     },
   },
 ];

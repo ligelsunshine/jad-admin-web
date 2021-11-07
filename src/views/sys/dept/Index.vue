@@ -142,10 +142,9 @@
        */
       async function handleSelect(key) {
         spinning.value = true;
+        data.value = null;
         if (key.length > 0) {
           data.value = await getDept(key[0]);
-        } else {
-          data.value = null;
         }
         spinning.value = false;
       }

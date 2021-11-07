@@ -470,6 +470,8 @@ export function beforeFetchFun(params, searchFormSchema) {
         condition = 'EQ';
       } else if (item.component == 'Input') {
         condition = 'LIKE';
+      } else if (item.component == 'IDInput') {
+        condition = 'EQ';
       }
       if (params[item.field] === 'true' || params[item.field] === 'false') {
         const whereItem: WhereItem = {

@@ -1,6 +1,5 @@
 <template>
   <a-input
-    disabled
     :style="{ width }"
     :placeholder="t('component.icon.placeholder')"
     :class="prefixCls"

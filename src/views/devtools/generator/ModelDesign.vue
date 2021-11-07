@@ -184,8 +184,9 @@
           generatorId: id,
         });
       }
-      function handleEditFieldEnd({ record }: Recordable) {
-        updateFieldApi(id.value, record);
+      async function handleEditFieldEnd({ record }: Recordable) {
+        await updateFieldApi(id.value, record);
+        await reload();
       }
       async function handleDeleteField(record: Recordable) {
         await deleteFieldApi(id.value, record.id);

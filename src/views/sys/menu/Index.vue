@@ -166,10 +166,9 @@
        */
       async function handleSelect(key) {
         spinning.value = true;
+        menu.value = null;
         if (key.length > 0) {
           menu.value = await getMenu(key[0]);
-        } else {
-          menu.value = null;
         }
         spinning.value = false;
       }

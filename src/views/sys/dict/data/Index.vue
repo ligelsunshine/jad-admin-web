@@ -33,7 +33,7 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent } from 'vue';
+  import { defineComponent, watch } from 'vue';
   import { BasicTable, beforeFetchFun, TableAction, useTable } from '/@/components/Table';
   import { useDrawer } from '/@/components/Drawer';
   import Icon from '/@/components/Icon';
@@ -74,6 +74,13 @@
         },
       });
       const [registerDrawer, { openDrawer }] = useDrawer();
+      // 监听字典ID，重新请求字典数据
+      watch(
+        () => props.dictId,
+        () => {
+          reload();
+        }
+      );
 
       function handleCreate() {
         openDrawer(true, {

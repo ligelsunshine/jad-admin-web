@@ -56,6 +56,7 @@
   import { PopConfirmButton } from '/@/components/Button';
   import { useDrawer } from '/@/components/Drawer';
   import Icon from '/@/components/Icon';
+  import { usePermission } from '/@/hooks/web/usePermission';
   import { useMessage } from '/@/hooks/web/useMessage';
 
   import { deleteApi, deleteArrApi, getPageApi } from '/@/api/sys/dict/Dict.api';
@@ -75,6 +76,7 @@
       TableAction,
     },
     setup() {
+      const { hasPermission } = usePermission();
       const message = useMessage().createMessage;
       const deleteArrLoading = ref(false);
       const [registerTable, { reload, getSelectRowKeys, setSelectedRowKeys }] = useTable({
@@ -99,6 +101,10 @@
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
+          ifShow: () =>
+            hasPermission('sys:dict:update') ||
+            hasPermission('sys:dict:dictDataMgr') ||
+            hasPermission('sys:dict:delete'),
         },
       });
       const [registerDrawer, { openDrawer }] = useDrawer();

@@ -37,6 +37,7 @@
   import { BasicTable, beforeFetchFun, TableAction, useTable } from '/@/components/Table';
   import { useDrawer } from '/@/components/Drawer';
   import Icon from '/@/components/Icon';
+  import { usePermission } from '/@/hooks/web/usePermission';
 
   import { deleteApi, getPageApi } from '/@/api/sys/dict/DictData.api';
   import { columns, searchFormSchema } from '/@/views/sys/dict/data/DictData.data';
@@ -56,6 +57,7 @@
       },
     },
     setup(props) {
+      const { hasPermission } = usePermission();
       const [registerTable, { reload }] = useTable({
         api: getPageApi,
         beforeFetch: (params) => {
@@ -71,6 +73,9 @@
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
+          ifShow: () =>
+            hasPermission('sys:dictData:update') ||
+            hasPermission('sys:dictData:delete')
         },
       });
       const [registerDrawer, { openDrawer }] = useDrawer();

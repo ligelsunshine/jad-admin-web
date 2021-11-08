@@ -2,7 +2,7 @@
   <BasicDrawer
     v-bind="$attrs"
     @register="registerDrawer"
-    title="字典数据管理"
+    title="字典数据"
     width="60%"
     :footer="null"
   >

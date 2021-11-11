@@ -51,6 +51,10 @@ export const createContextMenu = function (options: CreateContextOptions) {
       propsData.styles = options.styles;
     }
 
+    if (options.width) {
+      propsData.width = options.width;
+    }
+
     if (options.items) {
       propsData.items = options.items;
     }

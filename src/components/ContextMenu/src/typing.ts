@@ -14,6 +14,7 @@ export interface ContextMenuItem {
   ifShow?: boolean | (() => boolean);
 }
 export interface CreateContextOptions {
+  width?: number;
   event: MouseEvent;
   icon?: string;
   styles?: any;

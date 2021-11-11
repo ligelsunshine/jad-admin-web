@@ -1,7 +1,9 @@
 import { defHttp } from '/@/utils/http/axios';
+import qs from 'qs';
 
 enum Api {
   Save = '/sys/menu/save',
+  SaveAuthButton = '/sys/menu/saveAuthButton',
   Delete = '/sys/menu/delete',
   Update = '/sys/menu/update',
   Get = '/sys/menu/get',
@@ -15,16 +17,33 @@ export const saveMenu = (menu) => {
   return defHttp.post({ url: Api.Save, params: menu }, { isTransformResponse: true });
 };
 /**
+ * 添加
+ */
+export const saveAuthButton = (authButtonForm: {
+  modelName?: string;
+  authPrefix: string;
+  pid: string;
+}) => {
+  const params = qs.stringify(authButtonForm);
+  return defHttp.post({ url: Api.SaveAuthButton + '?' + params }, { isTransformResponse: true });
+};
+/**
  * 删除
  */
 export const deleteMenu = (id) => {
-  return defHttp.delete({ url: Api.Delete + '/' + id + '?includeSelf=true' }, { isTransformResponse: true });
+  return defHttp.delete(
+    { url: Api.Delete + '/' + id + '?includeSelf=true' },
+    { isTransformResponse: true }
+  );
 };
 /**
  * 删除子菜单
  */
 export const deleteMenuChildren = (id) => {
-  return defHttp.delete({ url: Api.Delete + '/' + id + '?includeSelf=false' }, { isTransformResponse: true });
+  return defHttp.delete(
+    { url: Api.Delete + '/' + id + '?includeSelf=false' },
+    { isTransformResponse: true }
+  );
 };
 /**
  * 修改

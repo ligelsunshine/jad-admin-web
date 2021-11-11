@@ -11,28 +11,30 @@ export interface MenuType {
   icon?: string;
   color?: string;
 }
-
+export const folderIcon = 'ant-design:folder-open-outlined';
+export const menuIcon = 'ant-design:file-text-outlined';
+export const buttonIcon = 'codicon:symbol-interface';
 export function getMenuType(type: number): MenuType {
   let menuType: MenuType = { type: type };
   if (type == 0) {
     menuType = {
       type: type,
       text: '目录',
-      icon: 'ant-design:folder-open-outlined',
+      icon: folderIcon,
       color: 'orange',
     };
   } else if (type == 1) {
     menuType = {
       type: type,
       text: '菜单',
-      icon: 'ant-design:file-text-outlined',
+      icon: menuIcon,
       color: 'green',
     };
   } else if (type == 2) {
     menuType = {
       type: type,
       text: '按钮',
-      icon: 'codicon:symbol-interface',
+      icon: buttonIcon,
       color: 'green',
     };
   }
@@ -103,8 +105,8 @@ export const columns: BasicColumn[] = [
 ];
 
 // const isDir = (type: number) => type === 0;
-const isMenu = (type: number) => type === 1;
-const isButton = (type: number) => type === 2;
+export const isMenu = (type: number) => type === 1;
+export const isButton = (type: number) => type === 2;
 
 export const searchFormSchema: FormSchema[] = [
   {

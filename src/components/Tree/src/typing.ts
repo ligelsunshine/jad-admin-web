@@ -44,6 +44,7 @@ export interface InsertNodeParams {
 }
 
 export interface ContextMenuOptions {
+  width?: number;
   icon?: string;
   styles?: any;
   items?: ContextMenuItem[];

@@ -63,19 +63,46 @@
       </Col>
     </Row>
     <MenuDrawer @register="registerDrawer" @success="handleSuccess" />
+    <Modal
+      :visible="visible"
+      :centered="true"
+      :confirmLoading="loading"
+      title="请输入"
+      @ok="handleOk"
+      @cancel="handleCancel"
+      style="padding: 10px"
+    >
+      <Input v-model:value="authButtonForm.modelName">
+        <template #addonBefore>
+          <div style="width: 80px; text-align: right">菜单名:</div>
+        </template>
+      </Input>
+      <Input v-model:value="authButtonForm.authPrefix">
+        <template #addonBefore>
+          <div style="width: 80px; text-align: right">权限码前缀:</div>
+        </template>
+      </Input>
+    </Modal>
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, unref } from 'vue';
-  import { BasicTree, ContextMenuItem, TreeItem, TreeActionType } from '/@/components/Tree/index';
+  import { defineComponent, reactive, ref, unref } from 'vue';
+  import {
+    BasicTree,
+    TreeItem,
+    TreeActionType,
+    ContextMenuOptions,
+  } from '/@/components/Tree/index';
   import { Description } from '/@/components/Description';
   import Icon from '/@/components/Icon/src/Icon.vue';
   import { PageWrapper } from '/@/components/Page';
   import { useDrawer } from '/@/components/Drawer';
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
-  import { Row, Col, Card, Empty, Spin, Alert } from 'ant-design-vue';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import { Row, Col, Card, Empty, Spin, Alert, Modal, Input } from 'ant-design-vue';
 
   import {
+    saveAuthButton,
     deleteMenu,
     deleteMenuChildren,
     getMenu,
@@ -98,12 +125,22 @@
       Empty,
       Spin,
       Alert,
+      Modal,
+      Input,
     },
     setup() {
       const spinning = ref<boolean>(false);
+      const loading = ref<boolean>(false);
+      const visible = ref<boolean>(false);
+      const authButtonForm = reactive<{ modelName?: string; authPrefix: string; pid: string }>({
+        authPrefix: '',
+        pid: '',
+      });
+      const authButtonFormRef = ref();
       const menuTreeRef = ref<Nullable<TreeActionType>>(null);
       const menuTreeData = ref<TreeItem[]>([]);
       const menu = ref<any>();
+      const message = useMessage();
       const [registerDrawer, { openDrawer }] = useDrawer();
       const [createContextMenu] = useContextMenu();
       getMenuTreeData();
@@ -128,37 +165,47 @@
       /**
        * 右击树节点
        */
-      async function getRightMenuList(node: any): Promise<ContextMenuItem[]> {
+      async function getRightMenuList(node: any): Promise<ContextMenuOptions> {
         // 选中数据
         getTree().setSelectedKeys([node.eventKey]);
         await handleSelect([node.eventKey]);
-        return [
-          {
-            label: '编辑',
-            icon: 'clarity:note-edit-line',
-            handler: () => handleEdit(),
-            auth: 'sys:menu:update',
-          },
-          {
-            label: '删除',
-            icon: 'ant-design:delete-outlined',
-            divider: true,
-            handler: () => handleDelete(node.eventKey),
-            auth: 'sys:menu:delete',
-          },
-          {
-            label: '添加子菜单',
-            icon: 'ant-design:plus-square-filled',
-            handler: () => handleCreate(node),
-            auth: 'sys:menu:save',
-          },
-          {
-            label: '删除子菜单',
-            icon: 'ant-design:delete-filled',
-            handler: () => handleDeleteChildren(node.eventKey),
-            auth: 'sys:menu:delete',
-          },
-        ];
+        return {
+          width: 180,
+          items: [
+            {
+              label: '编辑',
+              icon: 'clarity:note-edit-line',
+              handler: () => handleEdit(),
+              auth: 'sys:menu:update',
+            },
+            {
+              label: '删除',
+              icon: 'ant-design:delete-outlined',
+              divider: true,
+              handler: () => handleDelete(node.eventKey),
+              auth: 'sys:menu:delete',
+            },
+            {
+              label: '添加子菜单',
+              icon: 'ant-design:plus-square-filled',
+              handler: () => handleCreate(node),
+              auth: 'sys:menu:save',
+            },
+            {
+              label: '删除子菜单',
+              icon: 'ant-design:delete-filled',
+              divider: true,
+              handler: () => handleDeleteChildren(node.eventKey),
+              auth: 'sys:menu:delete',
+            },
+            {
+              label: '一键添加权限按钮',
+              icon: 'mdi:security',
+              handler: () => handleAddAuthButton(node.eventKey),
+              auth: 'addAuthButton',
+            },
+          ],
+        };
       }
       /**
        * 左击树节点
@@ -215,6 +262,10 @@
         await deleteMenuChildren(id);
         handleSuccess();
       }
+      function handleAddAuthButton(id: string) {
+        visible.value = true;
+        authButtonForm.pid = id;
+      }
       function handleRenderIcon({ type }) {
         return getMenuType(type)?.icon;
       }
@@ -224,18 +275,47 @@
           menu.value = response?.record;
         }
       }
+      function handleCancel() {
+        visible.value = false;
+      }
+      async function handleOk() {
+        if (!authButtonForm.authPrefix) {
+          message.createMessage.error('请输入权限码前缀');
+          return;
+        }
+        if (!authButtonForm.pid) {
+          message.createMessage.error('请右键菜单再进行操作');
+          return;
+        }
+        try {
+          loading.value = true;
+          await saveAuthButton(authButtonForm);
+          loading.value = false;
+          visible.value = false;
+          getMenuTreeData();
+        } catch (e) {
+          console.error(e);
+          loading.value = false;
+        }
+      }
       return {
+        menuTreeRef,
+        authButtonFormRef,
         registerDrawer,
         spinning,
-        menuTreeRef,
+        loading,
+        visible,
         menuTreeData,
         menu,
+        authButtonForm,
         descSchema,
         getRightMenuList,
         handleSelect,
         handleContext,
         handleRenderIcon,
         handleSuccess,
+        handleCancel,
+        handleOk,
       };
     },
   });

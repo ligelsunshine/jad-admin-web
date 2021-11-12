@@ -67,7 +67,7 @@
   import DataClassifyModal from '/@/views/sys/data-classify/DataClassifyModal.vue';
 
   export default defineComponent({
-    name: '1455552881344921682',
+    name: '1455552881344921650',
     components: {
       DataClassifyModal,
       BasicTree,

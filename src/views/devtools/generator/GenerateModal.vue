@@ -94,6 +94,7 @@
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { isArray, isBoolean } from '/@/utils/is';
   import { generateBackApi, generateFrontApi, generateTableApi } from '/@/api/devtools/generator';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   const schemas: FormSchema[] = [
     {
@@ -204,6 +205,7 @@
       });
       // generate id
       const id = ref('');
+      const message = useMessage();
       const [registerForm, { getFieldsValue, setFieldsValue, resetFields }] = useForm({
         schemas: schemas,
         showActionButtonGroup: false,
@@ -382,6 +384,11 @@
       async function handleViewFront() {
         result.spin.spinning = true;
         const config = getFieldsValue();
+        if (!config.frontPath) {
+          message.createMessage.info('请选择前端代码生成路径');
+          result.spin.spinning = false;
+          return;
+        }
         const data = generateFrontApi(id.value, 'VIEW', config.frontPath);
         result.data = await data;
         addMode();

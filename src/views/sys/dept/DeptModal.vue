@@ -34,7 +34,7 @@
           });
         } else {
           // 设置上级菜单id
-          data.record = { pid: data.record.id };
+          data.record = { pid: data.record?.id };
           await setFieldsValue({
             ...data.record,
           });

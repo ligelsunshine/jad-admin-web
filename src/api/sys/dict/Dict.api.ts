@@ -9,6 +9,7 @@ enum Api {
   Update = '/sys/dict/update',
   Get = '/sys/dict/get',
   GetPage = '/sys/dict/get/page',
+  GetDictData = '/sys/dict/getDictData',
 }
 
 /**
@@ -55,5 +56,13 @@ export const getApi = async (id: string) => {
  */
 export const getPageApi = async (params?: SearchForm) => {
   const response = await defHttp.post({ url: Api.GetPage, params: params });
+  return response.data?.data;
+};
+
+/**
+ * 分页获取字典
+ */
+export const getDictData = async (code: string) => {
+  const response = await defHttp.get({ url: Api.GetDictData + '/' + code });
   return response.data?.data;
 };

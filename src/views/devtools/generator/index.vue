@@ -49,7 +49,6 @@
   import { PageWrapper } from '/@/components/Page';
   import { useDrawer } from '/@/components/Drawer';
   import { usePermission } from '/@/hooks/web/usePermission';
-  import { useMessage } from '/@/hooks/web/useMessage';
   import { useGo } from '/@/hooks/web/usePage';
 
   import { columns, searchFormSchema } from '/@/views/devtools/generator/generator.data';
@@ -62,7 +61,6 @@
     components: { ModelDrawer, PageWrapper, ModuleTree, BasicTable, TableAction },
     setup() {
       const go = useGo();
-      const { createMessage } = useMessage();
       const { hasPermission } = usePermission();
       const [registerDrawer, { openDrawer: openDrawer }] = useDrawer();
       const searchInfo = reactive<Recordable>({});
@@ -110,11 +108,9 @@
         go('/devtools/generator/ModelDesign/' + record.id);
       }
 
-      function handleDelete(record: Recordable) {
-        deleteApi(record.id).then((res) => {
-          createMessage.success(res.data.msg);
-          reload();
-        });
+      async function handleDelete(record: Recordable) {
+        await deleteApi(record.id);
+        await reload();
       }
 
       function handleSuccess() {

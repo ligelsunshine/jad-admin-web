@@ -122,7 +122,7 @@
       const isUpdate = ref(true);
       const generatorId = ref('');
       const enumVals: EnumVal[] = reactive([]);
-      const rules: Rule[] = reactive([]);
+      let rules: Rule[] = reactive([]);
 
       const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
         labelWidth: 120,
@@ -137,26 +137,24 @@
         isUpdate.value = !!data?.isUpdate;
         generatorId.value = data?.generatorId;
 
+        // 清空枚举值
+        enumVals.splice(0, enumVals.length);
+        // 清空自定义校验规则
+        rules.splice(0, rules.length);
         if (unref(isUpdate)) {
           await setFieldsValue({
             ...data.record,
           });
-          // 枚举值
-          // 先清空
-          enumVals.splice(0, enumVals.length);
+          // 添加枚举值
           if (data.record.type == 'ENUM') {
             if (data.record.enumVal?.length > 0) {
-              // 再添加
               data.record.enumVal.forEach((enumVlue) => {
                 enumVals.push(enumVlue);
               });
             }
           }
-          // 自定义校验规则
-          // 先清空
-          rules.splice(0, rules.length);
+          // 添加自定义校验规则
           if (data.record.rules?.length > 0) {
-            // 再添加
             data.record.rules.forEach((rule) => {
               rules.push(rule);
             });

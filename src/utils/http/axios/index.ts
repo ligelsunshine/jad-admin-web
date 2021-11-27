@@ -137,17 +137,20 @@ const transform: AxiosTransform = {
     const errorMessageMode = config?.requestOptions?.errorMessageMode || 'none';
     const userStore = useUserStoreWithOut();
     const stp = projectSetting.sessionTimeoutProcessing;
+    const option: RequestOptions = config['requestOptions'];
+    const isTransformResponse = option?.isTransformResponse;
     let msg = '';
+
     try {
       if (message?.includes('Network Error')) {
         msg = t('sys.api.networkExceptionMsg');
       } else if (message?.indexOf('timeout') !== -1) {
         msg = t('sys.api.apiTimeoutMessage');
       } else if (status == 400) {
-        // msg = response?.data?.msg || t('sys.api.errMsg400');
-        createMessage.error(response?.data?.msg);
-        console.error(response?.data?.msg, response?.data?.data);
-        return Promise.reject(error);
+        msg = response?.data?.msg || t('sys.api.errMsg400');
+        // createMessage.error(response?.data?.msg);
+        // console.error(response?.data?.msg, response?.data?.data);
+        // return Promise.reject(error);
       } else if (status == 401) {
         msg = response?.data?.msg || t('sys.api.errMsg401');
         if (stp === SessionTimeoutProcessingEnum.PAGE_COVERAGE) {
@@ -183,7 +186,7 @@ const transform: AxiosTransform = {
       } else {
         msg = response?.data?.msg || t('sys.api.errorMessage');
       }
-      if (msg) {
+      if (isTransformResponse && msg) {
         if (errorMessageMode === 'modal') {
           createErrorModal({ title: t('sys.api.errorTip'), content: msg });
         } else if (errorMessageMode === 'message') {

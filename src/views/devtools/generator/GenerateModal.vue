@@ -89,13 +89,13 @@
   import { defineComponent, reactive, ref } from 'vue';
   import CodeMirrorEditor from '/@/components/CodeEditor/src/codemirror/CodeMirror.vue';
   import LocalPathSelect from '/@/components/Selector/LocalPathSelect.vue';
-  import { Card, Col, Result, Row, Spin, TabPane, Tabs } from 'ant-design-vue';
+  import { Card, Col, Result, Row, Spin, Tabs } from 'ant-design-vue';
   import { BasicForm, FormSchema, useForm } from '/@/components/Form';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { isArray, isBoolean } from '/@/utils/is';
   import { generateBackApi, generateFrontApi, generateTableApi } from '/@/api/devtools/generator';
   import { useMessage } from '/@/hooks/web/useMessage';
-
+  const TabPane = Tabs.TabPane;
   const schemas: FormSchema[] = [
     {
       field: 'entity',
@@ -167,6 +167,7 @@
       },
     },
   ];
+
   export default defineComponent({
     name: 'GenerateModal',
     components: {

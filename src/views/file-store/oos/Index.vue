@@ -70,7 +70,7 @@
   import { useModal } from '/@/components/Modal';
   import Icon from '/@/components/Icon';
   import { usePermission } from '/@/hooks/web/usePermission';
-  import { Dropdown, Menu, MenuItem } from 'ant-design-vue';
+  import { Dropdown, Menu } from 'ant-design-vue';
   import { DownOutlined } from '@ant-design/icons-vue';
   import { useMessage } from '/@/hooks/web/useMessage';
 
@@ -78,6 +78,8 @@
   import { columns, searchFormSchema } from '/@/views/file-store/oos/FileStore.data';
   import FileStoreDrawer from '/@/views/file-store/oos/FileStoreDrawer.vue';
   import FileStoreModal from '/@/views/file-store/oos/FileStoreModal.vue';
+
+  const MenuItem = Menu.Item;
 
   export default defineComponent({
     name: 'Index',

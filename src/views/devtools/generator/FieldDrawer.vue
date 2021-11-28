@@ -93,14 +93,15 @@
     Input,
     InputNumber,
     Select,
-    SelectOption,
-    TypographyText,
+    Typography,
   } from 'ant-design-vue';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicForm, useForm } from '/@/components/Form';
   import { EnumVal, fieldFormSchema, Rule } from '/@/views/devtools/generator/generator.data';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { saveFieldApi, updateFieldApi } from '/@/api/devtools/generator';
+  const SelectOption = Select.Option;
+  const TypographyText = Typography.Text;
 
   export default defineComponent({
     name: 'FieldDrawer',

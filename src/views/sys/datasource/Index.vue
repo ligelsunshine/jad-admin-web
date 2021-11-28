@@ -71,13 +71,15 @@
   import Icon from '/@/components/Icon';
   import { usePermission } from '/@/hooks/web/usePermission';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { Dropdown, Menu, MenuItem } from 'ant-design-vue';
+  import { Dropdown, Menu } from 'ant-design-vue';
   import { DownOutlined } from '@ant-design/icons-vue';
 
   import { deleteApi, deleteArrApi, getPageApi } from '/@/api/sys/datasource/Datasource.api';
   import { columns, searchFormSchema } from '/@/views/sys/datasource/Datasource.data';
   import DatasourceDrawer from '/@/views/sys/datasource/DatasourceDrawer.vue';
   import DatasourceModal from '/@/views/sys/datasource/DatasourceModal.vue';
+
+  const MenuItem = Menu.Item;
 
   export default defineComponent({
     name: 'Index',

@@ -26,9 +26,10 @@ interface PermCode {
  * @description: user login api
  */
 export function loginApi(params: LoginParams) {
-  return defHttp.post({
-    url: Api.Login + '?' + qs.stringify(params),
-  });
+  return defHttp.post(
+    { url: Api.Login + '?' + qs.stringify(params) },
+    { isTransformResponse: true }
+  );
 }
 
 /**

@@ -138,14 +138,16 @@ const transform: AxiosTransform = {
     const userStore = useUserStoreWithOut();
     const stp = projectSetting.sessionTimeoutProcessing;
     const option: RequestOptions = config['requestOptions'];
-    const isTransformResponse = option?.isTransformResponse;
+    let isTransformResponse = option?.isTransformResponse;
     let msg = '';
 
     try {
       if (message?.includes('Network Error')) {
         msg = t('sys.api.networkExceptionMsg');
+        isTransformResponse = true;
       } else if (message?.indexOf('timeout') !== -1) {
         msg = t('sys.api.apiTimeoutMessage');
+        isTransformResponse = true;
       } else if (status == 400) {
         msg = response?.data?.msg || t('sys.api.errMsg400');
         // createMessage.error(response?.data?.msg);

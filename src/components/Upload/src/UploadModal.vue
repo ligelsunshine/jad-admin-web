@@ -211,6 +211,7 @@
         }
       }
 
+      // TODO 先上传第一个文件，获得groupId再上传其他文件
       // 点击开始上传
       async function handleStartUpload() {
         const { maxNumber } = props;
@@ -252,7 +253,7 @@
         for (const item of fileListRef.value) {
           const { status, responseData } = item;
           if (status === UploadResultStatus.SUCCESS && responseData) {
-            fileList.push(responseData.url);
+            fileList.push(responseData.data);
           }
         }
         // 存在一个上传成功的即可保存

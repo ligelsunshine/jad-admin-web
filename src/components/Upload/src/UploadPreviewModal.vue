@@ -30,21 +30,22 @@
       const { t } = useI18n();
 
       const fileListRef = ref<PreviewFileItem[]>([]);
-      watch(
-        () => props.value,
-        (value) => {
-          fileListRef.value = value
-            .filter((item) => !!item)
-            .map((item) => {
-              return {
-                url: item,
-                type: item.split('.').pop() || '',
-                name: item.split('/').pop() || '',
-              };
-            });
-        },
-        { immediate: true }
-      );
+      // TODO 预览暂时屏蔽，因为返回值是对象，不是字符串
+      // watch(
+      //   () => props.value,
+      //   (value) => {
+      //     fileListRef.value = value
+      //       .filter((item) => !!item)
+      //       .map((item) => {
+      //         return {
+      //           url: item,
+      //           type: item.split('.').pop() || '',
+      //           name: item.split('/').pop() || '',
+      //         };
+      //       });
+      //   },
+      //   { immediate: true }
+      // );
 
       // 删除
       function handleRemove(record: PreviewFileItem) {

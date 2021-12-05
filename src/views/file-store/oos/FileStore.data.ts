@@ -76,6 +76,30 @@ export function renderOfStore(store) {
 }
 
 /**
+ * 上传类型
+ */
+export enum UploadType {
+  AVATAR = 0,
+  OTHER = 1,
+}
+
+/**
+ * 上传类型渲染
+ *
+ * @param uploadType 上传类型
+ */
+export function renderOfUploadType(uploadType) {
+  switch (uploadType) {
+    case UploadType.AVATAR:
+      return '头像';
+    case UploadType.OTHER:
+      return '其他';
+    default:
+      return 'undefined';
+  }
+}
+
+/**
  * 列表显示字段
  */
 export const columns: BasicColumn[] = [
@@ -155,84 +179,6 @@ export const searchFormSchema: FormSchema[] = [
     label: '创建时间',
     component: 'RangePicker',
     colProps: { span: 8 },
-  },
-];
-
-/**
- * 添加/编辑表单
- */
-export const formSchema: FormSchema[] = [
-  {
-    field: '_isUpdate',
-    label: '',
-    component: 'Switch',
-    show: false,
-  },
-  {
-    field: 'id',
-    label: 'ID',
-    component: 'Input',
-    show: false,
-  },
-  {
-    field: 'groupId',
-    label: '分组',
-    component: 'Input',
-  },
-  {
-    field: 'name',
-    label: '名称',
-    component: 'Input',
-  },
-  {
-    field: 'type',
-    label: '类型',
-    component: 'Input',
-  },
-  {
-    field: 'size',
-    label: '大小',
-    component: 'InputNumber',
-  },
-  {
-    field: 'path',
-    label: '路径',
-    component: 'Input',
-  },
-  {
-    field: 'md5',
-    label: 'MD5',
-    component: 'Input',
-  },
-  {
-    field: 'memi',
-    label: 'MEMI类型',
-    component: 'Input',
-  },
-  {
-    field: 'accessPolicy',
-    label: '访问策略',
-    component: 'Select',
-    componentProps: {
-      options: [
-        { label: '公开', value: AccessPolicy.PUBLIC },
-        { label: '私有', value: AccessPolicy.PRIVATE },
-      ],
-    },
-  },
-  {
-    field: 'store',
-    label: '存储源',
-    component: 'Select',
-    componentProps: {
-      options: [
-        { label: '本地存储', value: Store.LOCAL },
-        { label: 'minio存储', value: Store.MINIO },
-        { label: '七牛云', value: Store.QINIU },
-        { label: '阿里云', value: Store.ALIYUN },
-        { label: '腾讯云', value: Store.TENCENT },
-      ],
-    },
   },
 ];
 

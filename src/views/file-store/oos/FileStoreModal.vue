@@ -1,6 +1,6 @@
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" title="对象存储详情" width="50%">
-    <Description class="mt-4" size="middle" :column="3" :data="fileStore" :schema="descSchema" />
+    <Description class="mt-4" size="middle" :column="1" :data="fileStore" :schema="descSchema" />
   </BasicModal>
 </template>
 <script lang="ts">

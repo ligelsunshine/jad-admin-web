@@ -96,6 +96,7 @@
         useSearchForm: true,
         showTableSetting: true,
         bordered: true,
+        ellipsis: false,
         actionColumn: {
           width: 120,
           title: '操作',

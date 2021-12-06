@@ -178,7 +178,7 @@
       //   });
       // }
 
-      async function uploadApiByItem(item: FileItem) {
+      async function uploadApiByItem(item: FileItem, groupId: string) {
         const { api } = props;
         if (!api || !isFunction(api)) {
           return warn('upload api must exist and be a function');
@@ -189,6 +189,7 @@
             {
               ...(props.uploadParams || {}),
               file: item.file,
+              groupId: groupId,
             },
             function onUploadProgress(progressEvent: ProgressEvent) {
               const complete = ((progressEvent.loaded / progressEvent.total) * 100) | 0;
@@ -211,7 +212,6 @@
         }
       }
 
-      // TODO 先上传第一个文件，获得groupId再上传其他文件
       // 点击开始上传
       async function handleStartUpload() {
         const { maxNumber } = props;
@@ -221,11 +221,31 @@
         try {
           isUploadingRef.value = true;
           // 只上传不是成功状态的
-          const uploadFileList =
+          let uploadFileList =
             fileListRef.value.filter((item) => item.status !== UploadResultStatus.SUCCESS) || [];
+          const uploadedFileList =
+            fileListRef.value.filter((item) => item.status === UploadResultStatus.SUCCESS) || [];
+          let groupId = '';
+          if (uploadedFileList.length > 0) {
+            // 若已上传，则直接获取已有groupId
+            groupId = uploadedFileList[0].responseData?.data?.groupId;
+          } else if (uploadFileList.length > 1) {
+            // 先上传第一个文件，获得groupId再上传其他文件
+            const res = await uploadApiByItem(uploadFileList[0], '');
+            if (!res.success) {
+              console.error(res.error);
+              return;
+            }
+            groupId = uploadFileList[0].responseData?.data?.groupId;
+            if (!groupId) {
+              console.error(groupId + ':' + groupId);
+              return;
+            }
+            uploadFileList = uploadFileList.slice(1);
+          }
           const data = await Promise.all(
             uploadFileList.map((item) => {
-              return uploadApiByItem(item);
+              return uploadApiByItem(item, groupId);
             })
           );
           isUploadingRef.value = false;

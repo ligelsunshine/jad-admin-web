@@ -6,11 +6,13 @@ export function useUploadType({
   helpTextRef,
   maxNumberRef,
   maxSizeRef,
+  multiple,
 }: {
   acceptRef: Ref<string[]>;
   helpTextRef: Ref<string>;
   maxNumberRef: Ref<number>;
   maxSizeRef: Ref<number>;
+  multiple: Ref<boolean>;
 }) {
   // 文件类型限制
   const getAccept = computed(() => {
@@ -45,7 +47,8 @@ export function useUploadType({
     }
 
     const maxNumber = unref(maxNumberRef);
-    if (maxNumber && maxNumber !== Infinity) {
+    console.log(multiple);
+    if (multiple && maxNumber && maxNumber !== Infinity) {
       helpTexts.push(t('component.upload.maxNumber', [maxNumber]));
     }
     return helpTexts.join('，');

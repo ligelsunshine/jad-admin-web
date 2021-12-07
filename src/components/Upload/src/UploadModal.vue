@@ -25,7 +25,12 @@
     </template>
 
     <div class="upload-modal-toolbar">
-      <Alert :message="getHelpText" type="info" banner class="upload-modal-toolbar__text" />
+      <Alert
+        :message="getHelpText"
+        type="info"
+        banner
+        class="upload-modal-toolbar__text"
+      />
 
       <Upload
         :accept="getStringAccept"
@@ -33,7 +38,10 @@
         :before-upload="beforeUpload"
         class="upload-modal-toolbar__btn"
       >
-        <a-button type="primary">
+        <a-button type="primary" v-if="!multiple && fileListRef.length === 0">
+          {{ t('component.upload.choose') }}
+        </a-button>
+        <a-button type="primary" v-else-if="multiple">
           {{ t('component.upload.choose') }}
         </a-button>
       </Upload>
@@ -89,6 +97,7 @@
         helpTextRef: helpText,
         maxNumberRef: maxNumber,
         maxSizeRef: maxSize,
+        multiple: props.multiple,
       });
 
       const { createMessage } = useMessage();

@@ -104,6 +104,10 @@ export function renderOfUploadType(uploadType) {
  */
 export const columns: BasicColumn[] = [
   {
+    dataIndex: 'id',
+    title: 'FileID',
+  },
+  {
     dataIndex: 'groupId',
     title: '分组',
   },

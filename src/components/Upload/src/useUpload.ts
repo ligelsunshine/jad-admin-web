@@ -47,7 +47,6 @@ export function useUploadType({
     }
 
     const maxNumber = unref(maxNumberRef);
-    console.log(multiple);
     if (multiple && maxNumber && maxNumber !== Infinity) {
       helpTexts.push(t('component.upload.maxNumber', [maxNumber]));
     }

@@ -19,6 +19,7 @@ export interface FileItem {
 }
 
 export interface PreviewFileItem {
+  fileId: string;
   url: string;
   name: string;
   type: string;

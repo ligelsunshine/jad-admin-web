@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
-import type { RequestOptions, Result, UploadFileParams } from '../../../../types/axios';
+import type { RequestOptions, Result, UploadFileParams } from '/#/axios';
 import type { CreateAxiosOptions } from './axiosTransform';
 import axios from 'axios';
 import qs from 'qs';
@@ -102,7 +102,7 @@ export class VAxios {
       this.axiosInstance.interceptors.request.use(undefined, requestInterceptorsCatch);
 
     // Response result interceptor processing
-    this.axiosInstance.interceptors.response.use((res: AxiosResponse<any>) => {
+    this.axiosInstance.interceptors.response.use((res: AxiosResponse) => {
       res && axiosCanceler.removePending(res.config);
       if (responseInterceptors && isFunction(responseInterceptors)) {
         res = responseInterceptors(res);
@@ -171,6 +171,10 @@ export class VAxios {
       ...config,
       data: qs.stringify(config.data, { arrayFormat: 'brackets' }),
     };
+  }
+
+  getOptions() {
+    return this.options;
   }
 
   get<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {

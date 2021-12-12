@@ -20,6 +20,8 @@
   import { downloadByUrl } from '/@/utils/file/download';
   import { createPreviewColumns, createPreviewActionColumn } from './data';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import { getDownloadUrlApi } from '/@/api/file-store/Download.api';
+  import { createImgPreview } from '/@/components/Preview';
 
   export default defineComponent({
     components: { BasicModal, FileList },
@@ -30,22 +32,23 @@
       const { t } = useI18n();
 
       const fileListRef = ref<PreviewFileItem[]>([]);
-      // TODO 预览暂时屏蔽，因为返回值是对象，不是字符串
-      // watch(
-      //   () => props.value,
-      //   (value) => {
-      //     fileListRef.value = value
-      //       .filter((item) => !!item)
-      //       .map((item) => {
-      //         return {
-      //           url: item,
-      //           type: item.split('.').pop() || '',
-      //           name: item.split('/').pop() || '',
-      //         };
-      //       });
-      //   },
-      //   { immediate: true }
-      // );
+      watch(
+        () => props.value,
+        (value) => {
+          fileListRef.value = value
+            .filter((item) => !!item)
+            .map((item) => {
+              const url = getDownloadUrlApi(item.id);
+              return {
+                fileId: item.id,
+                url: url,
+                name: item.name || '',
+                type: item.type || '',
+              };
+            });
+        },
+        { immediate: true }
+      );
 
       // 删除
       function handleRemove(record: PreviewFileItem) {
@@ -60,17 +63,19 @@
         }
       }
 
-      // // 预览
-      // function handlePreview(record: PreviewFileItem) {
-      //   const { url = '' } = record;
-      //   createImgPreview({
-      //     imageList: [url],
-      //   });
-      // }
+      // 预览
+      function handlePreview(record: PreviewFileItem) {
+        const { fileId = '' } = record;
+        const url = getDownloadUrlApi(fileId);
+        createImgPreview({
+          imageList: [url],
+        });
+      }
 
       // 下载
       function handleDownload(record: PreviewFileItem) {
-        const { url = '' } = record;
+        const { fileId = '' } = record;
+        const url = getDownloadUrlApi(fileId);
         downloadByUrl({ url });
       }
 
@@ -80,7 +85,7 @@
         closeModal,
         fileListRef,
         columns: createPreviewColumns(),
-        actionColumn: createPreviewActionColumn({ handleRemove, handleDownload }),
+        actionColumn: createPreviewActionColumn({ handleRemove, handleDownload, handlePreview }),
       };
     },
   });

@@ -1,9 +1,6 @@
 import type { BasicColumn, ActionItem } from '/@/components/Table';
 import { FileItem, PreviewFileItem, UploadResultStatus } from './typing';
-import {
-  // checkImgType,
-  isImgTypeByName,
-} from './helper';
+import { checkImgType } from './helper';
 import { Progress, Tag } from 'ant-design-vue';
 import TableAction from '/@/components/Table/src/components/TableAction.vue';
 import ThumbUrl from './ThumbUrl.vue';
@@ -55,11 +52,11 @@ export function createTableColumns(): BasicColumn[] {
         return text && (text / 1024).toFixed(2) + 'KB';
       },
     },
-    // {
-    //   dataIndex: 'type',
-    //   title: '文件类型',
-    //   width: 100,
-    // },
+    {
+      dataIndex: 'type',
+      title: '文件类型',
+      width: 100,
+    },
     {
       dataIndex: 'status',
       title: t('component.upload.fileStatue'),
@@ -111,7 +108,7 @@ export function createPreviewColumns(): BasicColumn[] {
       width: 100,
       customRender: ({ record }) => {
         const { url } = (record as PreviewFileItem) || {};
-        return isImgTypeByName(url) && <ThumbUrl fileUrl={url} />;
+        return <ThumbUrl fileUrl={url} />;
       },
     },
     {
@@ -125,9 +122,11 @@ export function createPreviewColumns(): BasicColumn[] {
 export function createPreviewActionColumn({
   handleRemove,
   handleDownload,
+  handlePreview,
 }: {
   handleRemove: Fn;
   handleDownload: Fn;
+  handlePreview: Fn;
 }): BasicColumn {
   return {
     width: 160,
@@ -146,7 +145,12 @@ export function createPreviewActionColumn({
           onClick: handleDownload.bind(null, record),
         },
       ];
-
+      if (checkImgType(record)) {
+        actions.unshift({
+          label: t('component.upload.preview'),
+          onClick: handlePreview.bind(null, record),
+        });
+      }
       return <TableAction actions={actions} outside={true} />;
     },
   };

@@ -25,12 +25,7 @@
     </template>
 
     <div class="upload-modal-toolbar">
-      <Alert
-        :message="getHelpText"
-        type="info"
-        banner
-        class="upload-modal-toolbar__text"
-      />
+      <Alert :message="getHelpText" type="info" banner class="upload-modal-toolbar__text" />
 
       <Upload
         :accept="getStringAccept"
@@ -50,17 +45,16 @@
   </BasicModal>
 </template>
 <script lang="ts">
-  import { defineComponent, reactive, ref, toRefs, unref, computed, PropType } from 'vue';
-  import { Upload, Alert } from 'ant-design-vue';
+  import { computed, defineComponent, PropType, reactive, ref, toRefs, unref } from 'vue';
+  import { Alert, Upload } from 'ant-design-vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
-  //   import { BasicTable, useTable } from '/@/components/Table';
   // hooks
   import { useUploadType } from './useUpload';
   import { useMessage } from '/@/hooks/web/useMessage';
-  //   types
+  // types
   import { FileItem, UploadResultStatus } from './typing';
   import { basicProps } from './props';
-  import { createTableColumns, createActionColumn } from './data';
+  import { createActionColumn, createTableColumns } from './data';
   // utils
   import { checkFileType, checkImgType, getBase64WithFile } from './helper';
   import { buildUUID } from '/@/utils/uuid';
@@ -181,9 +175,10 @@
 
       // 预览
       // function handlePreview(record: FileItem) {
-      //   const { thumbUrl = '' } = record;
+      //   const { fileId = '' } = record;
+      //   const url = getDownloadUrlApi(fileId);
       //   createImgPreview({
-      //     imageList: [thumbUrl],
+      //     imageList: [url],
       //   });
       // }
 
@@ -201,8 +196,7 @@
               groupId: groupId,
             },
             function onUploadProgress(progressEvent: ProgressEvent) {
-              const complete = ((progressEvent.loaded / progressEvent.total) * 100) | 0;
-              item.percent = complete;
+              item.percent = ((progressEvent.loaded / progressEvent.total) * 100) | 0;
             }
           );
           item.status = UploadResultStatus.SUCCESS;
@@ -260,7 +254,9 @@
           isUploadingRef.value = false;
           // 生产环境:抛出错误
           const errorList = data.filter((item: any) => !item.success);
-          if (errorList.length > 0) throw errorList;
+          if (errorList.length > 0) {
+            console.error(errorList);
+          }
         } catch (e) {
           isUploadingRef.value = false;
           throw e;

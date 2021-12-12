@@ -139,20 +139,14 @@
         });
       }
 
-      function handleUploadChange(fileList) {
-        console.log(fileList);
-      }
+      function handleUploadChange(fileList) {}
 
       function handleUploadDelete(record) {
-        // TODO 删除文件
         if (record?.status == 'success') {
-          console.log('DEL', record);
         }
       }
 
-      function handleUploadPreviewDelete(url: string) {
-        console.log(url);
-      }
+      function handleUploadPreviewDelete(url: string) {}
 
       return {
         registerTable,

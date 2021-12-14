@@ -9,7 +9,7 @@ export const basicProps = {
   // 文件最大多少MB
   maxSize: {
     type: Number as PropType<number>,
-    default: 2,
+    default: 10,
   },
   // 最大数量的文件，Infinity不限制
   maxNumber: {
@@ -38,10 +38,14 @@ export const basicProps = {
 
 export const uploadContainerProps = {
   value: {
-    type: Array as PropType<string[]>,
-    default: () => [],
+    type: String as PropType<string>,
+    default: () => '',
   },
   ...basicProps,
+  showPreview: {
+    type: Boolean as PropType<boolean>,
+    default: true,
+  },
   showPreviewNumber: {
     type: Boolean as PropType<boolean>,
     default: true,

@@ -9,6 +9,7 @@ enum Api {
   Update = '/sys/fileStore/update',
   Get = '/sys/fileStore/get',
   GetPage = '/sys/fileStore/get/page',
+  getListByGroup = '/sys/fileStore/getList',
 }
 
 /**
@@ -55,5 +56,13 @@ export const getApi = async (id: string) => {
  */
 export const getPageApi = async (params?: SearchForm) => {
   const response = await defHttp.post({ url: Api.GetPage, params: params });
+  return response.data?.data;
+};
+
+/**
+ * 分组获取对象存储
+ */
+export const getListByGroupApi = async (groupId: string) => {
+  const response = await defHttp.get({ url: Api.getListByGroup + '/' + groupId });
   return response.data?.data;
 };

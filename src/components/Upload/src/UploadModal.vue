@@ -169,8 +169,11 @@
       // 删除
       function handleRemove(record: FileItem) {
         const index = fileListRef.value.findIndex((item) => item.uuid === record.uuid);
-        index !== -1 && fileListRef.value.splice(index, 1);
-        emit('delete', record);
+        if (index !== -1) {
+          const removed = fileListRef.value.splice(index, 1);
+          const fileId = removed[0].responseData?.data?.id;
+          emit('delete', fileId, fileListRef.value.length);
+        }
       }
 
       // 预览
@@ -229,14 +232,16 @@
           const uploadedFileList =
             fileListRef.value.filter((item) => item.status === UploadResultStatus.SUCCESS) || [];
           let groupId = '';
-          if (uploadedFileList.length > 0) {
+          if (props.previewFileList.length > 0) {
+            groupId = props.previewFileList[0].groupId;
+          } else if (uploadedFileList.length > 0) {
             // 若已上传，则直接获取已有groupId
             groupId = uploadedFileList[0].responseData?.data?.groupId;
           } else if (uploadFileList.length > 1) {
             // 先上传第一个文件，获得groupId再上传其他文件
             const res = await uploadApiByItem(uploadFileList[0], '');
-            if (!res.success) {
-              console.error(res.error);
+            if (!res?.success) {
+              console.error(res?.error);
               return;
             }
             groupId = uploadFileList[0].responseData?.data?.groupId;
@@ -273,7 +278,7 @@
         if (isUploadingRef.value) {
           return createMessage.warning(t('component.upload.saveWarn'));
         }
-        const fileList: string[] = [];
+        const fileList: any[] = [];
 
         for (const item of fileListRef.value) {
           const { status, responseData } = item;
@@ -285,9 +290,15 @@
         if (fileList.length <= 0) {
           return createMessage.warning(t('component.upload.saveError'));
         }
+        const groupId = fileList[0].groupId;
+        for (let i = 1; i < fileList.length; i++) {
+          if (fileList[i].groupId !== groupId) {
+            return createMessage.warning(t('component.upload.saveGroupIdError'));
+          }
+        }
         fileListRef.value = [];
         closeModal();
-        emit('change', fileList);
+        emit('change', groupId);
       }
 
       // 点击关闭：则所有操作不保存，包括上传的

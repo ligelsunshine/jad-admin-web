@@ -19,6 +19,7 @@
           @delete="handleUploadDelete"
           @previewDelete="handleUploadPreviewDelete"
           :api="uploadApi"
+          :showPreview="false"
         />
       </template>
       <template #action="{ record }">

@@ -99,6 +99,7 @@ export default {
     download: '下载',
     saveWarn: '请等待文件上传后，保存!',
     saveError: '没有上传成功的文件，无法保存!',
+    saveGroupIdError: '上传的GroupID不一致',
 
     preview: '预览',
     choose: '选择文件',

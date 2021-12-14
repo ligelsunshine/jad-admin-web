@@ -96,6 +96,7 @@ export default {
     download: 'download',
     saveWarn: 'Please wait for the file to upload and save!',
     saveError: 'There is no file successfully uploaded and cannot be saved!',
+    saveGroupIdError: 'The uploaded GroupID is inconsistent!',
 
     preview: 'Preview',
     choose: 'Select the file',

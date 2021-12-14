@@ -175,7 +175,6 @@ export const usePermissionStore = defineStore({
           // 格式化菜单树
           routeList = transformMenuTree(routeList);
 
-          // debugger
           // 动态引入组件
           routeList = transformObjToRoute(routeList);
 

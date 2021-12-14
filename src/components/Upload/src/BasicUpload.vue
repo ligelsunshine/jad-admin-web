@@ -4,7 +4,7 @@
       <a-button type="primary" @click="openUploadModal" preIcon="carbon:cloud-upload">
         {{ t('component.upload.upload') }}
       </a-button>
-      <Tooltip placement="bottom" v-if="showPreview">
+      <Tooltip placement="bottom" v-if="showPreview && emptyHidePreview">
         <template #title>
           {{ t('component.upload.uploaded') }}
           <template v-if="fileList.length">
@@ -13,7 +13,7 @@
         </template>
         <a-button @click="openPreviewModal">
           <Icon icon="bi:eye" />
-          <template v-if="fileList.length && showPreviewNumber">
+          <template v-if="showPreviewNumber && fileList.length">
             {{ fileList.length }}
           </template>
         </a-button>
@@ -31,13 +31,12 @@
     <UploadPreviewModal
       :value="fileList"
       @register="registerPreviewModal"
-      @list-change="handlePreviewChange"
       @delete="handlePreviewDelete"
     />
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, watch, unref, computed } from 'vue';
+  import { defineComponent, ref, watch, computed } from 'vue';
   import UploadModal from './UploadModal.vue';
   import UploadPreviewModal from './UploadPreviewModal.vue';
   import { Icon } from '/@/components/Icon';
@@ -47,23 +46,26 @@
   import { omit } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
 
+  import { deleteApi, getListByGroupApi } from '/@/api/file-store/oos/FileStore.api';
+
   export default defineComponent({
     name: 'BasicUpload',
     components: { UploadModal, UploadPreviewModal, Icon, Tooltip },
     props: uploadContainerProps,
-    emits: ['change', 'delete', 'preview-delete', 'update:value'],
+    emits: ['change', 'delete', 'update:value'],
 
     setup(props, { emit, attrs }) {
       const { t } = useI18n();
       // 上传modal
       const [registerUploadModal, { openModal: openUploadModal }] = useModal();
 
-      //   预览modal
+      // 预览modal
       const [registerPreviewModal, { openModal: openPreviewModal }] = useModal();
 
       const fileList = ref<string[]>([]);
+      const groupId = ref<string>();
 
-      const showPreview = computed(() => {
+      const emptyHidePreview = computed(() => {
         const { emptyHidePreview } = props;
         if (!emptyHidePreview) return true;
         return emptyHidePreview ? fileList.value.length > 0 : true;
@@ -76,43 +78,60 @@
 
       watch(
         () => props.value,
-        (value = []) => {
-          fileList.value = value;
+        async (value) => {
+          groupId.value = value;
+          if (value && value.length > 0) {
+            fileList.value = await getListByGroupApi(value);
+          }
         },
         { immediate: true }
       );
 
       // 上传modal保存操作
-      function handleChange(urls: string[]) {
-        fileList.value = [...unref(fileList), ...(urls || [])];
-        emit('update:value', fileList.value);
-        emit('change', fileList.value);
+      async function handleChange(gid: string) {
+        if (gid && gid.length > 0) {
+          fileList.value = await getListByGroupApi(gid);
+          emit('update:value', gid);
+          emit('change', gid);
+        }
       }
 
-      // 预览modal保存操作
-      function handlePreviewChange(urls: string[]) {
-        fileList.value = [...(urls || [])];
-        emit('update:value', fileList.value);
-        emit('change', fileList.value);
+      async function handleDelete(fileId: string, fileListCount: int) {
+        if (fileId && fileId.length > 0) {
+          await deleteApi(fileId);
+        }
+        if (groupId.value && groupId.value?.length > 0) {
+          fileList.value = await getListByGroupApi(groupId.value);
+        }
+        if (fileListCount === 0) {
+          groupId.value = '';
+        }
+        emit('update:value', groupId.value);
+        emit('change', groupId.value);
       }
 
-      function handleDelete(record: Recordable) {
-        emit('delete', record);
-      }
-
-      function handlePreviewDelete(url: string) {
-        emit('preview-delete', url);
+      async function handlePreviewDelete(fileId: string, fileListCount: int) {
+        if (fileId && fileId.length > 0) {
+          await deleteApi(fileId);
+        }
+        if (groupId.value && groupId.value?.length > 0) {
+          fileList.value = await getListByGroupApi(groupId.value);
+        }
+        if (fileListCount === 0) {
+          groupId.value = '';
+        }
+        emit('update:value', groupId.value);
+        emit('change', groupId.value);
       }
 
       return {
         registerUploadModal,
         openUploadModal,
         handleChange,
-        handlePreviewChange,
         registerPreviewModal,
         openPreviewModal,
         fileList,
-        showPreview,
+        emptyHidePreview,
         bindValue,
         handleDelete,
         handlePreviewDelete,

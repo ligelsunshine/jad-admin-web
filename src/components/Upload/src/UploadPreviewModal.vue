@@ -26,7 +26,7 @@
   export default defineComponent({
     components: { BasicModal, FileList },
     props: previewProps,
-    emits: ['list-change', 'register', 'delete'],
+    emits: ['register', 'delete'],
     setup(props, { emit }) {
       const [register, { closeModal }] = useModalInner();
       const { t } = useI18n();
@@ -41,6 +41,7 @@
               const url = getDownloadUrlApi(item.id);
               return {
                 fileId: item.id,
+                groupId: item.groupId,
                 url: url,
                 name: item.name || '',
                 type: item.type || '',
@@ -52,14 +53,10 @@
 
       // 删除
       function handleRemove(record: PreviewFileItem) {
-        const index = fileListRef.value.findIndex((item) => item.url === record.url);
+        const index = fileListRef.value.findIndex((item) => item.fileId === record.fileId);
         if (index !== -1) {
           const removed = fileListRef.value.splice(index, 1);
-          emit('delete', removed[0].url);
-          emit(
-            'list-change',
-            fileListRef.value.map((item) => item.url)
-          );
+          emit('delete', removed[0].fileId, fileListRef.value.length);
         }
       }
 

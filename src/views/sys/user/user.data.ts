@@ -19,6 +19,11 @@ export const columns: BasicColumn[] = [
     width: 120,
   },
   {
+    title: '姓名',
+    dataIndex: 'name',
+    width: 120,
+  },
+  {
     title: '角色',
     dataIndex: 'roles',
     width: 200,

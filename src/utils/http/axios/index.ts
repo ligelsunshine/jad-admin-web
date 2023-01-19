@@ -105,7 +105,7 @@ const transform: AxiosTransform = {
     const { code, msg, data } = response.data;
     response.status = code;
 
-    if (code == 200 && isTransformResponse) {
+    if (code == 200 && isTransformResponse && msg) {
       if (messageMode === 'modal') {
         if (data) {
           createSuccessModal({ title: msg, content: data });

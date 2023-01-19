@@ -70,26 +70,30 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, unref } from "vue";
-import { BasicTable, beforeFetchFun, TableAction, useTable } from "/@/components/Table";
-import Authority from "/@/components/Authority/src/Authority.vue";
-import { PopConfirmButton } from "/@/components/Button";
-import { useModal } from "/@/components/Modal";
-import Icon from "/@/components/Icon";
-import { usePermission } from "/@/hooks/web/usePermission";
-import { useMessage } from "/@/hooks/web/useMessage";
-import { BasicUpload } from "/@/components/Upload";
-import { useCopyToClipboard } from "/@/hooks/web/useCopyToClipboard";
-import { Image } from "ant-design-vue";
+  import { defineComponent, ref, unref } from 'vue';
+  import { BasicTable, beforeFetchFun, TableAction, useTable } from '/@/components/Table';
+  import Authority from '/@/components/Authority/src/Authority.vue';
+  import { PopConfirmButton } from '/@/components/Button';
+  import { useModal } from '/@/components/Modal';
+  import Icon from '/@/components/Icon';
+  import { usePermission } from '/@/hooks/web/usePermission';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import { BasicUpload } from '/@/components/Upload';
+  import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
+  import { Image } from 'ant-design-vue';
 
-import { uploadApi } from "/@/api/file-store/Upload.api";
-import { deleteApi, deleteArrApi, getPageApi } from "/@/api/file-store/oos/FileStore.api";
-import { columns, searchFormSchema } from "/@/views/file-store/oos/FileStore.data";
-import FileStoreModal from "/@/views/file-store/oos/FileStoreModal.vue";
-import { downloadFileApi, getFileDownloadUrlApi, getFilePreviewUrlApi } from "/@/api/file-store/Download.api";
-import { openWindow } from "/@/utils";
+  import { uploadApi } from '/@/api/file-store/Upload.api';
+  import { deleteApi, deleteArrApi, getPageApi } from '/@/api/file-store/oos/FileStore.api';
+  import { columns, searchFormSchema } from '/@/views/file-store/oos/FileStore.data';
+  import FileStoreModal from '/@/views/file-store/oos/FileStoreModal.vue';
+  import {
+    downloadFileApi,
+    getFileDownloadUrlApi,
+    getFilePreviewUrlApi,
+  } from '/@/api/file-store/Download.api';
+  import { openWindow } from '/@/utils';
 
-export default defineComponent({
+  export default defineComponent({
     name: 'Index',
     components: {
       FileStoreModal,

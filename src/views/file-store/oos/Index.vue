@@ -35,16 +35,19 @@
               icon: 'ant-design:cloud-download-outlined',
               tooltip: '下载',
               onClick: handleDownload.bind(null, record),
+              auth: 'sys:fileStore:download',
             },
             {
               icon: 'ant-design:share-alt-outlined',
               tooltip: '分享外链',
               onClick: handleShareLink.bind(null, record),
+              auth: 'sys:fileStore:shareLink',
             },
             {
               icon: 'icon-park-outline:preview-open',
               tooltip: '浏览器预览',
               onClick: handleBrowserPreview.bind(null, record),
+              auth: 'sys:fileStore:browserPreview',
             },
             {
               icon: 'ant-design:delete-outlined',
@@ -134,7 +137,12 @@
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
-          ifShow: () => hasPermission('sys:fileStore:get') || hasPermission('sys:fileStore:delete'),
+          ifShow: () =>
+            hasPermission('sys:fileStore:get') ||
+            hasPermission('sys:fileStore:download') ||
+            hasPermission('sys:fileStore:browserPreview') ||
+            hasPermission('sys:fileStore:browserPreview') ||
+            hasPermission('sys:fileStore:delete'),
         },
       });
       const [registerModal, { openModal }] = useModal();

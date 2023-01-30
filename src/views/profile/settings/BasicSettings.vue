@@ -18,9 +18,9 @@
         </div>
       </Col>
     </Row>
-    <Row>
-      <Col :align="'center'">
-        <Button type="primary" @click="handleSubmit"> 更新基本信息 </Button>
+    <Row justify="center">
+      <Col :span="8">
+        <Button type="primary" block @click="handleSubmit"> 保存 </Button>
       </Col>
     </Row>
   </Spin>
@@ -35,6 +35,7 @@
   import { getUserAvatar, getUserInfo, updateUser } from '/@/api/sys/user';
   import { uploadApi } from '/@/api/file-store/Upload.api';
   import { baseSettingsSchemas } from './settings.data';
+  import { User } from '/#/store';
 
   export default defineComponent({
     name: 'BasicSettings',
@@ -56,25 +57,25 @@
         showActionButtonGroup: false,
       });
 
-      const avatar = ref('');
+      let userInfo: User;
       const avatarBase64 = ref('');
       onMounted(async () => {
         const response = await getUserInfo();
         const { user } = response.data?.data;
         await setFieldsValue(user);
-        avatar.value = user.avatar;
+        userInfo = { ...user };
         avatarBase64.value = await getUserAvatar(user.avatar);
       });
 
       function updateAvatar({ data }) {
-        avatar.value = data.id;
+        userInfo.avatar = data.id;
       }
 
       async function handleSubmit() {
         try {
           const values = await validate();
           loading.value = true;
-          values.avatar = avatar.value;
+          values.avatar = userInfo.avatar;
           await updateUser(values);
           userStore.setUserInfo(values);
         } catch (e) {

@@ -13,14 +13,14 @@
               tooltip: '查看用户详情',
               onClick: handleView.bind(null, record),
               auth: 'sys:user:get',
-              ifShow: () => !hasSuperRoleInCodeList(record.roles.map((role) => role.code)),
+              ifShow: () => hasOperationAuthority(record.roles),
             },
             {
               icon: 'clarity:note-edit-line',
               tooltip: '编辑用户资料',
               onClick: handleEdit.bind(null, record),
               auth: 'sys:user:update',
-              ifShow: () => !hasSuperRoleInCodeList(record.roles.map((role) => role.code)),
+              ifShow: () => hasOperationAuthority(record.roles),
             },
             {
               icon: 'ant-design:delete-outlined',
@@ -31,7 +31,7 @@
                 confirm: handleDelete.bind(null, record),
               },
               auth: 'sys:user:delete',
-              ifShow: () => !hasSuperRoleInCodeList(record.roles.map((role) => role.code)),
+              ifShow: () => hasOperationAuthority(record.roles),
             },
           ]"
         />
@@ -63,6 +63,8 @@
   import DeptTree from './DeptTree.vue';
   import { deleteUser, getUserListPage } from '/@/api/sys/user';
   import { columns, searchFormSchema } from './user.data';
+  import type { Role } from '/#/store';
+  import { useUserStore } from '/@/store/modules/user';
 
   export default defineComponent({
     name: 'AccountManagement',
@@ -131,19 +133,36 @@
       }
 
       /**
-       * 是否拥有超级管理员角色
+       * 是否拥有操作权限
+       * 1、不允许操作拥有超级管理员角色的用户
+       * 2、不允许操作比自己角色等级高（含自己）的用户
        */
-      function hasSuperRoleInCodeList(allCodeList: string[]): boolean {
+      function hasOperationAuthority(roles: Role[]): boolean {
         const permissionStore = usePermissionStore();
         const superRole = permissionStore.getSuperRole as string;
-        return allCodeList.includes(superRole.replace('ROLE_', ''));
+        // 是否拥有超级管理员
+        const hasSuperRole = roles
+          .map((role) => role.code)
+          .includes(superRole.replace('ROLE_', ''));
+        // 是否角色等级比自己低
+        const rowUserMaxLevel = roles
+          .map((role) => role.level)
+          .reduce((a, b) => {
+            return a > b ? a : b;
+          });
+        const currentUserMaxLevel = useUserStore()
+          .getUserInfo.roles?.map((role) => role.level)
+          .reduce((a, b) => {
+            return a > b ? a : b;
+          }) as number;
+        return !hasSuperRole && currentUserMaxLevel > rowUserMaxLevel;
       }
 
       return {
         registerTable,
         registerModal,
         hasPermission,
-        hasSuperRoleInCodeList,
+        hasOperationAuthority,
         handleCreate,
         handleEdit,
         handleDelete,

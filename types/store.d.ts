@@ -46,7 +46,17 @@ export interface User {
   deptId?: string;
   dept?: any;
   roleIds?: string[];
-  roles?: any[];
+  roles?: Role[];
+}
+
+export interface Role {
+  id: string | number;
+  name: string;
+  code: string;
+  level: number;
+  status: number;
+  description?: string;
+  remark?: string;
 }
 
 export interface BeforeMiniState {

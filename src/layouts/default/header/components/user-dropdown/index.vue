@@ -1,7 +1,7 @@
 <template>
   <Dropdown placement="bottomLeft" :overlayClassName="`${prefixCls}-dropdown-overlay`">
     <span :class="[prefixCls, `${prefixCls}--${theme}`]" class="flex">
-      <Image :class="`${prefixCls}__header`" :src="userInfo.avatarBase64" />
+      <Image :class="`${prefixCls}__header`" :src="userInfo.avatar" />
       <span :class="`${prefixCls}__info hidden md:block`">
         <span :class="`${prefixCls}__name  `" class="truncate">
           {{ userInfo.name || userInfo.username }}
@@ -40,14 +40,13 @@
   import { DOC_URL } from '/@/settings/siteSetting';
   import { useUserStore } from '/@/store/modules/user';
   import { propTypes } from '/@/utils/propTypes';
-  import { defineComponent, onMounted, ref, toRefs } from 'vue';
+  import { defineComponent, onMounted, ref } from 'vue';
   import { useHeaderSetting } from '/@/hooks/setting/useHeaderSetting';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useModal } from '/@/components/Modal';
   import { openWindow } from '/@/utils';
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
-  import type { User } from '/#/store';
 
   import { getUserAvatar } from '/@/api/sys/user';
 
@@ -72,11 +71,17 @@
       const { getShowDoc, getUseLockPage } = useHeaderSetting();
       const userStore = useUserStore();
 
-      let userInfo = ref({});
+      const userInfo = ref<{ name: string; username: string; avatar: string }>({
+        name: '',
+        username: '',
+        avatar: '',
+      });
 
       onMounted(async () => {
-        userInfo.value = userStore.getUserInfo || {};
-        userInfo.value.avatarBase64 = await getUserAvatar(userInfo.value.avatar);
+        const user = userStore.getUserInfo;
+        userInfo.value.name = user.name;
+        userInfo.value.username = user.username;
+        userInfo.value.avatar = await getUserAvatar(user.avatar); // 获取头像base64
       });
 
       const [register, { openModal }] = useModal();

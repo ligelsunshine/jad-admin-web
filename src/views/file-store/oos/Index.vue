@@ -193,7 +193,7 @@
 
       function handleBrowserPreview(record: Recordable) {
         openWindow(getFilePreviewUrlApi(record.id), {
-          target: true,
+          target: true
         });
       }
 

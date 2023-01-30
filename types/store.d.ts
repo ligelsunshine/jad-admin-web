@@ -39,6 +39,7 @@ export interface User {
   email: string;
   phone: string;
   avatar: string;
+  avatarBase64: string;
   city: string;
   lastLogin: Date;
   remark?: string;

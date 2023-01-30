@@ -2,6 +2,7 @@ import { defHttp } from '/@/utils/http/axios';
 import { openWindow } from '/@/utils';
 import { getApi as getFileStoreApi } from '/@/api/file-store/oos/FileStore.api';
 import { Store } from '/@/views/file-store/oos/FileStore.data';
+import { stringify } from "qs";
 
 enum Api {
   Download = '/sys/file/download',
@@ -14,8 +15,8 @@ enum Api {
  * 文件下载
  */
 export const downloadFileApi = (fileId: string) => {
-  openWindow(defHttp.getOptions().requestOptions.apiUrl + Api.Download + '/' + fileId, {
-    target: true,
+  openWindow(defHttp.getOptions().requestOptions?.apiUrl + Api.Download + '/' + fileId, {
+    target: '_blank',
   });
 };
 
@@ -23,7 +24,7 @@ export const downloadFileApi = (fileId: string) => {
  * 获取下载链接
  */
 export const getDownloadUrlApi = (fileId: string) => {
-  return defHttp.getOptions().requestOptions.apiUrl + Api.Download + '/' + fileId;
+  return defHttp.getOptions().requestOptions?.apiUrl + Api.Download + '/' + fileId;
 };
 
 /**
@@ -31,8 +32,8 @@ export const getDownloadUrlApi = (fileId: string) => {
  */
 export const getFileBase64Api = async (fileId: string) => {
   const response = await defHttp.get(
-    { url: Api.Base64 + '/' + fileId },
-    { isTransformResponse: true }
+    { url: Api.Base64 + '?' + stringify({ fileId: fileId }) },
+    { isTransformResponse: false }
   );
   return response.data?.data;
 };
@@ -43,7 +44,7 @@ export const getFileBase64Api = async (fileId: string) => {
 export const getFileDownloadUrlApi = async (fileId: string) => {
   const result = await getFileStoreApi(fileId);
   if (result.store == Store.LOCAL) {
-    return defHttp.getOptions().requestOptions.apiUrl + Api.Download + '/' + fileId;
+    return defHttp.getOptions().requestOptions?.apiUrl + Api.Download + '/' + fileId;
   }
   const response = await defHttp.get(
     { url: Api.GetUrl + '/' + fileId },
@@ -56,5 +57,5 @@ export const getFileDownloadUrlApi = async (fileId: string) => {
  * 获取文件预览链接
  */
 export const getFilePreviewUrlApi = (fileId: string) => {
-  return defHttp.getOptions().requestOptions.apiUrl + Api.Preview + '/' + fileId;
+  return defHttp.getOptions().requestOptions?.apiUrl + Api.Preview + '/' + fileId;
 };

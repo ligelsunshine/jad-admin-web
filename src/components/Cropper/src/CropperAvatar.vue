@@ -91,9 +91,9 @@
         }
       );
 
-      function handleUploadSuccess({ source }) {
+      function handleUploadSuccess({ data, source }) {
         sourceValue.value = source;
-        emit('change', source);
+        emit('change', { data: data.data, source });
         createMessage.success(t('component.cropper.uploadSuccess'));
       }
 

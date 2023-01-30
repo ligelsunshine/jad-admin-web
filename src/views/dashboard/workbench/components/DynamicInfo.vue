@@ -26,7 +26,7 @@
 
   import { Card, List } from 'ant-design-vue';
   import { dynamicInfoItems } from './data';
-  import headerImg from '/@/assets/images/header.jpg';
+  import headerImg from '/@/assets/images/header.png';
   import { Icon } from '/@/components/Icon';
 
   export default defineComponent({

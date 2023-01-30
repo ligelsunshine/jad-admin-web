@@ -1,14 +1,10 @@
 <template>
   <Dropdown placement="bottomLeft" :overlayClassName="`${prefixCls}-dropdown-overlay`">
     <span :class="[prefixCls, `${prefixCls}--${theme}`]" class="flex">
-      <Image
-        :class="`${prefixCls}__header`"
-        :src="getUserInfo.avatar"
-        fallback="/resource/img/logo.png"
-      />
+      <Image :class="`${prefixCls}__header`" :src="userInfo.avatarBase64" />
       <span :class="`${prefixCls}__info hidden md:block`">
         <span :class="`${prefixCls}__name  `" class="truncate">
-          {{ getUserInfo.name || getUserInfo.username }}
+          {{ userInfo.name || userInfo.username }}
         </span>
       </span>
     </span>
@@ -44,13 +40,16 @@
   import { DOC_URL } from '/@/settings/siteSetting';
   import { useUserStore } from '/@/store/modules/user';
   import { propTypes } from '/@/utils/propTypes';
-  import { defineComponent, computed } from 'vue';
+  import { defineComponent, onMounted, ref, toRefs } from 'vue';
   import { useHeaderSetting } from '/@/hooks/setting/useHeaderSetting';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useModal } from '/@/components/Modal';
   import { openWindow } from '/@/utils';
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
+  import type { User } from '/#/store';
+
+  import { getUserAvatar } from '/@/api/sys/user';
 
   type MenuEvent = 'logout' | 'doc' | 'lock';
 
@@ -73,9 +72,11 @@
       const { getShowDoc, getUseLockPage } = useHeaderSetting();
       const userStore = useUserStore();
 
-      const getUserInfo = computed(() => {
-        const { username, name = '', avatar, remark } = userStore.getUserInfo || {};
-        return { username, name, avatar: avatar, remark };
+      let userInfo = ref({});
+
+      onMounted(async () => {
+        userInfo.value = userStore.getUserInfo || {};
+        userInfo.value.avatarBase64 = await getUserAvatar(userInfo.value.avatar);
       });
 
       const [register, { openModal }] = useModal();
@@ -111,7 +112,7 @@
       return {
         prefixCls,
         t,
-        getUserInfo,
+        userInfo,
         handleMenuClick,
         getShowDoc,
         register,

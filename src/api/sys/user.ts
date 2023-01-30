@@ -1,7 +1,9 @@
 import { defHttp } from '/@/utils/http/axios';
 import { LoginParams } from './model/userModel';
-
 import qs from 'qs';
+
+import headerImg from '/@/assets/images/header.png';
+import { getFileBase64Api } from '/@/api/file-store/Download.api';
 
 enum Api {
   Login = '/auth/login',
@@ -44,6 +46,20 @@ export function getPicCaptcha() {
  */
 export function getUserInfo() {
   return defHttp.get({ url: Api.GetUserInfo });
+}
+
+/**
+ * 获取用户头像的base64
+ * @param avatar 头像ID
+ */
+export async function getUserAvatar(avatar: string) {
+  let avatarBase64;
+  try {
+    avatarBase64 = await getFileBase64Api(avatar);
+  } catch (e) {
+    // ignore
+  }
+  return avatarBase64 || headerImg;
 }
 
 export async function getPermCode(): Promise<PermCode> {

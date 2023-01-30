@@ -196,7 +196,8 @@ export const formSchema: FormSchema[] = [
     label: '路由名称',
     component: 'Input',
     show: ({ values }) => isMenu(values.type),
-    helpMessage: '路由名称尽量唯一，不写默认自动生成，可以通过组件名称做页面缓存（切换标签页不刷新页面）',
+    helpMessage:
+      '路由名称尽量唯一，不写默认自动生成，可以通过组件名称做页面缓存（切换标签页不刷新页面）',
   },
   {
     field: 'component',

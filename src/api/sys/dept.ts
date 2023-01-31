@@ -17,13 +17,13 @@ export const saveDept = (dept) => {
 /**
  * 删除
  */
-export const deleteDept = (id:string) => {
+export const deleteDept = (id: string) => {
   return defHttp.delete({ url: Api.Delete + '/' + id + '?includeSelf=true' });
 };
 /**
  * 删除子部门
  */
-export const deleteDeptChildren = (id:string) => {
+export const deleteDeptChildren = (id: string) => {
   return defHttp.delete({ url: Api.Delete + '/' + id + '?includeSelf=false' });
 };
 /**

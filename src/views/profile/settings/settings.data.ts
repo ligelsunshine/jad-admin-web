@@ -37,15 +37,7 @@ export const baseSettingsSchemas: FormSchema[] = [
     field: 'username',
     label: '账号',
     component: 'Input',
-    rules: [
-      {
-        required: true,
-        pattern: /^[A-Za-z0-9@._]{1,16}$/,
-        message: '账号只能由 A-Z a-z 0-9 @ . _ 组成',
-        trigger: 'blur',
-      },
-    ],
-    show: false,
+    slot: 'username',
   },
   {
     label: '角色',

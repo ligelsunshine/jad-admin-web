@@ -2,7 +2,11 @@
   <Spin :spinning="loading">
     <Row :gutter="24">
       <Col :span="14">
-        <BasicForm @register="register" />
+        <BasicForm @register="register">
+          <template #username="{ model, field }">
+            <Input :value="model[field]" readonly disabled />
+          </template>
+        </BasicForm>
       </Col>
       <Col :span="10">
         <div class="change-avatar">
@@ -27,7 +31,7 @@
 </template>
 <script lang="ts">
   import { defineComponent, onMounted, ref } from 'vue';
-  import { Button, Row, Col, Spin } from 'ant-design-vue';
+  import { Button, Row, Col, Spin, Input } from 'ant-design-vue';
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { CropperAvatar } from '/@/components/Cropper';
   import { useUserStore } from '/@/store/modules/user';
@@ -45,6 +49,7 @@
       Row,
       Col,
       Spin,
+      Input,
       CropperAvatar,
     },
     setup() {
@@ -67,8 +72,9 @@
         avatarBase64.value = await getUserAvatar(user.avatar);
       });
 
-      function updateAvatar({ data }) {
+      async function updateAvatar({ data }) {
         userInfo.avatar = data.id;
+        await handleSubmit();
       }
 
       async function handleSubmit() {

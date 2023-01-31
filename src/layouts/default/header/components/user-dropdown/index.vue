@@ -1,7 +1,11 @@
 <template>
   <Dropdown placement="bottomLeft" :overlayClassName="`${prefixCls}-dropdown-overlay`">
     <span :class="[prefixCls, `${prefixCls}--${theme}`]" class="flex">
-      <Image :class="`${prefixCls}__header`" :src="userInfo.avatar" />
+      <Image
+        :class="`${prefixCls}__header`"
+        :src="userInfo.avatar"
+        fallback="/@/assets/images/header.png"
+      />
       <span :class="`${prefixCls}__info hidden md:block`">
         <span :class="`${prefixCls}__name  `" class="truncate">
           {{ userInfo.name || userInfo.username }}

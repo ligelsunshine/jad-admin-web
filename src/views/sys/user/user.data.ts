@@ -1,16 +1,19 @@
-import { Avatar } from 'ant-design-vue';
+import { Image } from 'ant-design-vue';
 import { Icon } from '/@/components/Icon';
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { DescItem } from '/@/components/Description';
 import { h } from 'vue';
+import { getFilePreviewUrlApi } from '/@/api/file-store/Download.api';
+import headerImg from '/@/assets/images/header.png';
 
 export const columns: BasicColumn[] = [
   {
     title: '头像',
     dataIndex: 'avatar',
     customRender: ({ record }) => {
-      return h(Avatar, { src: record.avatar, size: 50 });
+      const avatar = getFilePreviewUrlApi(record.avatar);
+      return h(Image, { src: avatar, width: 45, height: 45, fallback: headerImg });
     },
   },
   {
@@ -133,14 +136,14 @@ export const formSchemas: FormSchema[] = [
     },
   },
   {
-    field: 'age',
-    label: '年龄',
-    component: 'InputNumber',
-  },
-  {
     field: 'birthday',
     label: '出生日期',
     component: 'DatePicker',
+  },
+  {
+    field: 'age',
+    label: '年龄',
+    component: 'InputNumber',
   },
   {
     field: 'email',

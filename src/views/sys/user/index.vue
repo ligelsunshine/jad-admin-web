@@ -37,9 +37,9 @@
         />
       </template>
       <template #roles="{ record }">
-        <Tag v-for="role in record.roles" color="green" :key="role.id" style="margin: 5px">{{
-          role.name
-        }}</Tag>
+        <Tag v-for="role in record.roles" color="green" :key="role.id" style="margin: 5px">
+          {{ role.name }}
+        </Tag>
       </template>
       <template #dept="{ record }">
         <div>{{ record.dept?.name }}</div>

@@ -1,16 +1,8 @@
 <template>
   <Spin :spinning="loading">
     <Row :gutter="24">
-      <Col :span="14">
-        <BasicForm @register="register">
-          <template #username="{ model, field }">
-            <Input :value="model[field]" readonly disabled />
-          </template>
-        </BasicForm>
-      </Col>
-      <Col :span="10">
+      <Col :xs="24" :md="6">
         <div class="change-avatar">
-          <div class="mb-2">头像</div>
           <CropperAvatar
             :uploadApi="uploadApi"
             :value="avatar"
@@ -20,6 +12,21 @@
             width="150"
           />
         </div>
+      </Col>
+      <Col :xs="24" :md="18">
+        <BasicForm @register="register">
+          <template #username="{ model, field }">
+            <Input :value="model[field]" readonly disabled />
+          </template>
+          <template #roles="{ model, field }">
+            <Tag v-for="role in model[field]" color="green" :key="role.id" style="margin: 5px">
+              {{ role.name }}
+            </Tag>
+          </template>
+          <template #dept="{ model, field }">
+            <Input :value="model[field]?.name" readonly disabled />
+          </template>
+        </BasicForm>
       </Col>
     </Row>
     <Row justify="center">
@@ -31,7 +38,7 @@
 </template>
 <script lang="ts">
   import { defineComponent, onMounted, ref } from 'vue';
-  import { Button, Row, Col, Spin, Input } from 'ant-design-vue';
+  import { Button, Row, Col, Spin, Input, Tag } from 'ant-design-vue';
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { CropperAvatar } from '/@/components/Cropper';
   import { useUserStore } from '/@/store/modules/user';
@@ -50,6 +57,7 @@
       Col,
       Spin,
       Input,
+      Tag,
       CropperAvatar,
     },
     setup() {
@@ -104,6 +112,7 @@
 
 <style lang="less" scoped>
   .change-avatar {
+    text-align: center;
     img {
       display: block;
       margin-bottom: 15px;

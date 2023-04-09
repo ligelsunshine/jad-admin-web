@@ -41,9 +41,15 @@ export const baseSettingsSchemas: FormSchema[] = [
   },
   {
     label: '角色',
-    field: 'roleIds',
-    component: 'InputGroup',
-    show: false,
+    field: 'roles',
+    component: 'Input',
+    slot: 'roles',
+  },
+  {
+    label: '部门',
+    field: 'dept',
+    component: 'Input',
+    slot: 'dept',
   },
   {
     field: 'name',

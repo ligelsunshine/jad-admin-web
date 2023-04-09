@@ -57,5 +57,8 @@ export const getFileDownloadUrlApi = async (fileId: string) => {
  * 获取文件预览链接
  */
 export const getFilePreviewUrlApi = (fileId: string) => {
+  if (!fileId) {
+    return '';
+  }
   return defHttp.getOptions().requestOptions?.apiUrl + Api.Preview + '/' + fileId;
 };

@@ -14,6 +14,7 @@ enum Api {
   Save = '/sys/user/save',
   Delete = '/sys/user/delete',
   Update = '/sys/user/update',
+  UpdateBaseInfo = '/sys/user/updateBaseInfo',
   Get = '/sys/user/get',
   GetList = '/sys/user/get/list',
   GetListPage = '/sys/user/get/page',
@@ -95,6 +96,12 @@ export const deleteUser = (id) => {
  */
 export const updateUser = (user) => {
   return defHttp.put({ url: Api.Update, params: user }, { isTransformResponse: true });
+};
+/**
+ * 修改用户基础信息
+ */
+export const updateUserBaseInfo = (user) => {
+  return defHttp.put({ url: Api.UpdateBaseInfo, params: user }, { isTransformResponse: true });
 };
 /**
  * 获取单个用户

@@ -43,7 +43,7 @@
   import { CropperAvatar } from '/@/components/Cropper';
   import { useUserStore } from '/@/store/modules/user';
 
-  import { getUserAvatar, getUserInfo, updateUser } from '/@/api/sys/user';
+  import { getUserAvatar, getUserInfo, updateUserBaseInfo } from '/@/api/sys/user';
   import { uploadApi } from '/@/api/file-store/Upload.api';
   import { baseSettingsSchemas } from './settings.data';
   import { User } from '/#/store';
@@ -90,7 +90,7 @@
           const values = await validate();
           loading.value = true;
           values.avatar = userInfo.avatar;
-          await updateUser(values);
+          await updateUserBaseInfo(values);
           userStore.setUserInfo(values);
         } catch (e) {
           console.error(e);

@@ -7,12 +7,14 @@ export const settingList = [
     name: '基本设置',
     icon: 'ic:outline-info',
     component: 'BasicSettings',
+    auth: 'profile:settings:base',
   },
   {
     key: '2',
     name: '安全设置',
     icon: 'ic:baseline-security',
     component: 'SecureSettings',
+    auth: 'profile:settings:security',
   },
 ];
 

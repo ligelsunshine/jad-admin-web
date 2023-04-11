@@ -2,7 +2,7 @@
   <ScrollContainer>
     <div ref="wrapperRef" :class="prefixCls">
       <Tabs tab-position="left" :tabBarStyle="tabBarStyle">
-        <template v-for="item in settingList" :key="item.key">
+        <template v-for="item in getSettingList()" :key="item.key">
           <TabPane>
             <template #tab>
               <Icon :icon="item.icon" />
@@ -22,9 +22,11 @@
   import { ScrollContainer } from '/@/components/Container';
   import { Tabs, TabPane, Menu, MenuItem, Card } from 'ant-design-vue';
   import Icon from '/@/components/Icon/src/Icon.vue';
+
   import { settingList } from './settings.data';
   import BasicSettings from './BasicSettings.vue';
   import SecureSettings from './SecureSettings.vue';
+  import { usePermission } from '/@/hooks/web/usePermission';
 
   export default defineComponent({
     name: 'Index',
@@ -40,12 +42,18 @@
       SecureSettings,
     },
     setup() {
+      const { hasPermission } = usePermission();
+      function getSettingList() {
+        // 返回拥有权限的设置列表
+        return settingList.filter((setting) => hasPermission(setting.auth));
+      }
       return {
         prefixCls: 'account-setting',
-        settingList,
+        getSettingList,
         tabBarStyle: {
           width: 'auto',
         },
+        hasPermission,
       };
     },
   });

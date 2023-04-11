@@ -39,7 +39,7 @@
           width: 40%;
           height: 40px;
           float: right;
-          margin: 0px;
+          margin: 0;
           border-radius: 2px;
           cursor: pointer;
         "
@@ -202,6 +202,7 @@
           )
           .catch(() => {
             loading.value = false;
+            handlePicCaptcha();
           });
         if (userInfo) {
           notification.success({

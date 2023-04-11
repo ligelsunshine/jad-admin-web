@@ -1,14 +1,5 @@
 import { FormSchema } from '/@/components/Form';
 
-export interface ListItem {
-  key: string;
-  title: string;
-  description: string;
-  extra?: string;
-  avatar?: string;
-  color?: string;
-}
-
 // tab的list
 export const settingList = [
   {
@@ -118,36 +109,48 @@ export const baseSettingsSchemas: FormSchema[] = [
   },
 ];
 
-// 安全设置 list
-export const secureSettingList: ListItem[] = [
+// 安全设置 form
+export const secureSettingsSchema: FormSchema[] = [
   {
-    key: '1',
-    title: '账户密码',
-    description: '当前密码强度：：强',
-    extra: '修改',
+    field: 'oldPassword',
+    label: '当前密码',
+    component: 'InputPassword',
+    required: true,
   },
   {
-    key: '2',
-    title: '密保手机',
-    description: '已绑定手机：：138****8293',
-    extra: '修改',
+    field: 'newPassword',
+    label: '新密码',
+    component: 'StrengthMeter',
+    componentProps: {
+      placeholder: '新密码',
+    },
+    rules: [
+      {
+        required: true,
+        message: '请输入新密码',
+      },
+    ],
   },
   {
-    key: '3',
-    title: '密保问题',
-    description: '未设置密保问题，密保问题可有效保护账户安全',
-    extra: '修改',
-  },
-  {
-    key: '4',
-    title: '备用邮箱',
-    description: '已绑定邮箱：：ant***sign.com',
-    extra: '修改',
-  },
-  {
-    key: '5',
-    title: 'MFA 设备',
-    description: '未绑定 MFA 设备，绑定后，可以进行二次确认',
-    extra: '修改',
+    field: 'confirmPassword',
+    label: '确认密码',
+    component: 'InputPassword',
+
+    dynamicRules: ({ values }) => {
+      return [
+        {
+          required: true,
+          validator: (_, value) => {
+            if (!value) {
+              return Promise.reject('密码不能为空');
+            }
+            if (value !== values.newPassword) {
+              return Promise.reject('两次输入的密码不一致!');
+            }
+            return Promise.resolve();
+          },
+        },
+      ];
+    },
   },
 ];

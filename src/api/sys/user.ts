@@ -15,6 +15,7 @@ enum Api {
   Delete = '/sys/user/delete',
   Update = '/sys/user/update',
   UpdateBaseInfo = '/sys/user/updateBaseInfo',
+  UpdatePassword = '/sys/user/updatePassword',
   Get = '/sys/user/get',
   GetList = '/sys/user/get/list',
   GetListPage = '/sys/user/get/page',
@@ -102,6 +103,19 @@ export const updateUser = (user) => {
  */
 export const updateUserBaseInfo = (user) => {
   return defHttp.put({ url: Api.UpdateBaseInfo, params: user }, { isTransformResponse: true });
+};
+/**
+ * 修改用户密码
+ */
+export const updatePassword = (updatePasswordForm: {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}) => {
+  return defHttp.put(
+    { url: Api.UpdatePassword, params: updatePasswordForm },
+    { isTransformResponse: true }
+  );
 };
 /**
  * 获取单个用户

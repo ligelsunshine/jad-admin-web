@@ -2,7 +2,7 @@
 // The axios configuration can be changed according to the project, just change the file, other files can be left unchanged
 
 import type { AxiosResponse } from 'axios';
-import type { AxiosTransform, CreateAxiosOptions } from './axiosTransform';
+import type { AxiosTransform } from './axiosTransform';
 import { VAxios } from './Axios';
 import { useGlobSetting } from '/@/hooks/setting';
 import { useMessage } from '/@/hooks/web/useMessage';
@@ -202,7 +202,7 @@ const transform: AxiosTransform = {
   },
 };
 
-function createAxios(opt?: Partial<CreateAxiosOptions>) {
+function createAxios() {
   return new VAxios(
     deepMerge(
       {
@@ -246,7 +246,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
           withToken: true,
         },
       },
-      opt || {}
+      {}
     )
   );
 }

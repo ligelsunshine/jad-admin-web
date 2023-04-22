@@ -455,11 +455,11 @@ export interface SearchForm {
   pageSize: number;
   whereItems: WhereItem[];
 }
-export function beforeFetchFun(params, searchFormSchema) {
+export function beforeFetchFun(params, searchFormSchema, whereItems: WhereItem[] = []) {
   const result: SearchForm = {
     page: params.page,
     pageSize: params.pageSize,
-    whereItems: [],
+    whereItems: [...whereItems],
   };
   searchFormSchema.forEach((item) => {
     if (params[item.field] != undefined) {

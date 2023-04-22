@@ -17,8 +17,8 @@ enum Api {
   UpdateBaseInfo = '/sys/user/updateBaseInfo',
   UpdatePassword = '/sys/user/updatePassword',
   Get = '/sys/user/get',
-  GetList = '/sys/user/get/list',
   GetListPage = '/sys/user/get/page',
+  SearchUser = '/sys/user/searchUser',
 }
 
 interface PermCode {
@@ -124,16 +124,16 @@ export const getUser = async (id) => {
   return defHttp.get({ url: Api.Get + '/' + id });
 };
 /**
- * 获取所有
- */
-export const getUserList = async () => {
-  const response = await defHttp.post({ url: Api.GetList });
-  return response.data?.data;
-};
-/**
  * 分页获取
  */
 export const getUserListPage = async (params) => {
   const response = await defHttp.post({ url: Api.GetListPage, params: params });
+  return response.data?.data;
+};
+/**
+ * 搜索用户
+ */
+export const searchUser = async ({ keyword }) => {
+  const response = await defHttp.get({ url: Api.SearchUser + '?keyword=' + keyword });
   return response.data?.data;
 };

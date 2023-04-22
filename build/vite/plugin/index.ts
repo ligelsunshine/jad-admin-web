@@ -5,6 +5,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import legacy from '@vitejs/plugin-legacy';
 
 import purgeIcons from 'vite-plugin-purge-icons';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 import { configHtmlPlugin } from './html';
 import { configPwaConfig } from './pwa';
@@ -31,6 +32,12 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
     vue(),
     // have to
     vueJsx(),
+    topLevelAwait({
+      // The export name of top-level await promise for each chunk module
+      promiseExportName: '__tla',
+      // The function to generate import names of top-level await promise in each chunk module
+      promiseImportName: (i) => `__tla_${i}`,
+    }),
   ];
 
   // TODO

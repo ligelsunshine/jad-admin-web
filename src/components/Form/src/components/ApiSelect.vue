@@ -59,7 +59,10 @@
       },
       // support xxx.xxx.xx
       resultField: propTypes.string.def(''),
-      labelField: propTypes.string.def('label'),
+      labelField: {
+        type: [String, Function],
+        default: propTypes.string.def('label'),
+      },
       valueField: propTypes.string.def('value'),
       immediate: propTypes.bool.def(true),
     },
@@ -80,10 +83,16 @@
 
         return unref(options).reduce((prev, next: Recordable) => {
           if (next) {
+            let label: any;
+            if (isFunction(labelField)) {
+              label = labelField(next);
+            } else {
+              label = next[labelField];
+            }
             const value = next[valueField];
             prev.push({
-              ...omit(next, [labelField, valueField]),
-              label: next[labelField],
+              ...omit(next, [valueField]),
+              label: label,
               value: numberToString ? `${value}` : value,
             });
           }

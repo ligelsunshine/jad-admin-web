@@ -156,8 +156,8 @@
 
       const formData = reactive({
         type: '',
-        account: 'administrator',
-        password: '123456',
+        account: '',
+        password: '',
         codeKey: '',
         codeValue: '',
       });

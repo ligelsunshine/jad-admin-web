@@ -20,7 +20,7 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
   import { ScrollContainer } from '/@/components/Container';
-  import { Tabs, TabPane, Menu, MenuItem, Card } from 'ant-design-vue';
+  import { Tabs, Menu, Card } from 'ant-design-vue';
   import Icon from '/@/components/Icon/src/Icon.vue';
 
   import { settingList } from './settings.data';
@@ -33,9 +33,9 @@
     components: {
       ScrollContainer,
       Tabs,
-      TabPane,
+      TabPane: Tabs.TabPane,
       Menu,
-      MenuItem,
+      MenuItem: Menu.Item,
       Icon,
       Card,
       BasicSettings,

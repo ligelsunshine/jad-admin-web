@@ -2,7 +2,7 @@ import { h } from 'vue';
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { usePermission } from '/@/hooks/web/usePermission';
-import { Switch } from 'ant-design-vue';
+import { Switch, Tag } from 'ant-design-vue';
 
 import { updateRoleStatus } from '/@/api/sys/role';
 const { hasPermission } = usePermission();
@@ -22,6 +22,18 @@ export const columns: BasicColumn[] = [
     title: '角色级别',
     dataIndex: 'level',
     width: 180,
+  },
+  {
+    title: '是否默认角色',
+    dataIndex: 'defaultRole',
+    width: 120,
+    customRender: ({ record }) => {
+      const defaultRole = record.defaultRole;
+      const color = defaultRole ? 'green' : 'red';
+      const text = defaultRole ? '默认角色' : '否';
+      return h(Tag, { color: color }, () => text);
+    },
+    ifShow: () => hasPermission('sys:role:update:defaultRole'),
   },
   {
     title: '状态',
@@ -66,6 +78,18 @@ export const searchFormSchema: FormSchema[] = [
     field: 'name',
     label: '角色名称',
     component: 'Input',
+    colProps: { span: 8 },
+  },
+  {
+    field: 'defaultRole',
+    label: '默认角色',
+    component: 'Select',
+    componentProps: {
+      options: [
+        { label: '否', value: '0' },
+        { label: '默认角色', value: '1' },
+      ],
+    },
     colProps: { span: 8 },
   },
   {

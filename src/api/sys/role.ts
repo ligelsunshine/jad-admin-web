@@ -6,6 +6,7 @@ enum Api {
   Delete = '/sys/role/delete',
   Update = '/sys/role/update',
   UpdateStatus = '/sys/role/update/status',
+  UpdateDefaultRole = '/sys/role/update/defaultRole',
   GetRoleList = '/sys/role/get/list',
   GetRoleListPage = '/sys/role/get/page',
   GetRoleMenuItems = '/sys/role/getRoleMenuItems',
@@ -37,6 +38,13 @@ export const updateRoleStatus = async (id, status) => {
   status = status == 0 ? 'ENABLE' : 'DISABLE';
   const params = qs.stringify({ id, status });
   return defHttp.put({ url: Api.UpdateStatus + '?' + params }, { isTransformResponse: true });
+};
+/**
+ * 修改默认角色
+ */
+export const updateDefaultRole = async (id) => {
+  const params = qs.stringify({ id });
+  return defHttp.put({ url: Api.UpdateDefaultRole + '?' + params }, { isTransformResponse: true });
 };
 /**
  * 获取所有

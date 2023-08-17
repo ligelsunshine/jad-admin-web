@@ -16,6 +16,12 @@
               auth: 'sys:role:update',
             },
             {
+              icon: 'ant-design:pushpin-outlined',
+              onClick: handleUpdateDefaultRole.bind(null, record),
+              tooltip: '设为默认角色',
+              auth: 'sys:role:update:defaultRole',
+            },
+            {
               icon: 'clarity:menu-line',
               onClick: handleMenu.bind(null, record),
               tooltip: '分配菜单权限',
@@ -43,12 +49,12 @@
   import { defineComponent } from 'vue';
   import { useDrawer } from '/@/components/Drawer';
   import { BasicTable, useTable, TableAction, beforeFetchFun } from '/@/components/Table';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import { usePermission } from '/@/hooks/web/usePermission';
   import RoleDrawer from './RoleDrawer.vue';
   import MenuDrawer from './MenuDrawer.vue';
   import { columns, searchFormSchema } from './role.data';
-  import { deleteRole, getRoleListPage } from '/@/api/sys/role';
-  import { useMessage } from '/@/hooks/web/useMessage';
-  import { usePermission } from '/@/hooks/web/usePermission';
+  import { deleteRole, getRoleListPage, updateDefaultRole } from '/@/api/sys/role';
 
   const { createMessage } = useMessage();
 
@@ -74,13 +80,14 @@
         showTableSetting: true,
         bordered: true,
         actionColumn: {
-          width: 120,
+          width: 160,
           title: '操作',
           dataIndex: 'action',
           slots: { customRender: 'action' },
           fixed: 'right',
           ifShow: () =>
             hasPermission('sys:role:update') ||
+            hasPermission('sys:role:update:defaultRole') ||
             hasPermission('sys:role:assignPermissions') ||
             hasPermission('sys:role:delete'),
         },
@@ -96,6 +103,12 @@
         openRoleDrawer(true, {
           record,
           isUpdate: true,
+        });
+      }
+
+      function handleUpdateDefaultRole(record: Recordable) {
+        updateDefaultRole(record.id).then(() => {
+          reload();
         });
       }
 
@@ -122,6 +135,7 @@
         registerMenuDrawer,
         handleCreate,
         handleEdit,
+        handleUpdateDefaultRole,
         handleMenu,
         handleDelete,
         handleSuccess,

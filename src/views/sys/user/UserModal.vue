@@ -22,7 +22,7 @@
   import { Select } from 'ant-design-vue';
   import { formSchemas } from './user.data';
   import { getDeptTree } from '/@/api/sys/dept';
-  import { getRoleList } from '/@/api/sys/role';
+  import { getDefaultRole, getRoleList } from '/@/api/sys/role';
   import { saveUser, updateUser } from '/@/api/sys/user';
 
   export default defineComponent({
@@ -56,6 +56,12 @@
               roleOptions.value.push({ value: role.id, label: role.name });
             });
           }
+          // 设置默认角色
+          getDefaultRole().then(async (res) => {
+            await setFieldsValue({
+              roleIds: [res.id],
+            });
+          });
         }
 
         if (unref(isUpdate)) {

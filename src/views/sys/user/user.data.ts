@@ -6,7 +6,58 @@ import { DescItem } from '/@/components/Description';
 import { h } from 'vue';
 import { getFilePreviewUrlApi } from '/@/api/file-store/Download.api';
 import headerImg from '/@/assets/images/header.png';
+import { usePermissionStore } from '/@/store/modules/permission';
+import type { Role } from '/#/store';
+import { useUserStore } from '/@/store/modules/user';
+import { usePermission } from '/@/hooks/web/usePermission';
+const { hasPermission } = usePermission();
 
+/**
+ * 是否拥有操作权限
+ * 1、不允许操作拥有超级管理员角色的用户
+ * 2、不允许操作比自己角色等级高（含自己）的用户
+ */
+export function hasOperationAuthority(roles: Role[]): boolean {
+  const permissionStore = usePermissionStore();
+  const superRole = permissionStore.getSuperRole as string;
+  // 是否拥有超级管理员
+  const hasSuperRole = roles.map((role) => role.code).includes(superRole.replace('ROLE_', ''));
+  // 是否角色等级比自己低
+  const rowUserMaxLevel = roles
+    .map((role) => role.level)
+    .reduce((a, b) => {
+      return a > b ? a : b;
+    });
+  const currentUserMaxLevel = useUserStore()
+    .getUserInfo.roles?.map((role) => role.level)
+    .reduce((a, b) => {
+      return a > b ? a : b;
+    }) as number;
+  return !hasSuperRole && currentUserMaxLevel > rowUserMaxLevel;
+}
+export enum UserOrigin {
+  UNKNOWN = 0,
+  ADMIN_SAVE = 1,
+  NORMAL = 2,
+  PHONE_VERIFICATION_CODE = 3,
+  EMAIL_VERIFICATION_CODE = 4,
+}
+export function renderOfOrigin(origin) {
+  switch (origin) {
+    case UserOrigin.UNKNOWN:
+      return '未知来源';
+    case UserOrigin.ADMIN_SAVE:
+      return '管理员添加';
+    case UserOrigin.NORMAL:
+      return '正常注册';
+    case UserOrigin.PHONE_VERIFICATION_CODE:
+      return '手机验证码注册';
+    case UserOrigin.EMAIL_VERIFICATION_CODE:
+      return '邮箱验证码注册';
+    default:
+      return 'undefined';
+  }
+}
 export const columns: BasicColumn[] = [
   {
     title: '头像',
@@ -39,6 +90,12 @@ export const columns: BasicColumn[] = [
     slots: { customRender: 'dept' },
   },
   {
+    dataIndex: 'origin',
+    title: '用户账号来源',
+    customRender: ({ record }) => renderOfOrigin(record.origin),
+    ifShow: () => hasPermission('sys:user:get'),
+  },
+  {
     title: '创建时间',
     dataIndex: 'createTime',
     width: 180,
@@ -63,6 +120,27 @@ export const searchFormSchema: FormSchema[] = [
     field: 'name',
     label: '姓名',
     component: 'Input',
+    colProps: { span: 8 },
+  },
+  {
+    field: 'origin',
+    label: '用户账号来源',
+    component: 'Select',
+    componentProps: {
+      options: [
+        { label: renderOfOrigin(UserOrigin.UNKNOWN), value: UserOrigin.UNKNOWN },
+        { label: renderOfOrigin(UserOrigin.ADMIN_SAVE), value: UserOrigin.ADMIN_SAVE },
+        { label: renderOfOrigin(UserOrigin.NORMAL), value: UserOrigin.NORMAL },
+        {
+          label: renderOfOrigin(UserOrigin.PHONE_VERIFICATION_CODE),
+          value: UserOrigin.PHONE_VERIFICATION_CODE,
+        },
+        {
+          label: renderOfOrigin(UserOrigin.EMAIL_VERIFICATION_CODE),
+          value: UserOrigin.EMAIL_VERIFICATION_CODE,
+        },
+      ],
+    },
     colProps: { span: 8 },
   },
   {
@@ -204,6 +282,11 @@ export const userSchema: DescItem[] = [
   {
     field: 'name',
     label: '姓名',
+  },
+  {
+    field: 'origin',
+    label: '账号来源',
+    render: (val) => renderOfOrigin(val),
   },
   {
     field: 'sex',

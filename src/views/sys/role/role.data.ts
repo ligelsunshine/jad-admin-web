@@ -1,11 +1,11 @@
 import { h } from 'vue';
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
-import { usePermission } from '/@/hooks/web/usePermission';
 import { Switch, Tag } from 'ant-design-vue';
+import { usePermission } from '/@/hooks/web/usePermission';
+const { hasPermission } = usePermission();
 
 import { updateRoleStatus } from '/@/api/sys/role';
-const { hasPermission } = usePermission();
 
 export const columns: BasicColumn[] = [
   {

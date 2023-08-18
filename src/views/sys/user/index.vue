@@ -54,7 +54,6 @@
   import { BasicTable, useTable, TableAction, beforeFetchFun } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
-  import { usePermissionStore } from '/@/store/modules/permission';
   import { usePermission } from '/@/hooks/web/usePermission';
   import { useGo } from '/@/hooks/web/usePage';
   import { Tag } from 'ant-design-vue';
@@ -62,9 +61,7 @@
   import AccountModal from './UserModal.vue';
   import DeptTree from './DeptTree.vue';
   import { deleteUser, getUserListPage } from '/@/api/sys/user';
-  import { columns, searchFormSchema } from './user.data';
-  import type { Role } from '/#/store';
-  import { useUserStore } from '/@/store/modules/user';
+  import { columns, hasOperationAuthority, searchFormSchema } from "./user.data";
 
   export default defineComponent({
     name: 'AccountManagement',
@@ -130,32 +127,6 @@
 
       function handleView(record: Recordable) {
         go('/sys/user/UserDetail/' + record.id);
-      }
-
-      /**
-       * 是否拥有操作权限
-       * 1、不允许操作拥有超级管理员角色的用户
-       * 2、不允许操作比自己角色等级高（含自己）的用户
-       */
-      function hasOperationAuthority(roles: Role[]): boolean {
-        const permissionStore = usePermissionStore();
-        const superRole = permissionStore.getSuperRole as string;
-        // 是否拥有超级管理员
-        const hasSuperRole = roles
-          .map((role) => role.code)
-          .includes(superRole.replace('ROLE_', ''));
-        // 是否角色等级比自己低
-        const rowUserMaxLevel = roles
-          .map((role) => role.level)
-          .reduce((a, b) => {
-            return a > b ? a : b;
-          });
-        const currentUserMaxLevel = useUserStore()
-          .getUserInfo.roles?.map((role) => role.level)
-          .reduce((a, b) => {
-            return a > b ? a : b;
-          }) as number;
-        return !hasSuperRole && currentUserMaxLevel > rowUserMaxLevel;
       }
 
       return {

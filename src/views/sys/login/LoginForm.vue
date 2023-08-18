@@ -207,7 +207,9 @@
         if (userInfo) {
           notification.success({
             message: t('sys.login.loginSuccessTitle'),
-            description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.name}`,
+            description: `${t('sys.login.loginSuccessDesc')}${
+              userInfo.name ? ': ' + userInfo.name : ''
+            }`,
             duration: 3,
           });
         }

@@ -2,13 +2,6 @@
   <template v-if="getShow">
     <LoginFormTitle class="enter-x" />
     <Form class="p-4 enter-x" :model="formData" :rules="getFormRules" ref="formRef">
-      <FormItem name="account" class="enter-x">
-        <Input
-          size="large"
-          v-model:value="formData.account"
-          :placeholder="t('sys.login.userName')"
-        />
-      </FormItem>
       <FormItem name="mobile" class="enter-x">
         <Input size="large" v-model:value="formData.mobile" :placeholder="t('sys.login.mobile')" />
       </FormItem>
@@ -52,6 +45,7 @@
       >
         {{ t('sys.login.registerButton') }}
       </Button>
+
       <Button size="large" block class="enter-x mt-4" @click="handleBackLogin">
         {{ t('sys.login.backSignIn') }}
       </Button>
@@ -61,17 +55,19 @@
 <script lang="ts">
   import { defineComponent, reactive, ref, unref, computed } from 'vue';
 
-  import LoginFormTitle from './LoginFormTitle.vue';
-  import { Form, Input, Button, Checkbox } from 'ant-design-vue';
+  import LoginFormTitle from '../login/LoginFormTitle.vue';
+  import { Form, Input, Row, Col, Button, Checkbox } from 'ant-design-vue';
   import { StrengthMeter } from '/@/components/StrengthMeter';
   import { CountdownInput } from '/@/components/CountDown';
 
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useLoginState, useFormRules, useFormValid, LoginStateEnum } from './useLogin';
+  import { useLoginState, useFormRules, useFormValid, LoginStateEnum } from '../login/useLogin';
 
   export default defineComponent({
     name: 'RegisterPasswordForm',
     components: {
+      [Col.name]: Col,
+      [Row.name]: Row,
       Button,
       Form,
       FormItem: Form.Item,
@@ -84,7 +80,7 @@
     },
     setup() {
       const { t } = useI18n();
-      const { handleBackLogin, getLoginState } = useLoginState();
+      const { handleBackLogin, setLoginState, getLoginState } = useLoginState();
 
       const formRef = ref();
       const loading = ref(false);
@@ -117,6 +113,8 @@
         handleRegister,
         loading,
         handleBackLogin,
+        setLoginState,
+        LoginStateEnum,
         getShow,
       };
     },

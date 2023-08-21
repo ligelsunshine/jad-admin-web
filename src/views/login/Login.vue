@@ -18,7 +18,7 @@
           <div class="my-auto">
             <img
               :alt="title"
-              src="../../../assets/svg/login-box-bg.svg"
+              src="../../assets/svg/login-box-bg.svg"
               class="w-1/2 -mt-16 -enter-x"
             />
             <div class="mt-10 font-medium text-white -enter-x">
@@ -51,10 +51,10 @@
             "
           >
             <LoginForm />
-            <ForgetPasswordForm />
-            <RegisterForm />
             <MobileForm />
             <QrCodeForm />
+            <RegisterForm />
+            <ForgetPasswordForm />
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
   import { AppLocalePicker, AppDarkModeToggle } from '/@/components/Application';
   import LoginForm from './LoginForm.vue';
   import ForgetPasswordForm from './ForgetPasswordForm.vue';
-  import RegisterForm from './RegisterForm.vue';
+  import RegisterForm from '../register/RegisterForm.vue';
   import MobileForm from './MobileForm.vue';
   import QrCodeForm from './QrCodeForm.vue';
 

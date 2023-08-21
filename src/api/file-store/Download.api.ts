@@ -2,13 +2,13 @@ import { defHttp } from '/@/utils/http/axios';
 import { openWindow } from '/@/utils';
 import { getApi as getFileStoreApi } from '/@/api/file-store/oos/FileStore.api';
 import { Store } from '/@/views/file-store/oos/FileStore.data';
-import { stringify } from "qs";
+import { stringify } from 'qs';
 
 enum Api {
-  Download = '/sys/file/download',
-  Base64 = '/sys/file/base64',
-  GetUrl = '/sys/file/url',
-  Preview = '/sys/file/preview',
+  Download = '/pub/file/download',
+  Base64 = '/pub/file/base64',
+  GetUrl = '/pub/file/url',
+  Preview = '/pub/file/preview',
 }
 
 /**

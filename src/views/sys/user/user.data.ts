@@ -96,6 +96,11 @@ export const columns: BasicColumn[] = [
     ifShow: () => hasPermission('sys:user:get'),
   },
   {
+    title: '上一次登录时间',
+    dataIndex: 'lastLogin',
+    width: 180,
+  },
+  {
     title: '创建时间',
     dataIndex: 'createTime',
     width: 180,

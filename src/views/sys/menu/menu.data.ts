@@ -257,8 +257,8 @@ export const formSchema: FormSchema[] = [
     show: ({ values }) => isMenu(values.type),
   },
   {
-    field: 'hideChildrenInMenu',
-    label: '隐藏子菜单',
+    field: 'hideTab',
+    label: '隐藏标签页',
     component: 'RadioButtonGroup',
     defaultValue: false,
     componentProps: {
@@ -267,7 +267,8 @@ export const formSchema: FormSchema[] = [
         { label: '是', value: true },
       ],
     },
-    show: ({ values }) => !isButton(values.type),
+    helpMessage: '当前路由不再标签页显示',
+    show: ({ values }) => isMenu(values.type),
   },
   {
     field: 'hideMenu',
@@ -280,6 +281,21 @@ export const formSchema: FormSchema[] = [
         { label: '是', value: true },
       ],
     },
+    helpMessage: '当前路由不再菜单显示',
+    show: ({ values }) => !isButton(values.type),
+  },
+  {
+    field: 'hideChildrenInMenu',
+    label: '隐藏子菜单',
+    component: 'RadioButtonGroup',
+    defaultValue: false,
+    componentProps: {
+      options: [
+        { label: '否', value: false },
+        { label: '是', value: true },
+      ],
+    },
+    helpMessage: '隐藏所有子菜单',
     show: ({ values }) => !isButton(values.type),
   },
 ];

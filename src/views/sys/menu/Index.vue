@@ -86,7 +86,7 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { defineComponent, reactive, ref, unref } from 'vue';
+  import { defineComponent, h, reactive, ref, unref, VNode } from 'vue';
   import {
     BasicTree,
     TreeItem,
@@ -99,7 +99,7 @@
   import { useDrawer } from '/@/components/Drawer';
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { Row, Col, Card, Empty, Spin, Alert, Modal, Input } from 'ant-design-vue';
+  import { Row, Col, Card, Empty, Spin, Alert, Modal, Input, Tag } from 'ant-design-vue';
 
   import {
     saveAuthButton,
@@ -110,6 +110,7 @@
   } from '/@/api/sys/menu';
   import { descSchema, getMenuType } from '/@/views/sys/menu/menu.data';
   import MenuDrawer from '/@/views/sys/menu/MenuDrawer.vue';
+  import { useModel } from '/@/api/model';
 
   export default defineComponent({
     name: '1455552881344921618',
@@ -143,6 +144,7 @@
       const message = useMessage();
       const [registerDrawer, { openDrawer }] = useDrawer();
       const [createContextMenu] = useContextMenu();
+      const { Status } = useModel();
       getMenuTreeData();
       /**
        * 获取树对象
@@ -158,8 +160,36 @@
        * 获取菜单数据
        */
       function getMenuTreeData() {
+        const renderStyle = (treeData: any[]) => {
+          if (!treeData) {
+            return;
+          }
+          treeData.forEach((data) => {
+            var tags: VNode[] = [];
+            var newStyle = {};
+            if (data.status == Status.DISABLE) {
+              tags.push(h(Tag, { color: '#ff9fa0' }, '停用'));
+              newStyle['textDecoration'] = 'line-through';
+            }
+            if (data.hideMenu) {
+              tags.push(h(Tag, { color: '#7c7c7c' }, '隐藏'));
+            }
+            if (data.hideChildrenInMenu) {
+              tags.push(h(Tag, { color: '#7c7c7c' }, '隐藏子菜单'));
+            }
+            data.title = h(
+              'span',
+              {
+                style: newStyle,
+              },
+              h('div', [data.title, '  ', tags])
+            );
+            renderStyle(data.children);
+          });
+        };
         getUserMenuTreeAsPromise().then((response) => {
           menuTreeData.value = response.data?.data;
+          renderStyle(menuTreeData.value);
         });
       }
       /**

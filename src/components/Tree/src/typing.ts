@@ -7,6 +7,7 @@ export interface ActionItem {
 
 export interface TreeItem extends TreeDataItem {
   icon?: any;
+  status?: any;
 }
 
 export interface ReplaceFields {

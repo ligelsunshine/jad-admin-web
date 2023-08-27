@@ -3,11 +3,9 @@ import { FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Tag } from 'ant-design-vue';
 import { DescItem } from '/@/components/Description';
+import { useModel } from '/@/api/model';
 
-export enum Status {
-  ENABLE = 0,
-  DISABLE = 1,
-}
+const { Status } = useModel();
 
 export function renderOfStatus(status) {
   switch (status) {

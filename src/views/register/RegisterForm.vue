@@ -2,6 +2,19 @@
   <template v-if="getShow">
     <LoginFormTitle class="enter-x" />
     <Form class="p-4 enter-x" :model="formData" :rules="getFormRules" ref="formRef">
+      <FormItem name="type" class="enter-x">
+        <RadioGroup v-model:value="formData.type" buttonStyle="solid" :style="{ width: '100%' }">
+          <RadioButton value="2" :style="{ width: '33.33%', textAlign: 'center' }"
+            >普通注册</RadioButton
+          >
+          <RadioButton value="3" :style="{ width: '33.33%', textAlign: 'center' }"
+            >手机注册</RadioButton
+          >
+          <RadioButton value="4" :style="{ width: '33.33%', textAlign: 'center' }"
+            >邮箱注册</RadioButton
+          >
+        </RadioGroup>
+      </FormItem>
       <FormItem name="mobile" class="enter-x">
         <Input size="large" v-model:value="formData.mobile" :placeholder="t('sys.login.mobile')" />
       </FormItem>
@@ -56,7 +69,7 @@
   import { defineComponent, reactive, ref, unref, computed } from 'vue';
 
   import LoginFormTitle from '../login/LoginFormTitle.vue';
-  import { Form, Input, Row, Col, Button, Checkbox } from 'ant-design-vue';
+  import { Form, RadioGroup, RadioButton, Input, Row, Col, Button, Checkbox } from 'ant-design-vue';
   import { StrengthMeter } from '/@/components/StrengthMeter';
   import { CountdownInput } from '/@/components/CountDown';
 
@@ -71,6 +84,8 @@
       Button,
       Form,
       FormItem: Form.Item,
+      RadioGroup,
+      RadioButton,
       Input,
       InputPassword: Input.Password,
       Checkbox,
@@ -86,6 +101,7 @@
       const loading = ref(false);
 
       const formData = reactive({
+        type: '2',
         account: '',
         password: '',
         confirmPassword: '',

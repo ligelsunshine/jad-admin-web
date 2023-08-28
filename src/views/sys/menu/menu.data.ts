@@ -326,6 +326,10 @@ export const descSchema: DescItem[] = [
     label: '排序',
   },
   {
+    field: 'code',
+    label: '菜单编码',
+  },
+  {
     field: 'icon',
     label: '图标',
     render: (val) => {

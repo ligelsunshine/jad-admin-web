@@ -36,7 +36,7 @@
             title="菜单列表"
             ref="menuTreeRef"
             :treeData="menuTreeData"
-            :replaceFields="{ title: 'title', key: 'id' }"
+            :replaceFields="{ key: 'id' }"
             :beforeRightClick="getRightMenuList"
             :renderIcon="handleRenderIcon"
             @select="handleSelect"

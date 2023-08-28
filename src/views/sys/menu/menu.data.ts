@@ -178,6 +178,12 @@ export const formSchema: FormSchema[] = [
     helpMessage: '默认排序为升序',
   },
   {
+    field: 'code',
+    label: '菜单编码',
+    component: 'Input',
+    helpMessage: '菜单唯一编码，仅数字、字母、中横线组成',
+  },
+  {
     field: 'icon',
     label: '图标',
     component: 'IconPicker',

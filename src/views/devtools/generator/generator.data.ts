@@ -4,7 +4,7 @@ import { ComponentType } from '/@/components/Form/src/types';
 import { DescItem } from '/@/components/Description';
 import { h } from 'vue';
 import { Switch, Tag } from 'ant-design-vue';
-import { getAllApi } from "/@/api/sys/datasource/Datasource.api";
+import { getAllApi } from '/@/api/sys/datasource/Datasource.api';
 
 interface BaseField {
   module?: string;

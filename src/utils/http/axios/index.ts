@@ -13,7 +13,7 @@ import { setObjToUrlParams, deepMerge } from '/@/utils';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { joinTimestamp, formatRequestDate } from './helper';
 import { SessionTimeoutProcessingEnum } from '/@/enums/appEnum';
-import { useUserStoreWithOut } from '/@/store/modules/user';
+import { useUserStore, useUserStoreWithOut } from '/@/store/modules/user';
 import projectSetting from '/@/settings/projectSetting';
 import { RequestOptions } from '/#/axios';
 import { AxiosRequestConfig } from 'axios';
@@ -104,6 +104,13 @@ const transform: AxiosTransform = {
     const messageMode = option?.messageMode;
     const { code, msg, data } = response.data;
     response.status = code;
+
+    // 刷新Token
+    const token: string = response.headers['authorization'];
+    const oldToken = getToken();
+    if (token && oldToken !== token) {
+      useUserStore().setToken(token);
+    }
 
     if (code == 200 && isTransformResponse && msg) {
       if (messageMode === 'modal') {

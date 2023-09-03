@@ -208,6 +208,7 @@ export const formSchema: FormSchema[] = [
       },
       getPopupContainer: () => document.body,
     },
+    required: true,
   },
   {
     field: 'code',

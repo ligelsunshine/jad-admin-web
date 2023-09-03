@@ -10,12 +10,12 @@
         </template>
       </Alert>
     </template>
-    <Row :gutter="[16, 16]">
+    <Row :gutter="[16, 16]" v-if="treeData && treeData.length > 0">
       <Col
         :span="12"
         style="max-height: calc(100vh - 210px); overflow-y: scroll; overflow-x: hidden !important"
       >
-        <Card @contextmenu="handleContext">
+        <Card>
           <BasicTree
             title="系统设置列表"
             ref="treeRef"
@@ -45,7 +45,24 @@
         </Card>
       </Col>
     </Row>
+    <Row :gutter="[16, 16]" v-else>
+      <Col>
+        <Card>
+          <Empty description="请先绑定菜单">
+            <Button
+              type="primary"
+              class="enter-x"
+              ghost
+              @click="handleBindingMenu"
+              v-auth="'sys:settings:bindMenu'"
+              ><Icon icon="material-symbols:menu-open-rounded" />绑定菜单</Button
+            >
+          </Empty>
+        </Card>
+      </Col>
+    </Row>
     <SettingsModal @register="registerModal" @success="handleSuccess" />
+    <MenuSelector @register="registerMenuSelector" @success="handleSelectMenuSuccess" />
   </PageWrapper>
 </template>
 <script lang="ts">
@@ -54,10 +71,10 @@
   import { Description } from '/@/components/Description';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
-  import { useContextMenu } from '/@/hooks/web/useContextMenu';
-  import { Row, Col, Card, Empty, Spin, Alert } from 'ant-design-vue';
+  import { Row, Col, Card, Empty, Spin, Alert, Button } from 'ant-design-vue';
 
   import {
+    bindMenu,
     deleteApi,
     deleteChildrenApi,
     getApi,
@@ -65,14 +82,20 @@
   } from '/@/api/sys/settings/SettingsMgr.api';
   import { descSchema } from '/@/views/sys/settings-mgr/Settings.data';
   import SettingsModal from '/@/views/sys/settings-mgr/SettingsModal.vue';
+  import MenuSelector from '/@/views/sys/menu/MenuSelector.vue';
+  import Icon from '/@/components/Icon/src/Icon.vue';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
     name: 'Index',
     components: {
+      Icon,
       SettingsModal,
+      MenuSelector,
       BasicTree,
       Description,
       PageWrapper,
+      Button,
       Row,
       Col,
       Card,
@@ -86,7 +109,7 @@
       const treeData = ref<TreeItem[]>([]);
       const data = ref<any>();
       const [registerModal, { openModal }] = useModal();
-      const [createContextMenu] = useContextMenu();
+      const [registerMenuSelector, { openModal: openMenuSelector }] = useModal();
       getTreeData();
       /**
        * 获取树对象
@@ -153,24 +176,6 @@
         }
         spinning.value = false;
       }
-
-      /**
-       * 右击空白处
-       * @param e
-       */
-      function handleContext(e: MouseEvent) {
-        createContextMenu({
-          event: e,
-          items: [
-            {
-              label: '添加系统设置',
-              icon: 'ant-design:plus-outlined',
-              handler: () => handleCreate(),
-              auth: 'sys:settings:save',
-            },
-          ],
-        });
-      }
       function handleCreate(id?: string) {
         let record = null;
         if (id) {
@@ -202,8 +207,24 @@
           data.value = response?.record;
         }
       }
+      function handleBindingMenu() {
+        openMenuSelector(true, {
+          title: '请选择菜单',
+          checkable: false,
+        });
+      }
+      function handleSelectMenuSuccess({ keys }) {
+        if (!keys || keys.length != 1 || !keys[0]) {
+          useMessage().createMessage.error('请先选择菜单');
+          return;
+        }
+        bindMenu(keys[0]).then(() => {
+          getTreeData();
+        });
+      }
       return {
         registerModal,
+        registerMenuSelector,
         spinning,
         treeRef,
         treeData,
@@ -211,8 +232,9 @@
         descSchema,
         getRightMenuList,
         handleSelect,
-        handleContext,
         handleSuccess,
+        handleBindingMenu,
+        handleSelectMenuSuccess,
       };
     },
   });

@@ -63,14 +63,14 @@
       const [registerDrawer, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
         await resetFields();
         setDrawerProps({ confirmLoading: false });
-        roleId.value = data.record.id;
+        roleId.value = data.roleId;
 
         // 需要在setFieldsValue之前先填充treeData，否则Tree组件可能会报key not exist警告
         if (unref(treeData).length === 0) {
           treeData.value = (await getUserMenuTree()) as any as TreeItem[];
         }
         // 获取已分配的菜单权限
-        menuItems.value = await getRoleMenuItems(data.record.id);
+        menuItems.value = await getRoleMenuItems(data.roleId);
         const menuIds: string[] = [];
         menuItems.value.forEach((menuItem) => {
           if (menuItem.leaf) {

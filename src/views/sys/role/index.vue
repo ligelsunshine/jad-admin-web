@@ -114,7 +114,7 @@
 
       function handleMenu(record: Recordable) {
         openMenuDrawer(true, {
-          record,
+          roleId: record.id,
         });
       }
 

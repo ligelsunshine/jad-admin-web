@@ -7,6 +7,7 @@ enum Api {
   Update = '/sys/settingsMgr/update',
   Get = '/sys/settingsMgr/get',
   GetTree = '/sys/settingsMgr/getTree',
+  BindMenu = '/sys/settingsMgr/bindMenu',
 }
 
 /**
@@ -63,4 +64,10 @@ export const getTreeApi = async () => {
  */
 export const getTreeAsPromiseApi = async () => {
   return defHttp.get({ url: Api.GetTree });
+};
+/**
+ * 设置绑定菜单权限
+ */
+export const bindMenu = async (menuId: string) => {
+  return defHttp.post({ url: Api.BindMenu + '/' + menuId }, { isTransformResponse: true });
 };

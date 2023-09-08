@@ -110,7 +110,7 @@
   } from '/@/api/sys/menu';
   import { descSchema, getMenuType } from '/@/views/sys/menu/menu.data';
   import MenuDrawer from '/@/views/sys/menu/MenuDrawer.vue';
-  import { useModel } from '/@/api/model';
+  import { Status } from '/@/api/model';
 
   export default defineComponent({
     name: '1455552881344921618',
@@ -144,7 +144,6 @@
       const message = useMessage();
       const [registerDrawer, { openDrawer }] = useDrawer();
       const [createContextMenu] = useContextMenu();
-      const { Status } = useModel();
       getMenuTreeData();
       /**
        * 获取树对象

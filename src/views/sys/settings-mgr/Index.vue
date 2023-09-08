@@ -10,12 +10,22 @@
         </template>
       </Alert>
     </template>
-    <Row :gutter="[16, 16]" v-if="treeData && treeData.length > 0">
+    <Row :gutter="[16, 16]" v-if="treeData">
       <Col
         :span="12"
         style="max-height: calc(100vh - 210px); overflow-y: scroll; overflow-x: hidden !important"
       >
-        <Card>
+        <Card @contextmenu="handleContext">
+          <template #extra>
+            <Button
+              type="primary"
+              class="enter-x"
+              ghost
+              @click="handleBindingMenu"
+              v-auth="'sys:settings:bindMenu'"
+              ><Icon icon="material-symbols:menu-open-rounded" />重新绑定菜单</Button
+            >
+          </template>
           <BasicTree
             title="系统设置列表"
             ref="treeRef"
@@ -85,6 +95,7 @@
   import MenuSelector from '/@/views/sys/menu/MenuSelector.vue';
   import Icon from '/@/components/Icon/src/Icon.vue';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { useContextMenu } from '/@/hooks/web/useContextMenu';
 
   export default defineComponent({
     name: 'Index',
@@ -106,10 +117,12 @@
     setup() {
       const spinning = ref<boolean>(false);
       const treeRef = ref<Nullable<TreeActionType>>(null);
-      const treeData = ref<TreeItem[]>([]);
+      const treeData = ref<TreeItem[]>();
+      const originTreeData = ref<TreeItem>();
       const data = ref<any>();
       const [registerModal, { openModal }] = useModal();
       const [registerMenuSelector, { openModal: openMenuSelector }] = useModal();
+      const [createContextMenu] = useContextMenu();
       getTreeData();
       /**
        * 获取树对象
@@ -126,7 +139,17 @@
        */
       function getTreeData() {
         getTreeAsPromiseApi().then((response) => {
-          treeData.value = response.data?.data;
+          const data = response.data?.data;
+          if (data && data.length === 1) {
+            originTreeData.value = data[0];
+            if (data[0].children) {
+              treeData.value = data[0].children;
+            } else {
+              treeData.value = [];
+            }
+          } else {
+            treeData.value = undefined;
+          }
         });
       }
       /**
@@ -175,6 +198,27 @@
           data.value = await getApi(key[0]);
         }
         spinning.value = false;
+      }
+      /**
+       * 右击空白处
+       * @param e
+       */
+      function handleContext(e: MouseEvent) {
+        createContextMenu({
+          event: e,
+          items: [
+            {
+              label: '添加系统设置',
+              icon: 'ant-design:plus-outlined',
+              handler: () => {
+                data.value = null;
+                data.value = originTreeData.value;
+                handleCreate(data.value?.id);
+              },
+              auth: 'sys:settings:save',
+            },
+          ],
+        });
       }
       function handleCreate(id?: string) {
         let record = null;
@@ -232,6 +276,7 @@
         descSchema,
         getRightMenuList,
         handleSelect,
+        handleContext,
         handleSuccess,
         handleBindingMenu,
         handleSelectMenuSuccess,

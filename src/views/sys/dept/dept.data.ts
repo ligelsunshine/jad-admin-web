@@ -3,9 +3,7 @@ import { FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Tag } from 'ant-design-vue';
 import { DescItem } from '/@/components/Description';
-import { useModel } from '/@/api/model';
-
-const { Status } = useModel();
+import { Status } from '/@/api/model';
 
 export function renderOfStatus(status) {
   switch (status) {

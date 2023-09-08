@@ -215,6 +215,7 @@ export const formSchema: FormSchema[] = [
   {
     field: 'permissions',
     label: '权限标识',
+    helpMessage: '多个用逗号分隔，如：user:list,user:create',
     component: 'Input',
     show: ({ values }) => isButton(values.type),
   },

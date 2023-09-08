@@ -1,6 +1,16 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit">
-    <BasicForm @register="registerForm" />
+  <BasicModal
+    v-bind="$attrs"
+    @register="registerModal"
+    :title="getTitle"
+    width="70%"
+    @ok="handleSubmit"
+  >
+    <BasicForm @register="registerForm">
+      <template #RulesSlot="{ model, field }">
+        {{ model[field] }}
+      </template>
+    </BasicForm>
   </BasicModal>
 </template>
 <script lang="ts">
@@ -19,9 +29,10 @@
       const isUpdate = ref(true);
 
       const [registerForm, { resetFields, setFieldsValue, updateSchema, validate }] = useForm({
-        labelWidth: 100,
+        labelWidth: 160,
         schemas: formSchema,
         showActionButtonGroup: false,
+        baseColProps: { lg: 12, md: 24 },
       });
 
       const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {

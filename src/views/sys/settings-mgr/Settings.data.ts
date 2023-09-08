@@ -1,6 +1,9 @@
 import { FormSchema } from '/@/components/Table';
 import { DescItem } from '/@/components/Description';
 import { formatToDateTime } from '/@/utils/dateUtil';
+import { Status, useDataModel } from '/@/api/model';
+
+const { renderOfStatus } = useDataModel();
 
 /**
  * Entity
@@ -35,6 +38,12 @@ export enum SettingType {
 }
 
 /**
+ * 是否是设置项
+ * @param type
+ */
+export const isItem = (type: number) => type === SettingType.ITEM;
+
+/**
  * 设置类型渲染
  *
  * @param settingType 设置类型
@@ -47,30 +56,6 @@ export function renderOfSettingType(settingType) {
       return '设置页';
     case SettingType.ITEM:
       return '设置项';
-    default:
-      return 'undefined';
-  }
-}
-
-/**
- * 状态枚举
- */
-export enum Status {
-  E_N_A_B_L_E = 0,
-  D_I_S_A_B_L_E = 1,
-}
-
-/**
- * 状态渲染
- *
- * @param status 状态
- */
-export function renderOfStatus(status) {
-  switch (status) {
-    case Status.E_N_A_B_L_E:
-      return '启用';
-    case Status.D_I_S_A_B_L_E:
-      return '停用';
     default:
       return 'undefined';
   }
@@ -192,10 +177,36 @@ export const formSchema: FormSchema[] = [
     show: false,
   },
   {
+    field: 'origin',
+    label: 'origin',
+    component: 'Switch',
+    show: false,
+  },
+  {
     field: 'id',
     label: 'ID',
     component: 'Input',
     show: false,
+  },
+  {
+    field: 'settingType',
+    label: '设置类型',
+    component: 'RadioButtonGroup',
+    defaultValue: SettingType.DIRECTORY,
+    componentProps: {
+      options: [
+        { label: '目录', value: SettingType.DIRECTORY },
+        { label: '设置页', value: SettingType.PAGE },
+        { label: '设置项', value: SettingType.ITEM },
+      ],
+    },
+    colProps: { lg: 24, md: 24 },
+  },
+  {
+    field: 'title',
+    label: '标题',
+    component: 'Input',
+    required: true,
   },
   {
     field: 'pid',
@@ -211,59 +222,56 @@ export const formSchema: FormSchema[] = [
     required: true,
   },
   {
+    field: 'orderNo',
+    label: '排序',
+    component: 'InputNumber',
+    defaultValue: 0,
+    helpMessage: '默认排序为升序',
+  },
+  {
+    field: 'icon',
+    label: '图标',
+    component: 'IconPicker',
+    defaultValue: '',
+  },
+  {
+    field: 'permissions',
+    label: '权限标识',
+    component: 'Input',
+    helpMessage: '多个用逗号分隔，如：user:list,user:create',
+  },
+  {
+    field: 'status',
+    label: '状态',
+    component: 'RadioButtonGroup',
+    defaultValue: 0,
+    componentProps: {
+      options: [
+        { label: '启用', value: Status.ENABLE },
+        { label: '停用', value: Status.DISABLE },
+      ],
+    },
+  },
+  {
     field: 'code',
-    label: '编码',
+    label: '设置编码',
     component: 'Input',
     rules: [
       {
         required: false,
         pattern: /[a-zA-Z0-9\-]/,
-        message: '仅数字、字母、中横线组成',
+        message: '用于获取设置的唯一编码标识。仅数字、字母、中横线组成',
         trigger: 'blur',
       },
     ],
     helpMessage: '唯一标识码，仅数字、字母、中横线组成',
-  },
-  {
-    field: 'settingType',
-    label: '设置类型',
-    component: 'Select',
-    defaultValue: SettingType.DIRECTORY,
-    componentProps: {
-      options: [
-        { label: '目录', value: SettingType.DIRECTORY },
-        { label: '设置页', value: SettingType.PAGE },
-        { label: '设置项', value: SettingType.ITEM },
-      ],
-    },
-    required: true,
-  },
-  {
-    field: 'permissions',
-    label: '授权',
-    component: 'Input',
-  },
-  {
-    field: 'status',
-    label: '状态',
-    component: 'Select',
-    componentProps: {
-      options: [
-        { label: '启用', value: Status.E_N_A_B_L_E },
-        { label: '停用', value: Status.D_I_S_A_B_L_E },
-      ],
-    },
-  },
-  {
-    field: 'title',
-    label: '标题',
-    component: 'Input',
-    required: true,
+    show: ({ values }) => isItem(values.settingType),
   },
   {
     field: 'helpMessage',
     label: '提示消息',
     component: 'InputTextArea',
+    show: ({ values }) => isItem(values.settingType),
   },
   {
     field: 'component',
@@ -272,75 +280,105 @@ export const formSchema: FormSchema[] = [
     defaultValue: Component.INPUT,
     componentProps: {
       options: [
-        { label: 'Input', value: Component.INPUT },
-        { label: 'IdInput', value: Component.ID_INPUT },
+        { label: '普通文本框（Input）', value: Component.INPUT },
+        { label: 'ID文本框（IdInput）', value: Component.ID_INPUT },
         { label: 'InputGroup', value: Component.INPUT_GROUP },
-        { label: 'InputPassword', value: Component.INPUT_PASSWORD },
+        { label: '密码框（InputPassword）', value: Component.INPUT_PASSWORD },
         { label: 'InputSearch', value: Component.INPUT_SEARCH },
-        { label: 'InputTextArea', value: Component.INPUT_TEXT_AREA },
-        { label: 'InputNumber', value: Component.INPUT_NUMBER },
+        { label: '文本域（InputTextArea）', value: Component.INPUT_TEXT_AREA },
+        { label: '数字框（InputNumber）', value: Component.INPUT_NUMBER },
         { label: 'InputCountDown', value: Component.INPUT_COUNT_DOWN },
-        { label: 'Select', value: Component.SELECT },
         { label: 'ApiSelect', value: Component.API_SELECT },
+        { label: '下拉框（Select）', value: Component.SELECT },
         { label: 'TreeSelect', value: Component.TREE_SELECT },
-        { label: 'RadioButtonGroup', value: Component.RADIO_BUTTON_GROUP },
-        { label: 'RadioGroup', value: Component.RADIO_GROUP },
-        { label: 'Checkbox', value: Component.CHECKBOX },
-        { label: 'CheckboxGroup', value: Component.CHECKBOX_GROUP },
+        { label: '单选方形按钮组（RadioButtonGroup）', value: Component.RADIO_BUTTON_GROUP },
+        { label: '单选圆形按钮组（RadioGroup）', value: Component.RADIO_GROUP },
+        { label: '复选框（Checkbox）', value: Component.CHECKBOX },
+        { label: '复选框组（CheckboxGroup）', value: Component.CHECKBOX_GROUP },
         { label: 'AutoComplete', value: Component.AUTO_COMPLETE },
         { label: 'Cascader', value: Component.CASCADER },
-        { label: 'DatePicker', value: Component.DATE_PICKER },
-        { label: 'MonthPicker', value: Component.MONTH_PICKER },
-        { label: 'RangePicker', value: Component.RANGE_PICKER },
-        { label: 'WeekPicker', value: Component.WEEK_PICKER },
-        { label: 'TimePicker', value: Component.TIME_PICKER },
-        { label: 'Switch', value: Component.SWITCH },
-        { label: 'StrengthMeter', value: Component.STRENGTH_METER },
-        { label: 'Upload', value: Component.UPLOAD },
-        { label: 'IconPicker', value: Component.ICON_PICKER },
+        { label: '日期选择器（DatePicker）', value: Component.DATE_PICKER },
+        { label: '月份选择器（MonthPicker）', value: Component.MONTH_PICKER },
+        { label: '日期范围选择器（RangePicker）', value: Component.RANGE_PICKER },
+        { label: '周选择器（WeekPicker）', value: Component.WEEK_PICKER },
+        { label: '时间选择器（TimePicker）', value: Component.TIME_PICKER },
+        { label: '开关（Switch）', value: Component.SWITCH },
+        { label: '密码强度校验组件（StrengthMeter）', value: Component.STRENGTH_METER },
+        { label: '文件上传（Upload）', value: Component.UPLOAD },
+        { label: 'ICON选择器（IconPicker）', value: Component.ICON_PICKER },
         { label: 'Render', value: Component.RENDER },
         { label: 'Slider', value: Component.SLIDER },
-        { label: 'Rate', value: Component.RATE },
+        { label: '评分（Rate）', value: Component.RATE },
       ],
     },
-    required: true,
+    required: ({ values }) => isItem(values.settingType),
+    show: ({ values }) => isItem(values.settingType),
   },
   {
     field: 'val',
     label: '默认值',
     component: 'Input',
+    show: ({ values }) => isItem(values.settingType),
   },
   {
     field: 'require',
-    label: '是否必须',
+    label: 'require',
     component: 'Switch',
-  },
-  {
-    field: 'enumVal',
-    label: '枚举值',
-    component: 'InputTextArea',
+    show: ({ values }) => isItem(values.settingType),
   },
   {
     field: 'rules',
-    label: '自定义校验规则',
-    component: 'Input',
+    label: 'rules',
+    component: 'InputTextArea',
+    slot: 'RulesSlot',
+    helpMessage:
+      '[\n' +
+      '      {\n' +
+      '        required: false,\n' +
+      '        pattern: /[a-zA-Z0-9\\-]/,\n' +
+      "        message: '仅数字、字母、中横线组成',\n" +
+      "        trigger: 'blur',\n" +
+      '      },\n' +
+      '    ]',
+    show: ({ values }) => isItem(values.settingType),
+    colProps: { lg: 24 },
   },
   {
     field: 'componentProps',
-    label: '组件属性',
+    label: 'componentProps',
     component: 'InputTextArea',
+    helpMessage:
+      '{\n' +
+      '      options: [\n' +
+      "        { label: '停用', value: 0 },\n" +
+      "        { label: '启用', value: 1 },\n" +
+      '      ],\n' +
+      '    }',
+    show: ({ values }) => isItem(values.settingType),
+    colProps: { lg: 24 },
   },
   {
     field: 'colProps',
-    label: '列属性',
+    label: 'colProps',
     component: 'InputTextArea',
-  },
-  {
-    field: 'orderNo',
-    label: '排序',
-    component: 'InputNumber',
-    defaultValue: 0,
-    helpMessage: '默认排序为升序',
+    helpMessage:
+      '{\n' +
+      '      span: 24,\n' +
+      '      //<576px\n' +
+      '      xs: 24,\n' +
+      '      //≥576px\n' +
+      '      sm: 24,\n' +
+      '      //≥768px\n' +
+      '      md: 24,\n' +
+      '      //≥992px\n' +
+      '      lg: 24,\n' +
+      '      //≥1200px\n' +
+      '      xl: 24,\n' +
+      '      //≥1600px\n' +
+      '      xxl: 24,\n' +
+      '    }',
+    show: ({ values }) => isItem(values.settingType),
+    colProps: { lg: 24 },
   },
 ];
 

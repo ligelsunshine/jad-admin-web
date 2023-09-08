@@ -1,7 +1,7 @@
 import { FormSchema } from '/@/components/Table';
 import { DescItem } from '/@/components/Description';
 import { formatToDateTime } from '/@/utils/dateUtil';
-import { Status, useDataModel } from '/@/api/model';
+import { Status, useDataModel } from '/@/api/data';
 
 const { renderOfStatus } = useDataModel();
 

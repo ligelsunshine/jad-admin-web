@@ -110,7 +110,7 @@
   } from '/@/api/sys/menu';
   import { descSchema, getMenuType } from '/@/views/sys/menu/menu.data';
   import MenuDrawer from '/@/views/sys/menu/MenuDrawer.vue';
-  import { Status } from '/@/api/model';
+  import { Status } from '/@/api/data';
 
   export default defineComponent({
     name: '1455552881344921618',

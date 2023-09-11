@@ -1,21 +1,24 @@
 <template>
   <div class="h-full">
     <CodeMirrorEditor
-      :value="getValue"
+      v-bind="$attrs"
+      :value="model.data"
       @change="handleValueChange"
       @blur="handleBlur"
       :mode="mode"
       :readonly="readonly"
+      :copyButton="copyButton"
     />
-    <Alert v-show="hasError" message="JSON格式错误" :description="error" type="error" />
+    <Alert v-show="model.success" message="JSON格式错误" :description="model.msg" type="error" />
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, computed, ref } from 'vue';
+  import { defineComponent, ref, watch } from 'vue';
   import CodeMirrorEditor from './codemirror/CodeMirror.vue';
   import { Alert } from 'ant-design-vue';
 
   import { validateJson } from '/@/utils/jsonUtil';
+  import { Result } from '/@/api/data';
 
   const MODE = {
     JSON: 'application/json',
@@ -26,44 +29,53 @@
   const props = {
     value: { type: [Object, String] as PropType<Record<string, any> | string> },
     mode: { type: String, default: MODE.JSON },
-    readonly: { type: Boolean },
+    readonly: { type: Boolean, default: false },
+    validate: { type: Boolean, default: false },
+    copyButton: { type: Boolean, default: false },
   };
 
   export default defineComponent({
     name: 'CodeEditor',
     components: { CodeMirrorEditor, Alert },
     props,
-    emits: ['change', 'error'],
+    emits: ['change', 'error', 'update:value'],
     setup(props, { emit }) {
-      const hasError = ref<boolean>(false);
-      const error = ref<string>('');
-      const getValue = computed(() => {
-        const { value, mode } = props;
-        if (mode !== MODE.JSON) {
-          return value as string;
-        }
-        return validateJson(value).value;
+      const model = ref<Result>({
+        data: props.value,
       });
-
-
+      watch(
+        () => props.value,
+        () => {
+          const { value, mode } = props;
+          if (mode !== MODE.JSON) {
+            model.value.data = value as string;
+          } else {
+            model.value.data = validateJson(value).value;
+          }
+        }
+      );
+      watch(
+        () => model.value.data,
+        (val) => {
+          emit('update:value', val);
+        }
+      );
       function handleValueChange(v) {
+        model.value.data = validateJson(v).value;
         emit('change', v);
       }
 
       function handleBlur(v) {
         const result = validateJson(v);
-        if (result.error) {
-          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-          hasError.value = true;
-          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-          error.value = result.message;
-          emit('error', result);
+        if (props.validate && result.error) {
+          model.value.success = true;
+          model.value.msg = result.message;
+          emit('error', model);
         } else {
-          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-          hasError.value = false;
+          model.value.success = false;
         }
       }
-      return { hasError, error, handleValueChange, handleBlur, getValue };
+      return { model, handleValueChange, handleBlur };
     },
   });
 </script>

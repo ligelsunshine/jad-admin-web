@@ -17,12 +17,7 @@
       >
         <Card @contextmenu="handleContext">
           <template #extra>
-            <Button
-              type="primary"
-              class="enter-x"
-              ghost
-              @click="handleBindingMenu"
-              v-auth="'sys:settings:bindMenu'"
+            <Button type="primary" ghost @click="handleBindingMenu" v-auth="'sys:settings:bindMenu'"
               ><Icon icon="material-symbols:menu-open-rounded" />重新绑定菜单</Button
             >
           </template>

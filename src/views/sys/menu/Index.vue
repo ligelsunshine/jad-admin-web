@@ -167,14 +167,14 @@
             var tags: VNode[] = [];
             var newStyle = {};
             if (data.status == Status.DISABLE) {
-              tags.push(h(Tag, { color: '#ff9fa0' }, '停用'));
+              tags.push(h(Tag, { color: '#ff9fa0' }, { default: () => '停用' }));
               newStyle['textDecoration'] = 'line-through';
             }
             if (data.hideMenu) {
-              tags.push(h(Tag, { color: '#7c7c7c' }, '隐藏'));
+              tags.push(h(Tag, { color: '#7c7c7c' }, { default: () => '隐藏' }));
             }
             if (data.hideChildrenInMenu) {
-              tags.push(h(Tag, { color: '#7c7c7c' }, '隐藏子菜单'));
+              tags.push(h(Tag, { color: '#7c7c7c' }, { default: () => '隐藏子菜单' }));
             }
             data.title = h(
               'span',

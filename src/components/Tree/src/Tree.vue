@@ -388,7 +388,9 @@
 </script>
 <style lang="less">
   @prefix-cls: ~'@{namespace}-basic-tree';
-
+  [data-theme='dark'] .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    color: rgba(0, 0, 0, 0.85);
+  }
   .@{prefix-cls} {
     background-color: @component-background;
 

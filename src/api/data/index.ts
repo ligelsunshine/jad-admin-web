@@ -5,6 +5,11 @@ export enum Status {
   ENABLE = 0,
   DISABLE = 1,
 }
+export interface Result {
+  success?: boolean;
+  msg?: string;
+  data?: string | number | object | any;
+}
 export function useDataModel() {
   /**
    * 状态渲染

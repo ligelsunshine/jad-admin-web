@@ -328,57 +328,27 @@ export const formSchema: FormSchema[] = [
   },
   {
     field: 'rules',
-    label: 'rules',
+    label: '自定义规则',
     component: 'InputTextArea',
     slot: 'RulesSlot',
-    helpMessage:
-      '[\n' +
-      '      {\n' +
-      '        required: false,\n' +
-      '        pattern: /[a-zA-Z0-9\\-]/,\n' +
-      "        message: '仅数字、字母、中横线组成',\n" +
-      "        trigger: 'blur',\n" +
-      '      },\n' +
-      '    ]',
     show: ({ values }) => isItem(values.settingType),
     colProps: { lg: 24 },
   },
   {
     field: 'componentProps',
-    label: 'componentProps',
+    label: '组件属性',
     component: 'InputTextArea',
     slot: 'ComponentPropsSlot',
-    helpMessage:
-      '{\n' +
-      '      options: [\n' +
-      "        { label: '停用', value: 0 },\n" +
-      "        { label: '启用', value: 1 },\n" +
-      '      ],\n' +
-      '    }',
     show: ({ values }) => isItem(values.settingType),
     colProps: { lg: 24 },
   },
   {
     field: 'colProps',
-    label: 'colProps',
+    label: '列属性',
     component: 'InputTextArea',
     slot: 'ColPropsSlot',
     helpMessage:
-      '{\n' +
-      '      span: 24,\n' +
-      '      //<576px\n' +
-      '      xs: 24,\n' +
-      '      //≥576px\n' +
-      '      sm: 24,\n' +
-      '      //≥768px\n' +
-      '      md: 24,\n' +
-      '      //≥992px\n' +
-      '      lg: 24,\n' +
-      '      //≥1200px\n' +
-      '      xl: 24,\n' +
-      '      //≥1600px\n' +
-      '      xxl: 24,\n' +
-      '    }',
+      'span: 占用的栅格单元数；xs: <576px；sm: ≥576px；md: ≥768px；lg: ≥992px；xl: ≥1200px；xxl: ≥1600px',
     show: ({ values }) => isItem(values.settingType),
     colProps: { lg: 24 },
   },

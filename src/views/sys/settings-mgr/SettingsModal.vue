@@ -3,42 +3,31 @@
     v-bind="$attrs"
     @register="registerModal"
     :title="getTitle"
-    width="70%"
+    width="80%"
     @ok="handleSubmit"
   >
     <BasicForm @register="registerForm">
       <template #RulesSlot="{ model, field }">
-        <CodeEditor
-          v-model:value="model[field]"
-          @change="
-            (val) => {
-              handleEditorChange({ rules: val });
-            }
-          "
-          :readonly="false"
-        />
+        <Button v-if="!model[field]" @click="handleAddFieldValue('rules')" type="primary" ghost
+          >添加自定义规则</Button
+        >
+        <CodeEditor v-else v-model:value="model[field]" validate />
       </template>
       <template #ComponentPropsSlot="{ model, field }">
-        <CodeEditor
-          v-model:value="model[field]"
-          @change="
-            (val) => {
-              handleEditorChange({ componentProps: val });
-            }
-          "
-          :readonly="false"
-        />
+        <Button
+          v-if="!model[field]"
+          @click="handleAddFieldValue('componentProps')"
+          type="primary"
+          ghost
+          >添加组件属性</Button
+        >
+        <CodeEditor v-else v-model:value="model[field]" validate />
       </template>
       <template #ColPropsSlot="{ model, field }">
-        <CodeEditor
-          v-model:value="model[field]"
-          @change="
-            (val) => {
-              handleEditorChange({ colProps: val });
-            }
-          "
-          :readonly="false"
-        />
+        <Button v-if="!model[field]" @click="handleAddFieldValue('colProps')" type="primary" ghost
+          >添加列属性</Button
+        >
+        <CodeEditor v-else v-model:value="model[field]" validate />
       </template>
     </BasicForm>
   </BasicModal>
@@ -47,16 +36,17 @@
   import { defineComponent, ref, computed, unref } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, useForm } from '/@/components/Form';
+  import { Button } from '/@/components/Button';
   import { CodeEditor } from '/@/components/CodeEditor';
 
   import { saveApi, updateApi, getTreeApi } from '/@/api/sys/settings/SettingsMgr.api';
-  import { formSchema } from '/@/views/sys/settings-mgr/Settings.data';
+  import { formSchema, SettingType } from '/@/views/sys/settings-mgr/Settings.data';
   import { validateJson } from '/@/utils/jsonUtil';
   import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
     name: 'SettingsModal',
-    components: { BasicModal, BasicForm, CodeEditor },
+    components: { BasicModal, BasicForm, Button, CodeEditor },
     emits: ['success', 'register'],
     setup(_, { emit }) {
       const isUpdate = ref(true);
@@ -97,15 +87,6 @@
 
       const getTitle = computed(() => (!unref(isUpdate) ? '新增系统设置' : '编辑系统设置'));
 
-      async function handleEditorChange(data: {
-        rules?: string;
-        componentProps?: string;
-        colProps?: string;
-      }) {
-        await setFieldsValue({
-          ...data,
-        });
-      }
       function validateEditor() {
         try {
           const form = getFieldsValue();
@@ -122,11 +103,32 @@
           return false;
         }
       }
+      function handleAddFieldValue(field: string) {
+        const fieldsValue = {
+          rules:
+            '[{"required":false,"pattern":"[a-zA-Z0-9\\\\-]","message":"仅数字、字母、中横线组成","trigger":"blur"}]',
+          componentProps: '{"options":[{"label":"停用","value":0},{"label":"启用","value":1}]}',
+          colProps: '{"span":24,"xs":24,"sm":24,"md":24,"lg":24,"xl":24,"xxl":24}',
+        };
+        const value = fieldsValue[field];
+        switch (field) {
+          case 'rules':
+            setFieldsValue({ rules: value });
+            break;
+          case 'componentProps':
+            setFieldsValue({ componentProps: value });
+            break;
+          case 'colProps':
+            setFieldsValue({ colProps: value });
+            break;
+        }
+      }
       async function handleSubmit() {
         try {
           const values = await validate();
           setModalProps({ confirmLoading: true });
-          if (!validateEditor()) {
+          const { settingType } = getFieldsValue();
+          if (settingType === SettingType.ITEM && !validateEditor()) {
             return;
           }
           // API
@@ -145,7 +147,7 @@
         registerModal,
         registerForm,
         getTitle,
-        handleEditorChange,
+        handleAddFieldValue,
         handleSubmit,
       };
     },

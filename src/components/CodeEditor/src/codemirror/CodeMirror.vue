@@ -22,18 +22,52 @@
   import { useDebounceFn } from '@vueuse/core';
   import { useAppStore } from '/@/store/modules/app';
   import CodeMirror from 'codemirror';
-  // css
+
   import './codemirror.css';
-  import 'codemirror/theme/idea.css';
-  import 'codemirror/theme/material-palenight.css';
+
   // modes
-  import 'codemirror/mode/javascript/javascript';
+  import 'codemirror/addon/comment/comment';
+  import 'codemirror/addon/dialog/dialog.css';
+  import 'codemirror/addon/dialog/dialog';
+  import 'codemirror/addon/display/autorefresh';
+  import 'codemirror/addon/edit/closebrackets';
+  import 'codemirror/addon/edit/closetag';
+  import 'codemirror/addon/edit/matchbrackets';
+  import 'codemirror/addon/fold/brace-fold';
+  import 'codemirror/addon/fold/comment-fold';
+  import 'codemirror/addon/fold/foldcode';
+  import 'codemirror/addon/fold/foldgutter.css';
+  import 'codemirror/addon/fold/foldgutter';
+  import 'codemirror/addon/fold/indent-fold';
+  import 'codemirror/addon/fold/markdown-fold';
+  import 'codemirror/addon/fold/xml-fold';
+  import 'codemirror/addon/lint/coffeescript-lint';
+  import 'codemirror/addon/lint/css-lint';
+  // import 'codemirror/addon/lint/html-lint';
+  // import 'codemirror/addon/lint/javascript-lint';
+  // import 'codemirror/addon/lint/json-lint';
+  import 'codemirror/addon/lint/lint.css';
+  import 'codemirror/addon/lint/lint';
+  import 'codemirror/addon/lint/yaml-lint';
+  import 'codemirror/addon/scroll/annotatescrollbar';
+  import 'codemirror/addon/search/search';
+  import 'codemirror/addon/search/searchcursor';
+  import 'codemirror/addon/search/jump-to-line';
+  import 'codemirror/addon/search/matchesonscrollbar.css';
+  import 'codemirror/addon/search/matchesonscrollbar';
+  import 'codemirror/addon/selection/active-line' //光标行背景高亮，配置里面也需要styleActiveLine设置为true
+  import 'codemirror/keymap/sublime';
+  import 'codemirror/lib/codemirror.css';
   import 'codemirror/mode/vue/vue';
   import 'codemirror/mode/css/css';
-  import 'codemirror/mode/htmlmixed/htmlmixed';
   import 'codemirror/mode/sql/sql';
   import 'codemirror/mode/xml/xml';
   import 'codemirror/mode/clike/clike';
+  import 'codemirror/mode/htmlmixed/htmlmixed';
+  import 'codemirror/mode/javascript/javascript';
+  import 'codemirror/theme/idea.css';
+  import 'codemirror/theme/material-palenight.css';
+
 
   const props = {
     mode: { type: String, default: 'application/json' },
@@ -45,7 +79,7 @@
 
   export default defineComponent({
     props,
-    emits: ['change'],
+    emits: ['change', 'blur'],
     setup(props, { emit }) {
       const el = ref();
       let editor: Nullable<CodeMirror.Editor>;
@@ -94,10 +128,13 @@
 
       async function init() {
         const addonOptions = {
+          autoFormatOnLoad: true,
+          autoRefresh: true,
           autoCloseBrackets: true,
           autoCloseTags: true,
           foldGutter: true,
-          gutters: ['CodeMirror-linenumbers'],
+          lint: true,
+          gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
         };
 
         editor = CodeMirror(el.value!, {
@@ -106,7 +143,7 @@
           readOnly: props.readonly,
           tabSize: 2,
           theme: 'material-palenight',
-          lineWrapping: false,
+          lineWrapping: true,
           lineNumbers: true,
           spellcheck: true,
           autocorrect: true,
@@ -116,6 +153,11 @@
         setTheme();
         editor?.on('change', () => {
           emit('change', editor?.getValue());
+          refresh();
+        });
+        editor.on('blur', ()=>{
+          emit('blur', editor?.getValue())
+          refresh();
         });
       }
 
@@ -130,7 +172,7 @@
       });
 
       function handleCopy() {
-        clipboardRef.value = editor?.getValue();
+        clipboardRef.value = <string>editor?.getValue();
         if (unref(copiedRef)) {
           createMessage.success('复制成功');
         }

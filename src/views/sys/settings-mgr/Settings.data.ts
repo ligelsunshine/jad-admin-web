@@ -347,6 +347,7 @@ export const formSchema: FormSchema[] = [
     field: 'componentProps',
     label: 'componentProps',
     component: 'InputTextArea',
+    slot: 'ComponentPropsSlot',
     helpMessage:
       '{\n' +
       '      options: [\n' +
@@ -361,6 +362,7 @@ export const formSchema: FormSchema[] = [
     field: 'colProps',
     label: 'colProps',
     component: 'InputTextArea',
+    slot: 'ColPropsSlot',
     helpMessage:
       '{\n' +
       '      span: 24,\n' +

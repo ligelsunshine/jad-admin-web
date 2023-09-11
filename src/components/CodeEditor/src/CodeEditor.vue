@@ -3,15 +3,19 @@
     <CodeMirrorEditor
       :value="getValue"
       @change="handleValueChange"
+      @blur="handleBlur"
       :mode="mode"
       :readonly="readonly"
     />
+    <Alert v-show="hasError" message="JSON格式错误" :description="error" type="error" />
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, computed } from 'vue';
+  import { defineComponent, computed, ref } from 'vue';
   import CodeMirrorEditor from './codemirror/CodeMirror.vue';
-  import { isString } from '/@/utils/is';
+  import { Alert } from 'ant-design-vue';
+
+  import { validateJson } from '/@/utils/jsonUtil';
 
   const MODE = {
     JSON: 'application/json',
@@ -27,25 +31,39 @@
 
   export default defineComponent({
     name: 'CodeEditor',
-    components: { CodeMirrorEditor },
+    components: { CodeMirrorEditor, Alert },
     props,
-    emits: ['change'],
+    emits: ['change', 'error'],
     setup(props, { emit }) {
+      const hasError = ref<boolean>(false);
+      const error = ref<string>('');
       const getValue = computed(() => {
         const { value, mode } = props;
         if (mode !== MODE.JSON) {
           return value as string;
         }
-        return isString(value)
-          ? JSON.stringify(JSON.parse(value), null, 2)
-          : JSON.stringify(value, null, 2);
+        return validateJson(value).value;
       });
+
 
       function handleValueChange(v) {
         emit('change', v);
       }
 
-      return { handleValueChange, getValue };
+      function handleBlur(v) {
+        const result = validateJson(v);
+        if (result.error) {
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          hasError.value = true;
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          error.value = result.message;
+          emit('error', result);
+        } else {
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          hasError.value = false;
+        }
+      }
+      return { hasError, error, handleValueChange, handleBlur, getValue };
     },
   });
 </script>

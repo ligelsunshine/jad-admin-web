@@ -72,9 +72,10 @@
                 <CodeMirrorEditor
                   :value="item.content"
                   :mode="item.mode"
-                  :max-height="760"
+                  max-height="760px"
                   copy-button
                   style="text-align: left"
+                  readonly
                 />
               </TabPane>
             </Tabs>

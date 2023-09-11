@@ -11,7 +11,7 @@
         <Button v-if="!model[field]" @click="handleAddFieldValue('rules')" type="primary" ghost
           >添加自定义规则</Button
         >
-        <CodeEditor v-else v-model:value="model[field]" validate />
+        <CodeEditor v-else v-model:value="model[field]" validate max-height="400px" />
       </template>
       <template #ComponentPropsSlot="{ model, field }">
         <Button
@@ -21,13 +21,13 @@
           ghost
           >添加组件属性</Button
         >
-        <CodeEditor v-else v-model:value="model[field]" validate />
+        <CodeEditor v-else v-model:value="model[field]" validate max-height="400px" />
       </template>
       <template #ColPropsSlot="{ model, field }">
         <Button v-if="!model[field]" @click="handleAddFieldValue('colProps')" type="primary" ghost
           >添加列属性</Button
         >
-        <CodeEditor v-else v-model:value="model[field]" validate />
+        <CodeEditor v-else v-model:value="model[field]" validate max-height="400px" />
       </template>
     </BasicForm>
   </BasicModal>

@@ -8,6 +8,7 @@
       :mode="mode"
       :readonly="readonly"
       :copyButton="copyButton"
+      :maxHeight="maxHeight"
     />
     <Alert v-show="model.success" message="JSON格式错误" :description="model.msg" type="error" />
   </div>
@@ -32,6 +33,7 @@
     readonly: { type: Boolean, default: false },
     validate: { type: Boolean, default: false },
     copyButton: { type: Boolean, default: false },
+    maxHeight: { type: String, default: null },
   };
 
   export default defineComponent({

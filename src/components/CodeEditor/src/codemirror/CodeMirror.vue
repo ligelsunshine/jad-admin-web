@@ -57,7 +57,7 @@
   import 'codemirror/addon/search/matchesonscrollbar';
   import 'codemirror/addon/selection/active-line' //光标行背景高亮，配置里面也需要styleActiveLine设置为true
   import 'codemirror/keymap/sublime';
-  import 'codemirror/lib/codemirror.css';
+  // import 'codemirror/lib/codemirror.css'; // 会让maxHeight失效
   import 'codemirror/mode/vue/vue';
   import 'codemirror/mode/css/css';
   import 'codemirror/mode/sql/sql';
@@ -72,7 +72,7 @@
   const props = {
     mode: { type: String, default: 'application/json' },
     value: { type: String, default: '' },
-    maxHeight: { type: Number, default: null },
+    maxHeight: { type: String, default: null },
     readonly: { type: Boolean, default: false },
     copyButton: { type: Boolean, default: false },
   };
@@ -143,7 +143,7 @@
           readOnly: props.readonly,
           tabSize: 2,
           theme: 'material-palenight',
-          lineWrapping: true,
+          lineWrapping: false,
           lineNumbers: true,
           spellcheck: true,
           autocorrect: true,
@@ -182,7 +182,7 @@
     mounted() {
       const maxHeight = this.$props.maxHeight;
       if (maxHeight) {
-        this.$refs.el.style.maxHeight = maxHeight + 'px';
+        this.$refs.el.style.maxHeight = maxHeight;
         this.$refs.el.style.overflowY = 'scroll';
       }
     },

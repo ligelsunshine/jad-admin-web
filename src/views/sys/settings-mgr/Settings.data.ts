@@ -2,6 +2,10 @@ import { FormSchema } from '/@/components/Table';
 import { DescItem } from '/@/components/Description';
 import { formatToDateTime } from '/@/utils/dateUtil';
 import { Status, useDataModel } from '/@/api/data';
+import { buttonIcon, folderIcon, menuIcon, MenuType } from '/@/views/sys/menu/menu.data';
+import { h } from 'vue';
+import { Icon } from '/@/components/Icon';
+import { CodeEditor } from '/@/components/CodeEditor';
 
 const { renderOfStatus } = useDataModel();
 
@@ -48,17 +52,35 @@ export const isItem = (type: number) => type === SettingType.ITEM;
  *
  * @param settingType 设置类型
  */
-export function renderOfSettingType(settingType) {
+export function getSettingType(settingType: number): MenuType {
+  let model: MenuType = { type: settingType };
   switch (settingType) {
     case SettingType.DIRECTORY:
-      return '目录';
+      model = {
+        type: settingType,
+        text: '目录',
+        icon: folderIcon,
+        color: 'orange',
+      };
+      break;
     case SettingType.PAGE:
-      return '设置页';
+      model = {
+        type: settingType,
+        text: '设置页',
+        icon: menuIcon,
+        color: 'green',
+      };
+      break;
     case SettingType.ITEM:
-      return '设置项';
-    default:
-      return 'undefined';
+      model = {
+        type: settingType,
+        text: '设置项',
+        icon: buttonIcon,
+        color: 'green',
+      };
+      break;
   }
+  return model;
 }
 
 /**
@@ -352,8 +374,26 @@ export const formSchema: FormSchema[] = [
     show: ({ values }) => isItem(values.settingType),
     colProps: { lg: 24 },
   },
+  {
+    field: 'remark',
+    label: '备注',
+    component: 'InputTextArea',
+    colProps: { lg: 24 },
+  },
 ];
 
+/**
+ * 渲染JSON
+ *
+ * @param val json字符串
+ */
+function renderOfJsonCode(val: string) {
+  if (val) {
+    return h(CodeEditor, { value: val, maxHeight: '200px', readonly: true });
+  } else {
+    return '';
+  }
+}
 /**
  * 详情
  */
@@ -361,11 +401,33 @@ export const descSchema: DescItem[] = [
   {
     field: 'settingType',
     label: '设置类型',
-    render: (val) => renderOfSettingType(val),
+    span: 2,
+    render: (val) => {
+      const settingType = getSettingType(val);
+      return h('p', [h(Icon, { icon: settingType?.icon }), ' ' + settingType?.text]);
+    },
+  },
+  {
+    field: 'title',
+    label: '标题',
+    span: 2,
+  },
+  {
+    field: 'orderNo',
+    label: '排序',
+  },
+  {
+    field: 'icon',
+    label: '图标',
+    render: (val) => {
+      return h(Icon, {
+        icon: val,
+      });
+    },
   },
   {
     field: 'permissions',
-    label: '授权',
+    label: '权限标识',
   },
   {
     field: 'status',
@@ -373,8 +435,8 @@ export const descSchema: DescItem[] = [
     render: (val) => renderOfStatus(val),
   },
   {
-    field: 'title',
-    label: '标题',
+    field: 'code',
+    label: '设置编码',
   },
   {
     field: 'helpMessage',
@@ -393,30 +455,25 @@ export const descSchema: DescItem[] = [
     field: 'require',
     label: '是否必须',
     render: (val) => (eval(val) ? '是' : '否'),
-  },
-  {
-    field: 'enumVal',
-    label: '枚举值',
+    span: 2,
   },
   {
     field: 'rules',
     label: '自定义校验规则',
+    span: 2,
+    render: (val) => renderOfJsonCode(val),
   },
   {
     field: 'componentProps',
     label: '组件属性',
+    span: 2,
+    render: (val) => renderOfJsonCode(val),
   },
   {
     field: 'colProps',
     label: '列属性',
-  },
-  {
-    field: 'code',
-    label: '编码',
-  },
-  {
-    field: 'orderNo',
-    label: '排序',
+    span: 2,
+    render: (val) => renderOfJsonCode(val),
   },
   {
     field: 'createTime',
@@ -431,5 +488,6 @@ export const descSchema: DescItem[] = [
   {
     field: 'remark',
     label: '备注',
+    span: 2,
   },
 ];

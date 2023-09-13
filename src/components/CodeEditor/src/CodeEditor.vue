@@ -43,18 +43,20 @@
     emits: ['change', 'error', 'update:value'],
     setup(props, { emit }) {
       const model = ref<Result>({
-        data: props.value,
+        data: '',
       });
+      getValue();
+      function getValue() {
+        const { value, mode } = props;
+        if (mode !== MODE.JSON) {
+          model.value.data = value as string;
+        } else {
+          model.value.data = validateJson(value).value;
+        }
+      }
       watch(
         () => props.value,
-        () => {
-          const { value, mode } = props;
-          if (mode !== MODE.JSON) {
-            model.value.data = value as string;
-          } else {
-            model.value.data = validateJson(value).value;
-          }
-        }
+        () => getValue()
       );
       watch(
         () => model.value.data,

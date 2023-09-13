@@ -3,9 +3,16 @@
     <template #headerContent>
       <Alert type="info" show-icon banner closable message="说明：">
         <template #description>
-          右击空白处新增<span style="color: red">根节点</span>，右击树节点可操作<span
-            style="color: red"
-            >树节点</span
+          <p
+            >右击空白处新增<span style="color: red">根节点</span>，右击树节点可操作<span
+              style="color: red"
+              >树节点</span
+            ></p
+          >
+          <p
+            >注意：<span style="color: red"
+              >"目录"下只能添加"目录"和"设置页"，"设置页"下只能添加"设置项"，"设置项"下不能再添加子节点</span
+            ></p
           >
         </template>
       </Alert>
@@ -27,6 +34,7 @@
             :treeData="treeData"
             :replaceFields="{ key: 'id' }"
             :beforeRightClick="getRightMenuList"
+            :renderIcon="handleRenderIcon"
             @select="handleSelect"
             search
             toolbar
@@ -85,7 +93,7 @@
     getApi,
     getTreeAsPromiseApi,
   } from '/@/api/sys/settings/SettingsMgr.api';
-  import { descSchema } from '/@/views/sys/settings-mgr/Settings.data';
+  import { descSchema, getSettingType } from '/@/views/sys/settings-mgr/Settings.data';
   import SettingsModal from '/@/views/sys/settings-mgr/SettingsModal.vue';
   import MenuSelector from '/@/views/sys/menu/MenuSelector.vue';
   import Icon from '/@/components/Icon/src/Icon.vue';
@@ -240,6 +248,9 @@
         await deleteChildrenApi(id);
         handleSuccess();
       }
+      function handleRenderIcon({ settingType }) {
+        return getSettingType(settingType).icon;
+      }
       function handleSuccess(response?: { isUpdate; record }) {
         getTreeData();
         if (response?.isUpdate) {
@@ -272,6 +283,7 @@
         getRightMenuList,
         handleSelect,
         handleContext,
+        handleRenderIcon,
         handleSuccess,
         handleBindingMenu,
         handleSelectMenuSuccess,

@@ -69,7 +69,7 @@
   import { defineComponent, reactive, ref, unref, computed } from 'vue';
 
   import LoginFormTitle from '../login/LoginFormTitle.vue';
-  import { Form, RadioGroup, RadioButton, Input, Row, Col, Button, Checkbox } from 'ant-design-vue';
+  import { Form, Radio, Input, Row, Col, Button, Checkbox } from 'ant-design-vue';
   import { StrengthMeter } from '/@/components/StrengthMeter';
   import { CountdownInput } from '/@/components/CountDown';
 
@@ -84,8 +84,8 @@
       Button,
       Form,
       FormItem: Form.Item,
-      RadioGroup,
-      RadioButton,
+      RadioGroup: Radio.Group,
+      RadioButton: Radio.Button,
       Input,
       InputPassword: Input.Password,
       Checkbox,

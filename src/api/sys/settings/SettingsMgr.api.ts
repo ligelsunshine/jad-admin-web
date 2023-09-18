@@ -8,8 +8,8 @@ enum Api {
   Get = '/sys/settingsMgr/get',
   GetTree = '/sys/settingsMgr/getTree',
   BindMenu = '/sys/settingsMgr/bindMenu',
+  SaveSettingValue = '/sys/settingsMgr/saveSettingValue',
 }
-
 /**
  * 添加系统设置管理
  */
@@ -70,4 +70,11 @@ export const getTreeAsPromiseApi = async () => {
  */
 export const bindMenu = async (menuId: string) => {
   return defHttp.post({ url: Api.BindMenu + '/' + menuId }, { isTransformResponse: true });
+};
+/**
+ * 保存设置
+ */
+export const saveSetting = (param: { id: string; value: string }) => {
+  // TODO 保存设置
+  return defHttp.post({ url: Api.SaveSettingValue, params: param }, { isTransformResponse: true });
 };

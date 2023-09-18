@@ -25,11 +25,17 @@ export interface MenuTag {
 }
 
 export interface Menu {
+  id?: string;
+
   name: string;
+
+  title: string;
 
   icon?: string;
 
   path: string;
+
+  key?: string;
 
   // path contains param, auto assignment.
   paramPath?: string;

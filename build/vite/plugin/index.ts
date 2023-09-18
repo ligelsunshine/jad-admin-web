@@ -40,7 +40,6 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
     }),
   ];
 
-  // TODO
   !isBuild && vitePlugins.push(configHmrPlugin());
 
   // @vitejs/plugin-legacy

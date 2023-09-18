@@ -1,5 +1,4 @@
-// TODO
-import type { GetManualChunk } from 'rollup';
+ import type { GetManualChunk } from 'rollup';
 
 //
 const vendorLibs: { match: string[]; output: string }[] = [

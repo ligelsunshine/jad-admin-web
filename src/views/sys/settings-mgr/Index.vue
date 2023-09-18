@@ -79,12 +79,12 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, unref } from 'vue';
+import { defineComponent, h, ref, unref, VNode } from "vue";
   import { BasicTree, ContextMenuItem, TreeItem, TreeActionType } from '/@/components/Tree';
   import { Description } from '/@/components/Description';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
-  import { Row, Col, Card, Empty, Spin, Alert, Button } from 'ant-design-vue';
+import { Row, Col, Card, Empty, Spin, Alert, Button, Tag } from "ant-design-vue";
 
   import {
     bindMenu,
@@ -99,6 +99,7 @@
   import Icon from '/@/components/Icon/src/Icon.vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
+import { Status } from "/@/api/data";
 
   export default defineComponent({
     name: 'Index',
@@ -141,12 +142,34 @@
        * 获取树形数据
        */
       function getTreeData() {
+        const renderStyle = (treeData: any[]) => {
+          if (!treeData) {
+            return;
+          }
+          treeData.forEach((data) => {
+            var tags: VNode[] = [];
+            var newStyle = {};
+            if (data.status == Status.DISABLE) {
+              tags.push(h(Tag, { color: '#ff9fa0' }, { default: () => '停用' }));
+              newStyle['textDecoration'] = 'line-through';
+            }
+            data.title = h(
+              'span',
+              {
+                style: newStyle,
+              },
+              h('div', [data.title, '  ', tags])
+            );
+            renderStyle(data.children);
+          });
+        };
         getTreeAsPromiseApi().then((response) => {
           const data = response.data?.data;
           if (data && data.length === 1) {
             originTreeData.value = data[0];
             if (data[0].children) {
               treeData.value = data[0].children;
+              renderStyle(treeData.value);
             } else {
               treeData.value = [];
             }

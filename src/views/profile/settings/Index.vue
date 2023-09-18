@@ -60,7 +60,7 @@
 </script>
 <style lang="less">
   .account-setting {
-    margin: 12px;
+    margin: 24px;
     background-color: @component-background;
 
     .base-title {

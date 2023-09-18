@@ -260,7 +260,8 @@ export const formSchema: FormSchema[] = [
     field: 'permissions',
     label: '权限标识',
     component: 'Input',
-    helpMessage: '多个用逗号分隔，如：user:list,user:create',
+    helpMessage:
+      '多个用逗号分隔，如：user:list,user:create。不填代表此设置不需要认证和授权即可获取，即公开设置',
   },
   {
     field: 'status',

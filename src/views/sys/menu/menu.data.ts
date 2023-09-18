@@ -1,9 +1,7 @@
 import { h } from 'vue';
 import { DescItem } from '/@/components/Description';
-import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { Icon } from '/@/components/Icon';
-import { Tag } from 'ant-design-vue';
 
 export interface MenuType {
   type: number;
@@ -40,69 +38,6 @@ export function getMenuType(type: number): MenuType {
   }
   return menuType;
 }
-
-export const columns: BasicColumn[] = [
-  {
-    title: '菜单标题',
-    dataIndex: 'title',
-    width: 180,
-    align: 'left',
-    fixed: 'left',
-  },
-  {
-    title: '类型',
-    dataIndex: 'type',
-    width: 80,
-    customRender: ({ record }) => {
-      const menuType = getMenuType(record.type);
-      return h(Tag, { color: menuType?.color }, () => menuType?.text);
-    },
-  },
-  {
-    title: '图标',
-    dataIndex: 'icon',
-    width: 50,
-    customRender: ({ record }) => {
-      return h(Icon, { icon: record.icon });
-    },
-  },
-  {
-    title: '路由地址',
-    dataIndex: 'path',
-    align: 'left',
-  },
-  {
-    title: '权限标识',
-    dataIndex: 'permissions',
-    align: 'left',
-  },
-  {
-    title: '组件',
-    dataIndex: 'component',
-    width: 300,
-    align: 'left',
-  },
-  {
-    title: '排序',
-    dataIndex: 'orderNo',
-    width: 200,
-    edit: true,
-    editRule: true,
-    editComponent: 'InputNumber',
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    width: 80,
-    customRender: ({ record }) => {
-      const status = record.status;
-      const enable = ~~status === 0;
-      const color = enable ? 'green' : 'red';
-      const text = enable ? '启用' : '停用';
-      return h(Tag, { color: color }, () => text);
-    },
-  },
-];
 
 // const isDir = (type: number) => type === 0;
 export const isMenu = (type: number) => type === 1;
@@ -217,7 +152,6 @@ export const formSchema: FormSchema[] = [
     label: '权限标识',
     helpMessage: '多个用逗号分隔，如：user:list,user:create',
     component: 'Input',
-    show: ({ values }) => isButton(values.type),
   },
   {
     field: 'frameSrc',
@@ -358,7 +292,6 @@ export const descSchema: DescItem[] = [
   {
     field: 'permissions',
     label: '权限标识',
-    show: (record) => isButton(record.type),
   },
   {
     field: 'frameSrc',

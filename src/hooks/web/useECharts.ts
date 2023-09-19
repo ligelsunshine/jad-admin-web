@@ -25,9 +25,11 @@ export function useECharts(
 
   const getOptions = computed((): EChartsOption => {
     if (getDarkMode.value !== 'dark') {
+      // @ts-ignore
       return cacheOptions.value;
     }
     return {
+      // @ts-ignore
       backgroundColor: 'transparent',
       ...cacheOptions.value,
     };
@@ -55,6 +57,7 @@ export function useECharts(
   }
 
   function setOptions(options: EChartsOption, clear = true) {
+    // @ts-ignore
     cacheOptions.value = options;
     if (unref(elRef)?.offsetHeight === 0) {
       useTimeoutFn(() => {
@@ -86,6 +89,7 @@ export function useECharts(
       if (chartInstance) {
         chartInstance.dispose();
         initCharts(theme as 'default');
+        // @ts-ignore
         setOptions(cacheOptions.value);
       }
     }

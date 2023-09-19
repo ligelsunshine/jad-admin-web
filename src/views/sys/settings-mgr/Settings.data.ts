@@ -20,7 +20,8 @@ export interface Settings {
   settingType?: SettingType;
   permissions?: string;
   status?: Status;
-  title?: string;
+  title: string;
+  icon?: string;
   helpMessage?: string;
   component?: Component;
   val?: string;
